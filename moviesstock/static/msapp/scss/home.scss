@@ -1,0 +1,47 @@
+@import 'movies_list_style';
+@import 'movie_card_style';
+@import 'search_style';
+
+@font-face {
+    font-family: 'hollywood';
+    src: url('../fonts/HollywoodHills.ttf') format('truetype');
+}
+
+$primary-color: #4c0303;
+$wall-color: #f3f3f3;
+
+body {
+  background: $wall-color;
+  color: $primary-color;
+  font-family: "Segoe UI", system-ui, sans-serif;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+
+  main {
+    width: 100%;
+  }
+
+  h1 {
+    margin: 0;
+    margin-top: 10px;
+    font-size: 5em;
+  }
+  h1, h2 {
+    display: flex;
+    justify-content: center;
+  }
+  h1, button {
+    font-family: 'hollywood', sans-serif;
+  }
+  h2 {
+    margin-bottom: 50px;
+  }
+
+  button {
+    color: $primary-color;
+    font-size: 1.4em;
+  }
+}

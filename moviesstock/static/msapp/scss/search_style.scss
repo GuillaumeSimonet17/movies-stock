@@ -1,0 +1,18 @@
+
+#search_input {
+  background: none;
+  border: none;
+  border-bottom: 1px solid lightgrey;
+  border-left: 1px solid lightgrey;
+  padding: 10px 20px;
+  outline: none;
+  font-size: 1em;
+  margin-left: 20%;
+}
+#movies_results {
+  margin-left: 20%;
+}
+.movie_res:hover {
+  cursor: pointer;
+  font-weight: bold;
+}

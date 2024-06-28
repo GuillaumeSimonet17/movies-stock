@@ -1,0 +1,21 @@
+
+button {
+  border: none;
+  background: none;
+  cursor: pointer;
+  transition: 0.1s ease-in-out;
+  font-size: 1em;
+
+  &:hover {
+    transform: scale(1.05);
+  }
+  &:active {
+    transform: scale(1.08);
+  }
+}
+
+.movies_list {
+  width: 100%;
+  display: flex;
+  flex-wrap: wrap;
+}
