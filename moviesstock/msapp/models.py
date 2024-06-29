@@ -11,3 +11,9 @@ class Movie(models.Model):
     origin_country = models.CharField(max_length=255, null=True)
     production_companies = models.JSONField(null=True)
     status = models.CharField()
+
+
+class MoviesList(models.Model):
+    name = models.CharField(max_length=100, default='Main List')
+
+    movies = models.ManyToManyField(Movie, related_name='movies_lists')

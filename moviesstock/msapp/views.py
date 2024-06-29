@@ -3,7 +3,7 @@ import requests
 from django.shortcuts import redirect, render
 from django.urls import reverse
 from django.views.decorators.csrf import csrf_exempt
-from .models import Movie
+from .models import Movie, MoviesList
 
 API_KEY = 'eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiI5MTA2MjRmYjZmOGNkMGEzMjc5YTk4ZmJhZDBkYTA4ZCIsIm5iZiI6MTcxOTYxNTIyNi42MTcyMzksInN1YiI6IjYyMTNhNzJkODEzODMxMDAxYzYxN2Q2NiIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.KHP_u0H2ra2mASaXmyeiEX-qQiyCfhCK_HSeNbDvyn8'
 URL = 'https://api.themoviedb.org/3/'
@@ -11,7 +11,12 @@ URL = 'https://api.themoviedb.org/3/'
 
 def home(request):
     movies = Movie.objects.all()
-    context = { 'movies': movies }
+    movies_list = MoviesList.objects.first()
+
+    context = {
+        'movies': movies,
+        'movies_list': movies_list,
+    }
     return render(request, 'home.html', context)
 
 
@@ -56,6 +61,8 @@ def add_movie(request):
         movie_id = request.POST.get('id')
         movie_detailed = search_detailed_movies(movie_id)
         if movie_detailed:
+            movies_list, created = MoviesList.objects.get_or_create(name='Main List')
+
             movie = Movie(
                 title=movie_detailed.get('title'),
                 poster_path=movie_detailed.get('poster_path'),
@@ -68,6 +75,8 @@ def add_movie(request):
                 status=movie_detailed.get('status'),
             )
             movie.save()
+            movies_list.movies.add(movie)
+            # movies_list.save()
             return JsonResponse({'message': 'Film ajouté avec succès'})
 
         return JsonResponse({'error': 'Requête invalide'}, status=400)

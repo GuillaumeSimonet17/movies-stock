@@ -1,4 +1,4 @@
-{% for movie in movies %}
+{% for movie in movies_list.movies.all %}
 <div class="movie_card" onclick="goToMoviePage({{ movie.id }})">
     <div class="infos">
         <h3>{{ movie.title }}</h3>
