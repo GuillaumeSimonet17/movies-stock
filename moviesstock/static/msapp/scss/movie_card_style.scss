@@ -2,6 +2,23 @@
 .movie_card {
   padding: 10px;
   margin: 5px;
-  width: 200px;
+  width: 330px;
   border-bottom: 1px solid lightgrey;
+  cursor: pointer;
+  transition: 0.5s ease-in-out;
+
+  &:hover {
+    transform: scale(1.02);
+  }
+
+  .infos {
+    display: flex;
+    width: 100%;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  img {
+    width: 100%;
+  }
 }

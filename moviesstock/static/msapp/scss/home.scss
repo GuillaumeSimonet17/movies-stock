@@ -2,6 +2,8 @@
 @import 'movie_card_style';
 @import 'search_style';
 @import 'colors';
+
+
 body {
   background: $wall-color;
   color: $primary-color;
@@ -11,14 +13,14 @@ body {
   align-items: center;
   justify-content: center;
   width: 100%;
+  overflow-x: hidden;
 
   main {
     width: 100%;
   }
 
   h1 {
-    margin: 0;
-    margin-top: 10px;
+    margin: 10px 0 0 0;
     font-size: 5em;
   }
   h1, h2 {

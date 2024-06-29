@@ -1,6 +1,16 @@
 {% for movie in movies %}
 <div class="movie_card">
-    <h3>{{ movie.title }}</h3>
-    <p>Year: {{ movie.year }}</p>
+    <div class="infos">
+        <h3>{{ movie.title }}</h3>
+        {% if movie.status != "Released" %}
+            <p>{{ movie.status }}</p>
+        {% endif %}
+        {% if movie.status != "Released" %}
+            <p>{{ movie.release_date }}</p>
+        {% else %}
+            <p>{{ movie.release_date.year }}</p>
+        {% endif %}
+    </div>
+    <img src="https://image.tmdb.org/t/p/w500{{ movie.poster_path }}" alt="{{ movie.title }} poster"/>
 </div>
 {% endfor %}

@@ -74,7 +74,6 @@ function displayMovies(movies) {
 }
 
 function show_or_hide_search(movieSearchInput, searchContainer, to_show) {
-
     if (to_show) {
         movieSearchInput.css('opacity', '1');
         searchContainer.css('opacity', '1');
