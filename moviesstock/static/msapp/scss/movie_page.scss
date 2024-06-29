@@ -21,6 +21,35 @@
       flex-direction: column;
       align-items: start;
       margin-left: 50px;
+
+      .dates {
+        display: flex;
+        width: 400px;
+        p{
+          margin-right: 10px;
+        }
+      }
+
+      .genres {
+        display: flex;
+        width: 100%;
+        justify-content: start;
+
+        .genre {
+          margin-right: 10px;
+          font-weight: bold;
+        }
+      }
+
+      .prods {
+        width: 100%;
+
+        .prod {
+          width: 100px;
+          object-fit: contain;
+          margin-right: 50px;
+        }
+      }
     }
   }
 }

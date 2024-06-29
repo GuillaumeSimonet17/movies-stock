@@ -20,7 +20,7 @@
     </header>
     <main>
         <div class="movie_page_container">
-            <p class="title">{{ movie.title }}</p>
+            <p class="title">{{ movie.title }} ({{ movie.release_date.year }})</p>
             <div class="main_container">
                 <div class="left">
                     <img id="poster" src="https://image.tmdb.org/t/p/w500{{ movie.poster_path }}" alt="{{ movie.title }} poster"/>
@@ -28,23 +28,31 @@
                 </div>
 
                 <div class="right">
-                    {% if movie.status != "Released" %}
-                    <p style="color: red; font-weight: bold">{{ movie.status }}</p>
-                    {% endif %}
-                    {% if movie.status != "Released" %}
-                        <p>Release date : <span style="font-weight: bold">{{ movie.release_date }}</span></p>
-                    {% else %}
-                        <p style="font-weight: bold">{{ movie.release_date.year }}</p>
-                    {% endif %}
-
-                    <p>{{ movie.genre_ids }}</p>
-                    <p>{{ movie.overview }}</p>
+                    <div class="dates">
+                        {% if movie.status != "Released" %}
+                            <p style="color: red; font-weight: bold">{{ movie.status }}</p>
+                        {% endif %}
+                        {% if movie.status != "Released" %}
+                            <p>Release date : <span style="font-weight: bold">{{ movie.release_date }}</span></p>
+                        {% endif %}
+                    </div>
+                    <div class="genres">
+                        {% for genre in movie.genre_ids %}
+                            <p class="genre">{{ genre.name }}</p>
+                        {% endfor %}
+                    </div>
+                    <p style="line-height: 1.5em"><span style="font-weight: bold; text-decoration: underline;">Synopsis</span> : {{ movie.overview }}</p>
                     {% if movie.budget %}
-                        <p>{{ movie.budget }}</p>
+                        <p>Budget : {{ movie.budget }} $ </p>
                     {% endif %}
 
-                    <p>{{ movie.origin_country }}</p>
-                    <p>{{ movie.production_companies }}</p>
+                    <div class="prods">
+                        {% for prod in movie.production_companies %}
+                            {% if prod.logo_path %}
+                                <img class="prod" src="https://image.tmdb.org/t/p/w500{{ prod.logo_path }}" alt="{{ prod.name }} logo"/>
+                            {% endif %}
+                        {% endfor %}
+                    </div>
                 </div>
             </div>
         </div>
