@@ -22,9 +22,14 @@
         <div class="movie_page_container">
             <div class="head">
                 <p class="title">{{ movie.title }} ({{ movie.release_date.year }})</p>
-                <button onclick="goToNextMoviePage({{ movies_list  }}, {{ movie.id }})">
-                    Next >
-                </button>
+                <div class="btn_pass">
+                    <button onclick="goToPreviousMoviePage({{ movies_list }}, {{ movie.id }})">
+                        < Previous
+                    </button>
+                    <button onclick="goToNextMoviePage({{ movies_list }}, {{ movie.id }})">
+                        Next >
+                    </button>
+                </div>
             </div>
             <div class="main_container">
                 <div class="left">
