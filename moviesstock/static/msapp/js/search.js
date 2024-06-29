@@ -40,10 +40,11 @@ function searchMovies(query) {
 }
 
 function displayMovies(movies) {
-    console.log('====> ', movies)
     let resultsContainer = document.getElementById('movies_results');
     resultsContainer.innerHTML = '';
-     let limitedMovies = movies.slice(0, 5);
+    let limitedMovies = movies.slice(0, 5);
+    let movieSearchInput = $('#search_input');
+    let searchContainer = $('.search_container')
 
     limitedMovies.forEach(function(movie) {
         let movieElement = document.createElement('div');
@@ -62,6 +63,11 @@ function displayMovies(movies) {
                     data: { id: movie.id },
                     success: function(response) {
                         console.log('Réponse du serveur :', response.message);
+                        resultsContainer.innerHTML = '';
+                        movieSearchInput.empty()
+                        movieSearchInput.val('');
+                        movieSearchInput.css('opacity', '0');
+                        searchContainer.css('opacity', '0');
                     },
                     error: function(xhr, status, error) {
                         console.error('Erreur lors de la requête :', error);

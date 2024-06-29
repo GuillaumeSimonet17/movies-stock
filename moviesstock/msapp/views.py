@@ -67,12 +67,12 @@ def add_movie(request):
             movie = Movie(
                 title=movie_detailed.get('title'),
                 poster_path=movie_detailed.get('poster_path'),
-                release_date=movie_detailed.get('release_date'),
-                genre_ids=movie_detailed.get('genres'),
-                overview=movie_detailed.get('overview'),
-                budget=movie_detailed.get('budget'),
-                origin_country=movie_detailed.get('origin_country'),
-                production_companies=movie_detailed.get('production_companies'),
+                release_date=movie_detailed.get('release_date') or None,
+                genre_ids=movie_detailed.get('genres') or None,
+                overview=movie_detailed.get('overview') or None,
+                budget=movie_detailed.get('budget') or None,
+                origin_country=movie_detailed.get('origin_country') or None,
+                production_companies=movie_detailed.get('production_companies') or None,
                 status=movie_detailed.get('status'),
             )
             movie.save()
