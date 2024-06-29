@@ -10,12 +10,12 @@
 
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="{% static 'msapp/js/search.js' %}"></script>
+    <script src="{% static 'msapp/js/go_to_movie_page.js' %}"></script>
 
 </head>
 <body>
     <header>
-        <h1>Hollylist</h1>
-        <h2>In which world do you want to go now ?</h2>
+        {% include "header_template.html" %}
     </header>
     <main>
         {% include "search_template.html" %}

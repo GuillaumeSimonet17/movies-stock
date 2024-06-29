@@ -1,0 +1,54 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Movie Stock</title>
+    {% load sass_tags %}
+    {% load static %}
+    <link href="{% sass_src 'msapp/scss/movie_page.scss' %}" rel="stylesheet" type="text/css" />
+    <link href="{% sass_src 'msapp/scss/home.scss' %}" rel="stylesheet" type="text/css" />
+
+{#    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>#}
+{#    <script src="{% static 'msapp/js/search.js' %}"></script>#}
+{#    <script src="{% static 'msapp/js/go_to_movie_page.js' %}"></script>#}
+
+</head>
+<body>
+    <header>
+        {% include "header_template.html" %}
+    </header>
+    <main>
+        <div class="movie_page_container">
+            <p class="title">{{ movie.title }}</p>
+            <div class="main_container">
+                <div class="left">
+                    <img id="poster" src="https://image.tmdb.org/t/p/w500{{ movie.poster_path }}" alt="{{ movie.title }} poster"/>
+
+                </div>
+
+                <div class="right">
+                    {% if movie.status != "Released" %}
+                    <p style="color: red; font-weight: bold">{{ movie.status }}</p>
+                    {% endif %}
+                    {% if movie.status != "Released" %}
+                        <p>Release date : <span style="font-weight: bold">{{ movie.release_date }}</span></p>
+                    {% else %}
+                        <p style="font-weight: bold">{{ movie.release_date.year }}</p>
+                    {% endif %}
+
+                    <p>{{ movie.genre_ids }}</p>
+                    <p>{{ movie.overview }}</p>
+                    {% if movie.budget %}
+                        <p>{{ movie.budget }}</p>
+                    {% endif %}
+
+                    <p>{{ movie.origin_country }}</p>
+                    <p>{{ movie.production_companies }}</p>
+                </div>
+            </div>
+        </div>
+
+    </main>
+</body>
+</html>

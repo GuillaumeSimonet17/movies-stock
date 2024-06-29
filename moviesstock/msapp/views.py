@@ -16,7 +16,6 @@ def home(request):
 
 
 def search_movies(request):
-    print('ici => ', request)
     if request.method == 'GET' and 'query' in request.GET:
         query = request.GET.get('query')
         if query:

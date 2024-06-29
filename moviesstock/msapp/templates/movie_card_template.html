@@ -1,5 +1,5 @@
 {% for movie in movies %}
-<div class="movie_card">
+<div class="movie_card" onclick="goToMoviePage({{ movie.id }})">
     <div class="infos">
         <h3>{{ movie.title }}</h3>
         {% if movie.status != "Released" %}
