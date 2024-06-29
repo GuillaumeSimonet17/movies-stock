@@ -1,6 +1,7 @@
-from django.shortcuts import render
 from django.http import JsonResponse
 import requests
+from django.shortcuts import redirect, render
+from django.urls import reverse
 from django.views.decorators.csrf import csrf_exempt
 from .models import Movie
 
@@ -55,7 +56,6 @@ def add_movie(request):
     if request.method == 'POST':
         movie_id = request.POST.get('id')
         movie_detailed = search_detailed_movies(movie_id)
-        print(movie_detailed)
         if movie_detailed:
             movie = Movie(
                 title=movie_detailed.get('title'),
@@ -72,3 +72,12 @@ def add_movie(request):
             return JsonResponse({'message': 'Film ajouté avec succès'})
 
         return JsonResponse({'error': 'Requête invalide'}, status=400)
+
+
+@csrf_exempt
+def delete_movie(request):
+    if request.method == 'POST':
+        movie_to_delete = Movie.objects.get(pk=request.POST.get('id'))
+        movie_to_delete.delete()
+        return redirect(reverse('home'))
+    return render(request, 'home.html')

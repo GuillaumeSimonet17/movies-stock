@@ -63,6 +63,7 @@ function displayMovies(movies) {
                         console.log('Réponse du serveur :', response.message);
                         resultsContainer.innerHTML = '';
                         show_or_hide_search(movieSearchInput, searchContainer, 0)
+                        window.location.href = '/';
                     },
                     error: function(xhr, status, error) {
                         console.error('Erreur lors de la requête :', error);
