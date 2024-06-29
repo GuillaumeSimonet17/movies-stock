@@ -34,7 +34,6 @@ def search_movies(request):
                 response = requests.get(url, headers=headers)
                 response.raise_for_status()
                 data = response.json()
-                results = data.get('results', [])
                 return JsonResponse(data)
 
             except requests.exceptions.RequestException as e:

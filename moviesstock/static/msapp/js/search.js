@@ -5,8 +5,7 @@ $(document).ready(function() {
     $(document).on('keydown', function(event) {
         if (isValidKey(event.key)) {
             movieSearchInput.focus();
-            movieSearchInput.css('opacity', '1');
-            searchContainer.css('opacity', '1');
+            show_or_hide_search(movieSearchInput, searchContainer, 1)
         }
     });
 
@@ -15,8 +14,7 @@ $(document).ready(function() {
             searchMovies(movieSearchInput.val());
         else {
             moviesRes.empty()
-            movieSearchInput.css('opacity', '0');
-            searchContainer.css('opacity', '0');
+            show_or_hide_search(movieSearchInput, searchContainer, 0)
         }
     });
 });
@@ -64,10 +62,7 @@ function displayMovies(movies) {
                     success: function(response) {
                         console.log('Réponse du serveur :', response.message);
                         resultsContainer.innerHTML = '';
-                        movieSearchInput.empty()
-                        movieSearchInput.val('');
-                        movieSearchInput.css('opacity', '0');
-                        searchContainer.css('opacity', '0');
+                        show_or_hide_search(movieSearchInput, searchContainer, 0)
                     },
                     error: function(xhr, status, error) {
                         console.error('Erreur lors de la requête :', error);
@@ -76,4 +71,17 @@ function displayMovies(movies) {
             });
         }
     });
+}
+
+function show_or_hide_search(movieSearchInput, searchContainer, to_show) {
+
+    if (to_show) {
+        movieSearchInput.css('opacity', '1');
+        searchContainer.css('opacity', '1');
+    } else {
+        movieSearchInput.css('opacity', '0');
+        searchContainer.css('opacity', '0');
+        movieSearchInput.empty()
+        movieSearchInput.val('');
+    }
 }
