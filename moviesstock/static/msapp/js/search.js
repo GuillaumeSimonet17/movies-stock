@@ -47,14 +47,27 @@ function displayMovies(movies) {
 
     limitedMovies.forEach(function(movie) {
         let movieElement = document.createElement('div');
-        movieElement.className = 'res_container';
+        movieElement.id = 'res_container';
 
         if (movie.poster_path) {
             let imageUrl = movie.poster_path ? 'https://image.tmdb.org/t/p/w500' + movie.poster_path : 'placeholder_image_url';
 
             movieElement.innerHTML = '<img class="res_img" src="' + imageUrl + '" alt="' + movie.title + '"> <p class="res_title">' + movie.title + '</p>';
             resultsContainer.appendChild(movieElement);
-        }
 
+            $(movieElement).on('click', function() {
+                $.ajax({
+                    url: '/add_movie/',
+                    method: 'POST',
+                    data: { id: movie.id },
+                    success: function(response) {
+                        console.log('Réponse du serveur :', response.message);
+                    },
+                    error: function(xhr, status, error) {
+                        console.error('Erreur lors de la requête :', error);
+                    }
+                });
+            });
+        }
     });
 }
