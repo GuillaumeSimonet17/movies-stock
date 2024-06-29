@@ -1,18 +1,48 @@
+@import 'colors';
 
-#search_input {
-  background: none;
-  border: none;
-  border-bottom: 1px solid lightgrey;
-  border-left: 1px solid lightgrey;
-  padding: 10px 20px;
-  outline: none;
-  font-size: 1em;
-  margin-left: 20%;
+.search_container {
+  position: absolute;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background: $wall-color;
+  opacity: 0;
+
+  #search_input {
+    background: none;
+    border: none;
+    border-bottom: 1px solid lightgrey;
+    border-left: 1px solid lightgrey;
+    padding: 10px 20px;
+    outline: none;
+    font-size: 1em;
+    opacity: 0;
+  }
+
+  #movies_results {
+    margin-top: 10px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+
+    .res_container {
+      width: 70%;
+      display: flex;
+      border-bottom: 1px solid lightgrey;
+      cursor: pointer;
+
+      &:hover {
+        font-weight: bold;
+      }
+    }
+    .res_title {
+      margin-left: 10px;
+    }
+    .res_img {
+      width: 100px;
+  }
 }
-#movies_results {
-  margin-left: 20%;
-}
-.movie_res:hover {
-  cursor: pointer;
-  font-weight: bold;
+
 }

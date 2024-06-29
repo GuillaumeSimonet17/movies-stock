@@ -1,49 +1,16 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <title>Movie Stock</title>
     {% load sass_tags %}
+    {% load static %}
     <link href="{% sass_src 'msapp/scss/home.scss' %}" rel="stylesheet" type="text/css" />
 
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script>
-        $(document).ready(function() {
-            $('#search_input').on('input', function() {
-                var query = $(this).val();
-                console.log('lol = ', query)
-                if (query.length > 0) {
-                    searchMovies(query);
-                } else {
-                    $('#movies_results').empty();
-                }
-            });
+    <script src="{% static 'msapp/js/search.js' %}"></script>
 
-              function searchMovies(query) {
-                $.ajax({
-                    url: '/search_movies/',
-                    method: 'GET',
-                    data: { query: query },
-                    success: function(response) {
-                        displayMovies(response.results);
-                    },
-                    error: function(xhr, status, error) {
-                        console.error('Error fetching movies:', error);
-                    }
-                });
-            }
-            function displayMovies(movies) {
-                console.log(movies)
-                var resultsContainer = document.getElementById('movies_results');
-                resultsContainer.innerHTML = '';
-                movies.forEach(function(movie) {
-                    var movieElement = document.createElement('div');
-                    movieElement.innerHTML = '<p class="movie_res">' + movie.title + '</p>';
-                    resultsContainer.appendChild(movieElement);
-                });
-            }
-        });
-    </script>
 </head>
 <body>
     <header>
@@ -51,10 +18,8 @@
         <h2>In which world do you want to go now ?</h2>
     </header>
     <main>
-        {% block content %}
-            {% include "search_template.html" %}
-            {% include "movies_list_template.html" %}
-        {% endblock %}
+        {% include "search_template.html" %}
+        {% include "movies_list_template.html" %}
     </main>
 </body>
 </html>

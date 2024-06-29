@@ -1,15 +1,7 @@
 @import 'movies_list_style';
 @import 'movie_card_style';
 @import 'search_style';
-
-@font-face {
-    font-family: 'hollywood';
-    src: url('../fonts/HollywoodHills.ttf') format('truetype');
-}
-
-$primary-color: #4c0303;
-$wall-color: #f3f3f3;
-
+@import 'colors';
 body {
   background: $wall-color;
   color: $primary-color;
