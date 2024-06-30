@@ -3,6 +3,9 @@ $(document).ready(function() {
     let moviesRes = $('#movies_results')
     let searchContainer = $('.search_container')
     $(document).on('keydown', function(event) {
+        if (event.key === 'Escape' && movieSearchInput.val().length > 0) {
+            show_or_hide_search(movieSearchInput, searchContainer, 0)
+        }
         if (isValidKey(event.key)) {
             movieSearchInput.focus();
             show_or_hide_search(movieSearchInput, searchContainer, 1)
@@ -10,6 +13,7 @@ $(document).ready(function() {
     });
 
     movieSearchInput.on('input', function() {
+
         if (movieSearchInput.val().length > 0)
             searchMovies(movieSearchInput.val());
         else {
