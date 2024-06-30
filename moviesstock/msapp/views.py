@@ -69,7 +69,6 @@ def add_movie(request):
             if synopsis:
                 translator = deepl.Translator(API_KEY_DEEPL)
                 synopsis_translate = translator.translate_text(synopsis, target_lang="FR")
-                print(synopsis_translate)
 
             movie = Movie(
                 title=movie_detailed.get('title'),

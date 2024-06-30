@@ -17,9 +17,15 @@
     }
 
     .btn_pass {
-
+      display: flex;
+      height: 30px;
+      align-items: center;
       button {
         cursor: pointer;
+        margin-right: 10px;
+        #bin {
+          width: 20px;
+        }
       }
     }
 
