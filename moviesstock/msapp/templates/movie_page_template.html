@@ -57,6 +57,16 @@
                             <p class="genre">{{ genre.name }}</p>
                         {% endfor %}
                     </div>
+                    <a href="{{ movie.url_yts }}" target="_blank">Voir ou download sur YTS</a>
+                    <br/>
+                    <a href="https://wi-flix.xyz/?s={{ movie.title }}" target="_blank">Voir sur Wiflix</a>
+                    <br/>
+                    <a href="https://www.google.com/search?q={{ movie.title }}" target="_blank">Voir sa page Google</a>
+                    <br/>
+                    <a href="https://www.yavroz.com" target="_blank">Chercher sur yavroz</a>
+                    <br/>
+                    <a href="https://www.youtube.com/results?search_query={{ movie.title }}" target="_blank">Bande Annonce</a>
+
                     <p style="line-height: 1.5em"><span style="font-weight: bold; text-decoration: underline;">Synopsis</span> : {{ movie.overview }}</p>
                     {% if movie.budget %}
                         <p>Budget : {{ movie.budget }} $ </p>

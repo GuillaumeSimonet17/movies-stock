@@ -43,6 +43,11 @@
       align-items: start;
       margin-left: 50px;
 
+      a {
+        text-decoration: none;
+        color: #3875d7;
+      }
+
       .dates {
         display: flex;
         width: 400px;

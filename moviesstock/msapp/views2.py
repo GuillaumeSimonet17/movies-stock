@@ -16,16 +16,3 @@ def movie_page(request):
             'movies_list': movie_ids
         }
         return render(request, 'movie_page_template.html', context)
-
-
-def next_movie(request):
-    print('okok')
-#     if request.method == 'GET' and 'query' in request.GET:
-#         m = Movie.objects.get(pk=request.GET.get('movie.id'))
-#         return render(request, 'movie_page_template.html')
-
-    #
-    #     movie_to_delete = Movie.objects.get(pk=request.POST.get('id'))
-    #     movie_to_delete.delete()
-    #     return redirect(reverse('home'))
-    # return render(request, 'home.html')

@@ -11,6 +11,7 @@ class Movie(models.Model):
     origin_country = models.CharField(max_length=255, null=True)
     production_companies = models.JSONField(null=True)
     status = models.CharField()
+    url_yts = models.URLField(null=True)
 
 
 class MoviesList(models.Model):

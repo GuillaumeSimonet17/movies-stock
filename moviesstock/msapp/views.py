@@ -6,10 +6,12 @@ from django.views.decorators.csrf import csrf_exempt
 from .models import Movie, MoviesList
 import deepl
 
-API_KEY_TMDB = 'eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiI5MTA2MjRmYjZmOGNkMGEzMjc5YTk4ZmJhZDBkYTA4ZCIsIm5iZiI6MTcxOTYxNTIyNi42MTcyMzksInN1YiI6IjYyMTNhNzJkODEzODMxMDAxYzYxN2Q2NiIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.KHP_u0H2ra2mASaXmyeiEX-qQiyCfhCK_HSeNbDvyn8'
 URL_TMDB = 'https://api.themoviedb.org/3/'
+URL_YTS = 'https://en.yts-official.mx/movies/'
 
+API_KEY_TMDB = 'eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiI5MTA2MjRmYjZmOGNkMGEzMjc5YTk4ZmJhZDBkYTA4ZCIsIm5iZiI6MTcxOTYxNTIyNi42MTcyMzksInN1YiI6IjYyMTNhNzJkODEzODMxMDAxYzYxN2Q2NiIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.KHP_u0H2ra2mASaXmyeiEX-qQiyCfhCK_HSeNbDvyn8'
 API_KEY_DEEPL = '54f88a40-a6c4-4a68-bdee-460f77863eb4:fx'
+
 
 def home(request):
     movies = Movie.objects.all()
@@ -70,6 +72,12 @@ def add_movie(request):
                 translator = deepl.Translator(API_KEY_DEEPL)
                 synopsis_translate = translator.translate_text(synopsis, target_lang="FR")
 
+            title = movie_detailed.get('title')
+            title_dash = title.replace(' ', '-')
+            date = movie_detailed.get('release_date')
+            year_date = date[:4]
+            yts = URL_YTS + title_dash + '-' + year_date
+
             movie = Movie(
                 title=movie_detailed.get('title'),
                 poster_path=movie_detailed.get('poster_path'),
@@ -80,10 +88,10 @@ def add_movie(request):
                 origin_country=movie_detailed.get('origin_country') or None,
                 production_companies=movie_detailed.get('production_companies') or None,
                 status=movie_detailed.get('status'),
+                url_yts=yts
             )
             movie.save()
             movies_list.movies.add(movie)
-            # movies_list.save()
             return JsonResponse({'message': 'Film ajouté avec succès'})
 
         return JsonResponse({'error': 'Requête invalide'}, status=400)
