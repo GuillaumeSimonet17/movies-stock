@@ -4,10 +4,12 @@ from django.shortcuts import redirect, render
 from django.urls import reverse
 from django.views.decorators.csrf import csrf_exempt
 from .models import Movie, MoviesList
+import deepl
 
-API_KEY = 'eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiI5MTA2MjRmYjZmOGNkMGEzMjc5YTk4ZmJhZDBkYTA4ZCIsIm5iZiI6MTcxOTYxNTIyNi42MTcyMzksInN1YiI6IjYyMTNhNzJkODEzODMxMDAxYzYxN2Q2NiIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.KHP_u0H2ra2mASaXmyeiEX-qQiyCfhCK_HSeNbDvyn8'
-URL = 'https://api.themoviedb.org/3/'
+API_KEY_TMDB = 'eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiI5MTA2MjRmYjZmOGNkMGEzMjc5YTk4ZmJhZDBkYTA4ZCIsIm5iZiI6MTcxOTYxNTIyNi42MTcyMzksInN1YiI6IjYyMTNhNzJkODEzODMxMDAxYzYxN2Q2NiIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.KHP_u0H2ra2mASaXmyeiEX-qQiyCfhCK_HSeNbDvyn8'
+URL_TMDB = 'https://api.themoviedb.org/3/'
 
+API_KEY_DEEPL = '54f88a40-a6c4-4a68-bdee-460f77863eb4:fx'
 
 def home(request):
     movies = Movie.objects.all()
@@ -24,10 +26,10 @@ def search_movies(request):
     if request.method == 'GET' and 'query' in request.GET:
         query = request.GET.get('query')
         if query:
-            url = f'{URL}search/movie?query={query}'
+            url = f'{URL_TMDB}search/movie?query={query}'
             headers = {
                 'accept': 'application/json',
-                "Authorization": "Bearer " + API_KEY,
+                "Authorization": "Bearer " + API_KEY_TMDB,
             }
             try:
                 response = requests.get(url, headers=headers)
@@ -41,10 +43,10 @@ def search_movies(request):
 
 
 def search_detailed_movies(movie_id):
-    url = f'{URL}movie/{movie_id}'
+    url = f'{URL_TMDB}movie/{movie_id}'
     headers = {
         'accept': 'application/json',
-        "Authorization": "Bearer " + API_KEY,
+        "Authorization": "Bearer " + API_KEY_TMDB,
     }
     try:
         response = requests.get(url, headers=headers)
@@ -63,12 +65,18 @@ def add_movie(request):
         if movie_detailed:
             movies_list, created = MoviesList.objects.get_or_create(name='Main List')
 
+            synopsis = movie_detailed.get('overview')
+            if synopsis:
+                translator = deepl.Translator(API_KEY_DEEPL)
+                synopsis_translate = translator.translate_text(synopsis, target_lang="FR")
+                print(synopsis_translate)
+
             movie = Movie(
                 title=movie_detailed.get('title'),
                 poster_path=movie_detailed.get('poster_path'),
                 release_date=movie_detailed.get('release_date') or None,
                 genre_ids=movie_detailed.get('genres') or None,
-                overview=movie_detailed.get('overview') or None,
+                overview=synopsis_translate or None,
                 budget=movie_detailed.get('budget') or None,
                 origin_country=movie_detailed.get('origin_country') or None,
                 production_companies=movie_detailed.get('production_companies') or None,
