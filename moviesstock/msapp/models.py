@@ -7,7 +7,7 @@ class Movie(models.Model):
     release_date = models.DateField(blank=True, null=True)
     genre_ids = models.JSONField(null=True)
     overview = models.TextField(null=True)
-    budget = models.IntegerField(null=True)
+    budget = models.CharField(null=True)
     origin_country = models.CharField(max_length=255, null=True)
     production_companies = models.JSONField(null=True)
     status = models.CharField()

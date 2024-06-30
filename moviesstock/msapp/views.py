@@ -78,13 +78,16 @@ def add_movie(request):
             year_date = date[:4]
             yts = URL_YTS + title_dash + '-' + year_date
 
+            budget = int(movie_detailed.get('budget'))
+            budget_parsed = str(f"{budget:,}".replace(",", "."))
+
             movie = Movie(
                 title=movie_detailed.get('title'),
                 poster_path=movie_detailed.get('poster_path'),
                 release_date=movie_detailed.get('release_date') or None,
                 genre_ids=movie_detailed.get('genres') or None,
                 overview=synopsis_translate or None,
-                budget=movie_detailed.get('budget') or None,
+                budget=budget_parsed or None,
                 origin_country=movie_detailed.get('origin_country') or None,
                 production_companies=movie_detailed.get('production_companies') or None,
                 status=movie_detailed.get('status'),
