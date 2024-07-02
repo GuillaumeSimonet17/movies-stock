@@ -13,6 +13,9 @@ class Movie(models.Model):
     status = models.CharField()
     url_yts = models.URLField(null=True)
 
+class FilePath(models.Model):
+    movie = models.ForeignKey(Movie, related_name='file_paths', on_delete=models.CASCADE)
+    file_path = models.CharField(max_length=255)
 
 class MoviesList(models.Model):
     name = models.CharField(max_length=100, default='Main List')

@@ -3,7 +3,7 @@ import requests
 from django.shortcuts import redirect, render
 from django.urls import reverse
 from django.views.decorators.csrf import csrf_exempt
-from .models import Movie, MoviesList
+from .models import Movie, MoviesList, FilePath
 import deepl
 
 URL_TMDB = 'https://api.themoviedb.org/3/'
@@ -43,6 +43,20 @@ def search_movies(request):
                 print(f"Error fetching data from TMDb API: {e}")
     return JsonResponse()
 
+def get_movie_images(movie_id):
+    url = f'{URL_TMDB}movie/{movie_id}/images'
+    headers = {
+        'accept': 'application/json',
+        "Authorization": "Bearer " + API_KEY_TMDB,
+    }
+    try:
+        response = requests.get(url, headers=headers)
+        response.raise_for_status()
+        data = response.json()
+        return data
+    except requests.exceptions.RequestException as e:
+        print(f"Error fetching data from TMDb API: {e}")
+
 
 def search_detailed_movies(movie_id):
     url = f'{URL_TMDB}movie/{movie_id}'
@@ -64,6 +78,14 @@ def add_movie(request):
     if request.method == 'POST':
         movie_id = request.POST.get('id')
         movie_detailed = search_detailed_movies(movie_id)
+        pics = get_movie_images(movie_id)
+        all_file_paths = []
+        print(pics)
+        for key in ['backdrops']:
+            images = pics.get(key, [])
+            file_paths = [image['file_path'] for image in images]
+            all_file_paths.extend(file_paths)
+
         if movie_detailed:
             movies_list, created = MoviesList.objects.get_or_create(name='Main List')
 
@@ -95,6 +117,11 @@ def add_movie(request):
                 status=movie_detailed.get('status'),
                 url_yts=yts
             )
+            movie.save()
+
+            for file_path in all_file_paths:
+                FilePath.objects.create(movie=movie, file_path=file_path)
+
             movie.save()
             movies_list.movies.add(movie)
             return JsonResponse({'message': 'Film ajouté avec succès'})

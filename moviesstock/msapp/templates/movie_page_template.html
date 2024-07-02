@@ -82,7 +82,11 @@
                 </div>
             </div>
         </div>
-
+        <div class="backdrops">
+        {% for file_path in movie.file_paths.all %}
+            <img src="https://image.tmdb.org/t/p/w500{{ file_path.file_path }}"" alt="Image">
+        {% endfor %}
+    </div>
     </main>
 </body>
 </html>
