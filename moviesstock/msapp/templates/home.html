@@ -5,11 +5,12 @@
 
 {% block content %}
 {% if user.is_authenticated %}
-Coucou {{ user.username }}!
-<form action="{% url 'logout' %}" method="post">
-  {% csrf_token %}
-  <button type="submit">Log Out</button>
-</form>
+<div class="logout_container">
+    <form action="{% url 'logout' %}" method="post">
+      {% csrf_token %}
+      <button type="submit">Leave</button>
+    </form>
+</div>
 <header>
     {% include "header_template.html" %}
 </header>
@@ -19,8 +20,10 @@ Coucou {{ user.username }}!
 </main>
 
 {% else %}
-<p>You are not logged in</p>
-<a href="{% url 'login' %}">Log In</a>
-    
+
+<a href="{% url 'login' %}" class="login_container">
+    <p>Enter to hollylist</p>
+</a>
+
 {% endif %}
 {% endblock %}

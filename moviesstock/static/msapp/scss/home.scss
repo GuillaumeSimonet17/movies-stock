@@ -3,6 +3,9 @@
 @import 'search_style';
 @import 'colors';
 
+button {
+  cursor: pointer;
+}
 
 body {
   background: $wall-color;
@@ -15,8 +18,62 @@ body {
   width: 100%;
   overflow-x: hidden;
 
+  .logout_container {
+    position: absolute;
+    top: 2px;
+    right: 2px;
+  }
+
+  .login_container {
+    cursor: pointer;
+    margin-top: 200px;
+    background: $primary-color;
+    width: 500px;
+    height: 70px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+
+    a,p {
+      font-family: 'hollywood';
+      color: $wall-color;
+      font-size: 3em;
+    }
+  }
+
+  .login_form {
+    margin-top: 50px;
+    height: 170px;
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    justify-content: space-around;
+    align-items: center;
+
+    input {
+      border: none;
+      outline: none;
+      padding: 10px;
+      border-radius: 3px;
+    }
+    button {
+      margin-top: 30px;
+    }
+  }
+
   main {
     width: 100%;
+  }
+
+  header {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+    p {
+      font-size: 1.3em;
+    }
   }
 
   h1 {

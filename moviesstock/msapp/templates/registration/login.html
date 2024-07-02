@@ -3,9 +3,11 @@
 {% block title %}Login{% endblock %}
 
 {% block content %}
+<header>
+    <h1 onclick="goToHomePage()">Hollylist</h1>
+</header>
 
-<h2>Log In</h2>
-<form method="post">
+<form class="login_form" method="post">
   {% csrf_token %}
   {{ form }}
   <button type="submit">Log In</button>
