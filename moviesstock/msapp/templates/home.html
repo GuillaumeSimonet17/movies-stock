@@ -6,6 +6,10 @@
 {% block content %}
 {% if user.is_authenticated %}
 Coucou {{ user.username }}!
+<form action="{% url 'logout' %}" method="post">
+  {% csrf_token %}
+  <button type="submit">Log Out</button>
+</form>
 <header>
     {% include "header_template.html" %}
 </header>
