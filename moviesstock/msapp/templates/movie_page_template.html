@@ -29,10 +29,10 @@
                             <img id="bin" src="{% static 'msapp/icons/bin.png' %}" alt="bin icon">
                         </button>
                     </form>
-                    <button onclick="goToPreviousMoviePage({{ movies_list }}, {{ movie.id }})">
+                    <button onclick="goToNextMoviePage({{ movies_list }}, {{ movie.id }})">
                         < Previous
                     </button>
-                    <button onclick="goToNextMoviePage({{ movies_list }}, {{ movie.id }})">
+                    <button onclick="goToPreviousMoviePage({{ movies_list }}, {{ movie.id }})">
                         Next >
                     </button>
                 </div>
