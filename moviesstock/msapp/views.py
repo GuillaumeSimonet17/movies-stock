@@ -43,8 +43,9 @@ def search_movies(request):
                 print(f"Error fetching data from TMDb API: {e}")
     return JsonResponse()
 
-def get_movie_images(movie_id):
-    url = f'{URL_TMDB}movie/{movie_id}/images'
+def get_images_and_links(request):
+    movie = Movie.objects.get(pk=request.GET.get('movie_id'))
+    url = f'{URL_TMDB}movie/{movie.movie_id}/images'
     headers = {
         'accept': 'application/json',
         "Authorization": "Bearer " + API_KEY_TMDB,
@@ -53,7 +54,34 @@ def get_movie_images(movie_id):
         response = requests.get(url, headers=headers)
         response.raise_for_status()
         data = response.json()
-        return data
+        all_file_paths = []
+        for key in ['backdrops']:
+            images = data.get(key, [])
+            file_paths = [image['file_path'] for image in images]
+            all_file_paths.extend(file_paths)
+
+        for file_path in all_file_paths:
+            FilePath.objects.create(movie=movie, file_path=file_path)
+
+        if movie.overview:
+            translator = deepl.Translator(API_KEY_DEEPL)
+            synopsis_translate = translator.translate_text(movie.overview, target_lang="FR")
+
+        title_dash = movie.title.replace(' ', '-')
+        year_date = movie.release_date.year
+        yts = URL_YTS + title_dash + '-' + str(year_date)
+
+        if movie.budget and int(movie.budget) > 0:
+            budget = int(movie.budget)
+            budget_parsed = str(f"{budget:,}".replace(",", "."))
+            movie.budget = budget_parsed
+
+
+        movie.overview = synopsis_translate
+        movie.url_yts = yts
+        movie.save()
+        return JsonResponse({'file_paths': all_file_paths})
+        # return data
     except requests.exceptions.RequestException as e:
         print(f"Error fetching data from TMDb API: {e}")
 
@@ -78,53 +106,25 @@ def add_movie(request):
     if request.method == 'POST':
         movie_id = request.POST.get('id')
         movie_detailed = search_detailed_movies(movie_id)
-        pics = get_movie_images(movie_id)
-        all_file_paths = []
-        print(pics)
-        for key in ['backdrops']:
-            images = pics.get(key, [])
-            file_paths = [image['file_path'] for image in images]
-            all_file_paths.extend(file_paths)
 
         if movie_detailed:
             movies_list, created = MoviesList.objects.get_or_create(name='Main List')
 
-            synopsis = movie_detailed.get('overview')
-            if synopsis:
-                translator = deepl.Translator(API_KEY_DEEPL)
-                synopsis_translate = translator.translate_text(synopsis, target_lang="FR")
-
-            title = movie_detailed.get('title')
-            title_dash = title.replace(' ', '-')
-            date = movie_detailed.get('release_date')
-            year_date = date[:4]
-            yts = URL_YTS + title_dash + '-' + year_date
-
-            budget = int(movie_detailed.get('budget'))
-            budget_parsed = ''
-            if budget > 0:
-                budget_parsed = str(f"{budget:,}".replace(",", "."))
-
             movie = Movie(
+                movie_id=movie_detailed.get('id'),
                 title=movie_detailed.get('title'),
                 poster_path=movie_detailed.get('poster_path'),
                 release_date=movie_detailed.get('release_date') or None,
                 genre_ids=movie_detailed.get('genres') or None,
-                overview=synopsis_translate or None,
-                budget=budget_parsed or None,
+                overview=movie_detailed.get('overview') or None,
+                budget=movie_detailed.get('budget') or None,
                 origin_country=movie_detailed.get('origin_country') or None,
                 production_companies=movie_detailed.get('production_companies') or None,
                 status=movie_detailed.get('status'),
-                url_yts=yts
             )
             movie.save()
-
-            for file_path in all_file_paths:
-                FilePath.objects.create(movie=movie, file_path=file_path)
-
-            movie.save()
             movies_list.movies.add(movie)
-            return JsonResponse({'message': 'Film ajouté avec succès'})
+            return JsonResponse({'movie_id': movie.id})
 
         return JsonResponse({'error': 'Requête invalide'}, status=400)
 

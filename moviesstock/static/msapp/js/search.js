@@ -64,10 +64,10 @@ function displayMovies(movies) {
                     method: 'POST',
                     data: { id: movie.id },
                     success: function(response) {
-                        console.log('Réponse du serveur :', response.message);
+                        console.log('Réponse du serveur :', response);
                         resultsContainer.innerHTML = '';
-                        show_or_hide_search(movieSearchInput, searchContainer, 0)
                         window.location.href = '/';
+                        get_images(response.movie_id)
                     },
                     error: function(xhr, status, error) {
                         console.error('Erreur lors de la requête :', error);
@@ -77,6 +77,21 @@ function displayMovies(movies) {
         }
     });
 }
+
+function get_images(movieId) {
+    $.ajax({
+        url: '/get_images/',
+        method: 'GET',
+        data: { movie_id: movieId },
+        success: function(response) {
+            console.log('Réponse du serveur :', response.message);
+        },
+        error: function(xhr, status, error) {
+            console.error('Erreur lors de la requête :', error);
+        }
+    });
+}
+
 
 function show_or_hide_search(movieSearchInput, searchContainer, to_show) {
     if (to_show) {
