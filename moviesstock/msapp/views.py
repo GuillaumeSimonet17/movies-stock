@@ -15,7 +15,7 @@ API_KEY_DEEPL = '54f88a40-a6c4-4a68-bdee-460f77863eb4:fx'
 
 def home(request):
     movies = Movie.objects.all()
-    movies_list = MoviesList.objects.first()
+    movies_list = MoviesList.objects.first().movies.all().order_by('-id')
 
     context = {
         'movies': movies,
@@ -79,7 +79,9 @@ def add_movie(request):
             yts = URL_YTS + title_dash + '-' + year_date
 
             budget = int(movie_detailed.get('budget'))
-            budget_parsed = str(f"{budget:,}".replace(",", "."))
+            budget_parsed = ''
+            if budget > 0:
+                budget_parsed = str(f"{budget:,}".replace(",", "."))
 
             movie = Movie(
                 title=movie_detailed.get('title'),
