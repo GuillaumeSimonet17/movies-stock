@@ -72,16 +72,15 @@ def get_images_and_links(request):
         yts = URL_YTS + title_dash + '-' + str(year_date)
 
         if movie.budget and int(movie.budget) > 0:
-            budget = int(movie.budget)
-            budget_parsed = str(f"{budget:,}".replace(",", "."))
+            budget = int(movie.budget) // 1_000_000
+            budget_parsed = str(budget) + 'M'
             movie.budget = budget_parsed
-
 
         movie.overview = synopsis_translate
         movie.url_yts = yts
         movie.save()
+
         return JsonResponse({'file_paths': all_file_paths})
-        # return data
     except requests.exceptions.RequestException as e:
         print(f"Error fetching data from TMDb API: {e}")
 
