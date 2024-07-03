@@ -18,6 +18,43 @@ body {
   width: 100%;
   overflow-x: hidden;
 
+
+  .signup_container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      form {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        .helptext {
+          font-size: 0.8em;
+        }
+        input {
+          outline: none;
+          margin-top: 10px;
+          margin-bottom: 20px;
+          padding: 10px;
+          border: none;
+        }
+        div {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          justify-content: center;
+          li {
+            text-align: center;
+            list-style-type: none;
+          }
+        }
+      }
+      button {
+        margin-top: 10px;
+    }
+  }
+
   .logout_container {
     position: absolute;
     top: 2px;
@@ -52,6 +89,7 @@ body {
     align-items: center;
 
     input {
+      background: white;
       border: none;
       outline: none;
       padding: 10px;

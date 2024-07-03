@@ -21,6 +21,7 @@ INSTALLED_APPS = [
     'msapp',
     'django_sass',
     'sass_processor',
+    'accounts',
 ]
 
 MIDDLEWARE = [

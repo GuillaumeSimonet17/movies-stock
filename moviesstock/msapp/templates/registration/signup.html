@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+
+{% block title %}Sign Up{% endblock %}
+
+{% block content %}
+<header>
+    <h1 onclick="goToHomePage()">Hollylist</h1>
+</header>
+<div class="signup_container">
+    <h2>Sign up</h2>
+    <form method="post">
+      {% csrf_token %}
+      {{ form }}
+      <button type="submit">Sign Up</button>
+    </form>
+
+    <a href="{% url 'login' %}">
+        <p>Already registered ? Login</p>
+    </a>
+</div>
+{% endblock %}
