@@ -8,10 +8,8 @@ button {
 }
 
 body {
-  //background: $wall-color;
-  //color: $primary-color;
-  background-color: var(--wall-color);
-  color: var(--primary-color);
+  background: $wall-color;
+  color: $primary-color;
   font-family: "Segoe UI", system-ui, sans-serif;
   display: flex;
   flex-direction: column;
@@ -66,7 +64,7 @@ body {
   .login_container {
     cursor: pointer;
     margin-top: 200px;
-    background: var(--primary-color);
+    background: $primary-color;
     width: 500px;
     height: 70px;
     display: flex;
@@ -76,7 +74,7 @@ body {
 
     a,p {
       font-family: 'hollywood';
-      color: var(--wall-color);
+      color: $wall-color;
       font-size: 3em;
     }
   }
@@ -133,7 +131,7 @@ body {
   }
 
   button {
-    color: var(--primary-color);
+    color: $primary-color;
     font-size: 1.4em;
   }
 }

@@ -36,14 +36,3 @@ function goToPreviousMoviePage(movies_list, id) {
           previousId = movies_list[movies_list.length-1]
      window.location.href = '/movie_page/?query=' + previousId;
 }
-
-function switch_mode(light) {
-     console.log(light)
-     if (light) {
-          document.documentElement.style.setProperty('--primary-color', '#4c0303');
-          document.documentElement.style.setProperty('--wall-color', '#f3f3f3');
-     } else {
-          document.documentElement.style.setProperty('--primary-color', '#f3f3f3');
-          document.documentElement.style.setProperty('--wall-color', '#4c0303');
-     }
-}
