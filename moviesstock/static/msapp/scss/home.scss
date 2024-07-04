@@ -18,7 +18,12 @@ body {
   width: 100%;
   overflow-x: hidden;
 
-
+  main {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+  }
   .signup_container {
       display: flex;
       flex-direction: column;
