@@ -105,7 +105,7 @@ def add_movie(request):
     if request.method == 'POST':
         movie_id = request.POST.get('id')
         movie_detailed = search_detailed_movies(movie_id)
-
+        print(movie_detailed)
         if movie_detailed:
             movies_list, created = MoviesList.objects.get_or_create(name='Main List')
 

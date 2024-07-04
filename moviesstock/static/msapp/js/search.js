@@ -98,8 +98,10 @@ function show_or_hide_search(movieSearchInput, searchContainer, to_show) {
         movieSearchInput.css('opacity', '1');
         searchContainer.css('opacity', '1');
     } else {
-        movieSearchInput.css('opacity', '0');
-        searchContainer.css('opacity', '0');
+        if (window.innerWidth > 480) {
+            movieSearchInput.css('opacity', '0');
+            searchContainer.css('opacity', '0');
+        }
         movieSearchInput.empty()
         movieSearchInput.val('');
     }
