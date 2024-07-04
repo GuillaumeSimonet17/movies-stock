@@ -6,6 +6,13 @@ from django.views.decorators.csrf import csrf_exempt
 from .models import Movie, MoviesList, FilePath
 import deepl
 
+from PIL import Image
+import numpy as np
+from sklearn.cluster import KMeans
+from io import BytesIO
+from collections import Counter
+
+
 URL_TMDB = 'https://api.themoviedb.org/3/'
 URL_YTS = 'https://en.yts-official.mx/movies/'
 
@@ -105,9 +112,12 @@ def add_movie(request):
     if request.method == 'POST':
         movie_id = request.POST.get('id')
         movie_detailed = search_detailed_movies(movie_id)
-        print(movie_detailed)
+
         if movie_detailed:
             movies_list, created = MoviesList.objects.get_or_create(name='Main List')
+
+            image_path = 'https://image.tmdb.org/t/p/w500' + movie_detailed.get('poster_path')
+            dominant_color = get_dominant_color(image_path)
 
             movie = Movie(
                 movie_id=movie_detailed.get('id'),
@@ -120,9 +130,11 @@ def add_movie(request):
                 origin_country=movie_detailed.get('origin_country') or None,
                 production_companies=movie_detailed.get('production_companies') or None,
                 status=movie_detailed.get('status'),
+                dominant_color=dominant_color,
             )
             movie.save()
             movies_list.movies.add(movie)
+
             return JsonResponse({'movie_id': movie.id})
 
         return JsonResponse({'error': 'Requête invalide'}, status=400)
@@ -135,3 +147,24 @@ def delete_movie(request):
         movie_to_delete.delete()
         return redirect(reverse('home'))
     return render(request, 'home.html')
+
+
+def get_dominant_color(image_path, k=4):
+    response = requests.get(image_path)
+    image = Image.open(BytesIO(response.content))
+
+    image = image.resize((150, 150))
+    image_np = np.array(image)
+
+    half_height = image_np.shape[0] // 2
+    top_half = image_np[:half_height, :, :]
+    pixels = top_half.reshape(-1, 3)
+
+    kmeans = KMeans(n_clusters=k)
+    kmeans.fit(pixels)
+    counts = Counter(kmeans.labels_)
+    most_common_cluster = counts.most_common(1)[0][0]
+    dominant_color = kmeans.cluster_centers_[most_common_cluster]
+
+    dominant_color_hex = '#%02x%02x%02x' % tuple(dominant_color.astype(int))
+    return dominant_color_hex

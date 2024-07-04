@@ -9,17 +9,16 @@
     <link href="{% sass_src 'msapp/scss/movie_page.scss' %}" rel="stylesheet" type="text/css" />
     <link href="{% sass_src 'msapp/scss/home.scss' %}" rel="stylesheet" type="text/css" />
 
-
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="{% static 'msapp/js/go_to.js' %}"></script>
 
 </head>
-<body>
+<body style="background: {{ movie.dominant_color }}">
     <header>
         {% include "header_template.html" %}
     </header>
     <main>
-        <div class="movie_page_container">
+        <div style="color: {{ text_color }}; background: {{ background }}" class="movie_page_container">
             <div class="head">
                 <p class="title">{{ movie.title }} ({{ movie.release_date.year }})</p>
                 <div class="btn_pass">
@@ -67,15 +66,15 @@
                         </div>
     
                         <div class="links_container">
-                            <a href="{{ movie.url_yts }}" target="_blank">Voir ou download sur YTS</a>
+                            <a style="color: {{ text_color }}" href="{{ movie.url_yts }}" target="_blank">Voir ou download sur YTS</a>
                             <br/>
-                            <a href="https://wi-flix.xyz/?s={{ movie.title }}" target="_blank">Voir sur Wiflix</a>
+                            <a style="color: {{ text_color }}" href="https://wi-flix.xyz/?s={{ movie.title }}" target="_blank">Voir sur Wiflix</a>
                             <br/>
-                            <a href="https://www.yavroz.com" target="_blank">Chercher sur yavroz</a>
+                            <a style="color: {{ text_color }}" href="https://www.yavroz.com" target="_blank">Chercher sur yavroz</a>
                             <br/>
-                            <a href="https://www.google.com/search?q={{ movie.title }}" target="_blank">Voir sa page Google</a>
+                            <a style="color: {{ text_color }}" href="https://www.google.com/search?q={{ movie.title }}" target="_blank">Voir sa page Google</a>
                             <br/>
-                            <a href="https://www.youtube.com/results?search_query={{ movie.title }}" target="_blank">Bande Annonce</a>
+                            <a style="color: {{ text_color }}" href="https://www.youtube.com/results?search_query={{ movie.title }}" target="_blank">Bande Annonce</a>
                         </div>
                     </div>
                 

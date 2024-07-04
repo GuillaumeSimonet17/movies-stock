@@ -1,7 +1,6 @@
 
 .movie_page_container {
-  background: #e2e2e4;
-  padding: 30px;
+  padding: 40px;
   display: flex;
   flex-direction: column;
   width: 75%;
@@ -21,10 +20,14 @@
 
     .btn_pass {
       display: flex;
-      height: 30px;
       align-items: center;
+
       button {
         cursor: pointer;
+        border: none;
+        padding: 10px;
+        width: 50px;
+        background: rgba(255, 255, 255, 0.64);
         margin-right: 10px;
         #bin {
           width: 20px;
@@ -83,7 +86,7 @@
           a {
             display: flex;
             text-decoration: none;
-            color: #3875d7;
+            //color: #1e59bc;
           }
         }
       }

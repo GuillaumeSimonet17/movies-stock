@@ -13,6 +13,7 @@ class Movie(models.Model):
     production_companies = models.JSONField(null=True)
     status = models.CharField()
     url_yts = models.URLField(null=True)
+    dominant_color = models.CharField(max_length=7, null=True, blank=True)
 
 class FilePath(models.Model):
     movie = models.ForeignKey(Movie, related_name='file_paths', on_delete=models.CASCADE)
