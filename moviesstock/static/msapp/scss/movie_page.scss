@@ -4,6 +4,9 @@
   padding: 30px;
   display: flex;
   flex-direction: column;
+  width: 75%;
+  min-width: 850px;
+  overflow-x: hidden;
 
   .head {
     width: 100%;
@@ -52,7 +55,7 @@
         display: flex;
 
         .infos_container {
-          width: 40%;
+          width: 50%;
 
           .dates {
             display: flex;
