@@ -1,10 +1,10 @@
 ## Movie Stock
 
-Stock movie you want to watch later. 
+#### Stock movie you want to watch later. 
 
-Its contains all infos and most of all, ALL THE LINKS to download HD or to watch in streaming. Don't waste your time searching.
+Its contains all infos and most of all, **ALL THE LINKS to download HD** or to watch in streaming. Don't waste your time searching.
 
-With pictures an AI that set a colour for each movie, you'll be right in the mood !
+With pictures an **AI that set a colour for each movie**, you'll be right in the mood !
 
 ![img_4.png](img_4.png)
 ![img.png](img.png)
