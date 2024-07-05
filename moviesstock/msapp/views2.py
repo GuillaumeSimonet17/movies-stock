@@ -1,33 +1,27 @@
-from django.core.serializers import serialize
-from django.http import JsonResponse
-import requests
+from django.utils import timezone
 from django.shortcuts import redirect, render, reverse
 from .models import Movie, MoviesList
+from .views import search_detailed_movies
 import colorsys
 
 
 def movie_page(request):
     if request.method == 'GET' and 'query' in request.GET:
         movie = Movie.objects.get(pk=request.GET.get('query'))
+
+        if movie.status != 'Released' and movie.release_date < timezone.now().date():
+            movie_detailed = search_detailed_movies(movie.movie_id)
+            if movie_detailed:
+                movie.release_date = movie_detailed.get('release_date') or None
+                movie.budget=movie_detailed.get('budget') or None
+                movie.status=movie_detailed.get('status') or None
+                movie.save()
+
         movies_list = MoviesList.objects.first()
         movie_ids = list(movies_list.movies.values_list('id', flat=True))
 
         darkness = color_darkness(movie.dominant_color)
-
-        print(darkness)
-        if darkness < 0.1:
-            text_color = '#E6E6E6FF'
-        elif 0.1 < darkness < 0.4:
-            text_color = lighten_color(movie.dominant_color, 100)
-        elif 0.4 < darkness < 0.6:
-            text_color = darken_color(movie.dominant_color, 50)
-        else:
-            text_color = darken_color(movie.dominant_color, 70)
-
-        if darkness < 0.1:
-            background = '#5C5C5C26'
-        else:
-            background = '#FFFFFF9E'
+        text_color, background = get_text_background_colors(darkness, movie.dominant_color)
 
         context = {
             'movie': movie,
@@ -36,6 +30,23 @@ def movie_page(request):
             'background': background,
         }
         return render(request, 'movie_page_template.html', context)
+
+def get_text_background_colors(darkness, dominant_color):
+    if darkness < 0.1:
+        text_color = '#E6E6E6FF'
+    elif 0.1 < darkness < 0.4:
+        text_color = lighten_color(dominant_color, 100)
+    elif 0.4 < darkness < 0.6:
+        text_color = darken_color(dominant_color, 50)
+    else:
+        text_color = darken_color(dominant_color, 70)
+
+    if darkness < 0.1:
+        background = '#5C5C5C26'
+    else:
+        background = '#FFFFFF9E'
+
+    return text_color, background
 
 def color_darkness(hex_color):
     color = hex_color.lstrip('#')

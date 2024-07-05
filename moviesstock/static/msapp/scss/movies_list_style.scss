@@ -3,10 +3,11 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  margin-top: 20px;
+  margin-top: 50px;
 
   .movies_list {
     display: flex;
+    justify-content: center;
     width: 90%;
     flex-wrap: wrap;
   }
