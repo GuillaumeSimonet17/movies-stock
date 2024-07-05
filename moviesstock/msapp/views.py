@@ -2,6 +2,7 @@ from django.http import JsonResponse
 import requests
 from django.shortcuts import redirect, render
 from django.urls import reverse
+from django.contrib.auth.decorators import login_required
 from django.views.decorators.csrf import csrf_exempt
 from .models import Movie, MoviesList, FilePath
 import deepl
@@ -20,17 +21,21 @@ API_KEY_TMDB = 'eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiI5MTA2MjRmYjZmOGNkMGEzMjc5YTk4ZmJ
 API_KEY_DEEPL = '54f88a40-a6c4-4a68-bdee-460f77863eb4:fx'
 
 
+@login_required
 def home(request):
     movies = Movie.objects.all()
-    movies_list = MoviesList.objects.first().movies.all().order_by('-id')
+    movies_list, created = MoviesList.objects.get_or_create(
+        user=request.user,
+        defaults={'name': request.user.username + '\'s list'}
+    )
 
     context = {
         'movies': movies,
-        'movies_list': movies_list,
+        'movies_list': movies_list.movies.all().order_by('-id'),
     }
     return render(request, 'home.html', context)
 
-
+@login_required
 def search_movies(request):
     if request.method == 'GET' and 'query' in request.GET:
         query = request.GET.get('query')
@@ -50,6 +55,7 @@ def search_movies(request):
                 print(f"Error fetching data from TMDb API: {e}")
     return JsonResponse()
 
+@login_required
 def get_images_and_links(request):
     movie = Movie.objects.get(pk=request.GET.get('movie_id'))
     url = f'{URL_TMDB}movie/{movie.movie_id}/images'
@@ -114,7 +120,7 @@ def add_movie(request):
         movie_detailed = search_detailed_movies(movie_id)
 
         if movie_detailed:
-            movies_list, created = MoviesList.objects.get_or_create(name='Main List')
+            movies_list = MoviesList.objects.get(user=request.user)
 
             image_path = 'https://image.tmdb.org/t/p/w500' + movie_detailed.get('poster_path')
             dominant_color = get_dominant_color(image_path)

@@ -1,6 +1,7 @@
 
 .movie_page_container {
-  box-shadow: rgba(149, 157, 165, 0.2) 0px 8px  24px;
+  border-radius: 5px;
+  box-shadow: rgba(177, 177, 177, 0.29) 0px 8px  24px;
   padding: 40px;
   display: flex;
   flex-direction: column;
@@ -28,7 +29,7 @@
         border: none;
         padding: 10px;
         width: 50px;
-        background: rgba(255, 255, 255, 0.64);
+        background: none;
         margin-right: 10px;
         #bin {
           width: 20px;
@@ -85,15 +86,19 @@
           margin-left: 100px;
           margin-top: 65px;
           a {
+            transition: 0.2s ease-in-out;
             display: flex;
             text-decoration: none;
-            //color: #1e59bc;
+            &:hover {
+              transform: scale(1.03 );
+            }
           }
         }
       }
 
       .prods {
-        width: 100%;
+        padding: 10px;
+        width: 90%;
         margin-top: 50px;
 
         .prod {

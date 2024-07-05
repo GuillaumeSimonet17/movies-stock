@@ -1,4 +1,5 @@
 from django.db import models
+from django.contrib.auth.models import User
 
 
 class Movie(models.Model):
@@ -20,6 +21,9 @@ class FilePath(models.Model):
     file_path = models.CharField(max_length=255)
 
 class MoviesList(models.Model):
-    name = models.CharField(max_length=100, default='Main List')
-
+    name = models.CharField(max_length=100)
+    user = models.OneToOneField(User, on_delete=models.CASCADE, null=True)
     movies = models.ManyToManyField(Movie, related_name='movies_lists')
+
+class UserProfile(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE, null=True)

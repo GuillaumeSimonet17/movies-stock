@@ -2,9 +2,10 @@ from django.utils import timezone
 from django.shortcuts import redirect, render, reverse
 from .models import Movie, MoviesList
 from .views import search_detailed_movies
+from django.contrib.auth.decorators import login_required
 import colorsys
 
-
+@login_required
 def movie_page(request):
     if request.method == 'GET' and 'query' in request.GET:
         movie = Movie.objects.get(pk=request.GET.get('query'))
@@ -17,8 +18,9 @@ def movie_page(request):
                 movie.status=movie_detailed.get('status') or None
                 movie.save()
 
-        movies_list = MoviesList.objects.first()
+        movies_list = MoviesList.objects.get(user=request.user)
         movie_ids = list(movies_list.movies.values_list('id', flat=True))
+        movies_list_length = movies_list.movies.count()
 
         darkness = color_darkness(movie.dominant_color)
         text_color, background = get_text_background_colors(darkness, movie.dominant_color)
@@ -28,8 +30,9 @@ def movie_page(request):
             'movies_list': movie_ids,
             'text_color': text_color,
             'background': background,
+            'movies_list_length': movies_list_length,
         }
-        return render(request, 'movie_page_template.html', context)
+        return render(request, 'movie_page.html', context)
 
 def get_text_background_colors(darkness, dominant_color):
     if darkness < 0.1:
@@ -41,10 +44,17 @@ def get_text_background_colors(darkness, dominant_color):
     else:
         text_color = darken_color(dominant_color, 70)
 
-    if darkness < 0.1:
-        background = '#5C5C5C26'
+    text_darkness = color_darkness(text_color)
+
+    if text_darkness < 0.3:
+        background = '#FFFFFFA0'
     else:
-        background = '#FFFFFF9E'
+        background = '#5C5C5C26'
+
+    if darkness < 0.1:
+        background = '#FFFFFF84'
+    if text_darkness > 0.8 and darkness < 0.1:
+        background = '#C5C5C554'
 
     return text_color, background
 
