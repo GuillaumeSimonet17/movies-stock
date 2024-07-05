@@ -40,7 +40,6 @@
             <div class="main_container">
                 <div class="left">
                     <img id="poster" src="https://image.tmdb.org/t/p/w500{{ movie.poster_path }}" alt="{{ movie.title }} poster"/>
-
                 </div>
 
                 <div class="right">
@@ -64,6 +63,8 @@
                             {% if movie.budget %}
                                 <p>Budget : {{ movie.budget }} $ </p>
                             {% endif %}
+                            <p style="line-height: 1.5em"><span style="font-weight: bold">Casting</span> : {{ movie.actors }}</p>
+                            <p><span style="font-weight: bold">Director</span> : {{ movie.directors }}</p>
                         </div>
     
                         <div class="links_container">

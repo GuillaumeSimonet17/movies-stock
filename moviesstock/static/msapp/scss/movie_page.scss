@@ -55,12 +55,11 @@
       margin-left: 50px;
 
       .right_container {
-
         width: 80%;
         display: flex;
 
         .infos_container {
-          width: 50%;
+          width: 60%;
 
           .dates {
             display: flex;
@@ -83,7 +82,7 @@
 
         }
         .links_container {
-          margin-left: 100px;
+          margin-left: 70px;
           margin-top: 65px;
           a {
             transition: 0.2s ease-in-out;

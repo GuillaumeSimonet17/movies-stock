@@ -5,6 +5,7 @@ from django.urls import reverse
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.csrf import csrf_exempt
 from .models import Movie, MoviesList, FilePath
+import string
 import deepl
 
 from PIL import Image
@@ -80,7 +81,8 @@ def get_images_and_links(request):
             translator = deepl.Translator(API_KEY_DEEPL)
             synopsis_translate = translator.translate_text(movie.overview, target_lang="FR")
 
-        title_dash = movie.title.replace(' ', '-')
+        title_no_punct = movie.title.translate(str.maketrans('', '', string.punctuation))
+        title_dash = title_no_punct.replace(' ', '-')
         year_date = movie.release_date.year
         yts = URL_YTS + title_dash + '-' + str(year_date)
 
@@ -97,9 +99,7 @@ def get_images_and_links(request):
     except requests.exceptions.RequestException as e:
         print(f"Error fetching data from TMDb API: {e}")
 
-
-def search_detailed_movies(movie_id):
-    url = f'{URL_TMDB}movie/{movie_id}'
+def search_detailed_movies(url):
     headers = {
         'accept': 'application/json',
         "Authorization": "Bearer " + API_KEY_TMDB,
@@ -112,12 +112,16 @@ def search_detailed_movies(movie_id):
     except requests.exceptions.RequestException as e:
         print(f"Error fetching data from TMDb API: {e}")
 
-
 @csrf_exempt
 def add_movie(request):
     if request.method == 'POST':
         movie_id = request.POST.get('id')
-        movie_detailed = search_detailed_movies(movie_id)
+        movie_detailed = search_detailed_movies(f'{URL_TMDB}movie/{movie_id}')
+        actors_directors = search_detailed_movies(f'{URL_TMDB}movie/{movie_id}/credits')
+        actors = [actor['name'] for actor in actors_directors['cast'][:5]]
+        directors = [crew['name'] for crew in actors_directors['crew'] if crew['job'] == 'Director']
+        actors_combined = ', '.join(actors)
+        directors_combined = ', '.join(directors)
 
         if movie_detailed:
             movies_list = MoviesList.objects.get(user=request.user)
@@ -132,6 +136,8 @@ def add_movie(request):
                 release_date=movie_detailed.get('release_date') or None,
                 genre_ids=movie_detailed.get('genres') or None,
                 overview=movie_detailed.get('overview') or None,
+                actors=actors_combined,
+                directors=directors_combined,
                 budget=movie_detailed.get('budget') or None,
                 origin_country=movie_detailed.get('origin_country') or None,
                 production_companies=movie_detailed.get('production_companies') or None,
@@ -140,6 +146,8 @@ def add_movie(request):
             )
             movie.save()
             movies_list.movies.add(movie)
+
+
 
             return JsonResponse({'movie_id': movie.id})
 
