@@ -24,11 +24,21 @@ $(document).ready(function() {
 
     let toggle_genres = $('#toggle_genres')
     let genres_list = $('#genres_list')
-    console.log(toggle_genres)
-    console.log(genres_list)
+    let toggle_ordered = $('#toggle_ordered')
+    let ordered_list = $('#ordered_list')
+
+    let show_genres_list = $('.show_genres_list')
+    let show_ordered_list = $('.show_ordered_list')
+
     toggle_genres.click(function() {
-        console.log('cououuuu')
-         genres_list.toggleClass('show_genres_list');
+        if (ordered_list.hasClass('show_ordered_list'))
+            ordered_list.toggleClass('show_ordered_list');
+        genres_list.toggleClass('show_genres_list');
+    });
+    toggle_ordered.click(function() {
+        if (genres_list.hasClass('show_genres_list'))
+            genres_list.toggleClass('show_genres_list');
+         ordered_list.toggleClass('show_ordered_list');
     });
 });
 

@@ -1,36 +1,43 @@
 .filters_container {
   width: 100%;
   background: white;
-  margin-bottom: 20px;
+  margin-bottom: 40px;
   display: flex;
-  justify-content: start;
+  justify-content: center;
+  text-align: center;
   position: relative;
   height: 50px;
 
-  .filter_genre {
-    width: 150px;
+  .filter_genre, .ordered_by {
+    margin-left: 10px;
+    border-bottom: 1px solid $primary-color;
+    width: 200px;
     z-index: 1000;
-    position: absolute;
 
-    #toggle_genres {
+    #toggle_genres, #toggle_ordered {
+      margin: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 50px;
       cursor: pointer;
-      margin-left: 20px;
-      width: 250px;
+      width: 200px;
       font-weight: bold;
     }
 
-    #genres_list {
+    #genres_list, #ordered_list {
+      margin: 0;
       display: none;
-      height: 300px;
+      max-height: 295px;
 
-      &.show_genres_list {
+      &.show_genres_list, &.show_ordered_list {
         display: block;
         overflow-y: auto;
-          box-shadow: rgba(177, 177, 177, 0.29) 0px 8px  24px;
+        border-top: 2px solid $primary-color;
 
       }
 
-      &.show_genres_list::-webkit-scrollbar {
+      &.show_genres_list::-webkit-scrollbar, &.show_ordered_list::-webkit-scrollbar {
         display: none;
       }
 

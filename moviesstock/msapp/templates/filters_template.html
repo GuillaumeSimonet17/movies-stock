@@ -1,14 +1,29 @@
 <div class="filters_container">
     <div class="filter_genre">
         {% if genre_selected and genre_selected != 'All' %}
-            <p id="toggle_genres">Filtrez par genre ({{ genre_selected }})</p>
+            <p id="toggle_genres">Genres ({{ genre_selected }})</p>
         {% else %}
-            <p id="toggle_genres">Filtrez par genre</p>
+            <p id="toggle_genres">Genres</p>
         {% endif %}
-    
+
         <ul id="genres_list">
             {% for genre in genres %}
-                <li><a href="/?genre={{ genre }}">{{ genre }}</a></li>
+                <li><a href="/?gnr={{ genre }}">{{ genre }}</a></li>
+            {%  endfor %}
+        </ul>
+    </div>
+
+    <div class="ordered_by">
+
+        {% if ordered_selected and ordered_selected != 'All' %}
+            <p id="toggle_ordered">Ordonner par ({{ ordered_selected }})</p>
+        {% else %}
+            <p id="toggle_ordered">Ordonner par</p>
+        {% endif %}
+
+        <ul id="ordered_list">
+            {% for order in orders %}
+                <li><a href="/?ord={{ order }}">{{ order }}</a></li>
             {%  endfor %}
         </ul>
     </div>

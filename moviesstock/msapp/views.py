@@ -52,6 +52,11 @@ GENRES = [
     'War',
     'Western',
 ]
+ORDERS = [
+    'Year Asc',
+    'Year Dsc',
+    'Date added',
+]
 
 @login_required
 def home(request):
@@ -60,17 +65,32 @@ def home(request):
         defaults={'name': request.user.username + '\'s list'}
     )
 
-    genre = request.GET.get('genre')
+    genre = request.GET.get('gnr')
     genre_selected = genre
     movies_in_list = movies_list.movies.all()
     if genre and genre != 'All':
         movies_in_list = movies_in_list.filter(genre_ids__contains=[{'name': genre}])
 
+    ordered_by = request.GET.get('ord')
+    ordered_selected = ordered_by
+    order = '-id'
+    if ordered_by and ordered_by != 'Date added':
+        if ordered_by == 'Year Asc':
+            order = '-release_date'
+        if ordered_by == 'Year Dsc':
+            order = 'release_date'
+
+    print(order)
+
+    movies_in_list = movies_in_list.order_by(order)
+
     context = {
         'movies': movies_in_list,
-        'movies_list': movies_list.movies.all().order_by('-id'),
+        # 'movies_list': movies_list.movies.all().order_by(order),
         'genres': GENRES,
+        'orders': ORDERS,
         'genre_selected': genre_selected,
+        'ordered_selected': ordered_selected,
     }
     return render(request, 'home.html', context)
 
