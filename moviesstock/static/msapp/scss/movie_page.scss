@@ -59,7 +59,7 @@
         display: flex;
 
         .infos_container {
-          width: 60%;
+          width: 50%;
 
           .dates {
             display: flex;
@@ -82,9 +82,14 @@
 
         }
         .links_container {
-          margin-left: 70px;
-          margin-top: 65px;
+          margin-left: 20px;
+          width: 400px;
+          display: flex;
+          flex-direction: column;
+          justify-content: center;
           a {
+            padding: 10px 20px;
+            border-radius: 50px;
             transition: 0.2s ease-in-out;
             display: flex;
             text-decoration: none;

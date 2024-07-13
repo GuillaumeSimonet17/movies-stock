@@ -1,24 +1,25 @@
 
 .movie_card {
   margin: 5px;
-  width: 200px;
   border-bottom: 1px solid lightgrey;
   cursor: pointer;
   transition: 0.5s ease-in-out;
   position: relative;
+  width: 350px;
+
   &:hover {
     transform: scale(1.02);
     button {
       opacity: 1;
     }
   }
+  @media (min-width: 750px) {
+      width: 200px;
+  }
 
-  //.infos {
-  //  display: flex;
-  //  width: 100%;
-  //  align-items: center;
-  //  justify-content: space-between;
-  //}
+  @media (min-width: 550px) {
+      width: 250px;
+  }
 
   #poster {
     width: 100%;

@@ -1,15 +1,5 @@
 {% for movie in movies_list %}
 <div class="movie_card" onclick="goToMoviePage({{ movie.id }})">
-{#    <div class="infos">#}
-{#        {% if movie.status != "Released" %}#}
-{#            <h3>{{ movie.title }}</h3>#}
-{#            <p style="color: red">{{ movie.status }}</p>#}
-{#            <p>{{ movie.release_date }}</p>#}
-{#        {% else %}#}
-{#            <h3>{{ movie.title }} <span style="font-weight: normal">({{ movie.release_date.year }})</span></h3>#}
-{#            <p></p>#}
-{#        {% endif %}#}
-{#    </div>#}
     <form action="{% url 'delete_movie' %}" method="post">
         <button type="submit" name='id' value={{movie.id}}>
             {% load static %}
