@@ -5,7 +5,6 @@ from django.urls import reverse
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.csrf import csrf_exempt
 from .models import Movie, MoviesList, FilePath
-import string
 import deepl
 
 from PIL import Image
@@ -24,7 +23,6 @@ API_KEY_TMDB = os.getenv('API_KEY_TMDB')
 API_KEY_DEEPL = os.getenv('API_KEY_DEEPL')
 
 URL_TMDB = 'https://api.themoviedb.org/3/'
-URL_YTS = 'https://en.yts-official.mx/movies/'
 
 
 @login_required
@@ -86,18 +84,12 @@ def get_images_and_links(request):
             translator = deepl.Translator(API_KEY_DEEPL)
             synopsis_translate = translator.translate_text(movie.overview, target_lang="FR")
 
-        title_no_punct = movie.title.translate(str.maketrans('', '', string.punctuation))
-        title_dash = title_no_punct.replace(' ', '-')
-        year_date = movie.release_date.year
-        yts = URL_YTS + title_dash + '-' + str(year_date)
-
         if movie.budget and int(movie.budget) > 0:
             budget = int(movie.budget) // 1_000_000
             budget_parsed = str(budget) + 'M'
             movie.budget = budget_parsed
 
         movie.overview = synopsis_translate
-        movie.url_yts = yts
         movie.save()
 
         return JsonResponse({'file_paths': all_file_paths})

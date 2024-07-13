@@ -4,11 +4,21 @@ from .models import Movie, MoviesList
 from .views import search_detailed_movies
 from django.contrib.auth.decorators import login_required
 import colorsys
+import string
+
+URL_YTS_1 = 'https://en.yts-official.mx/movies/'
+URL_YTS_2 = 'https://yts.rs/movie/'
 
 @login_required
 def movie_page(request):
     if request.method == 'GET' and 'query' in request.GET:
         movie = Movie.objects.get(pk=request.GET.get('query'))
+
+        title_no_punct = movie.title.translate(str.maketrans('', '', string.punctuation))
+        title_dash = title_no_punct.replace(' ', '-')
+        year_date = movie.release_date.year
+        yts1 = URL_YTS_1 + title_dash + '-' + str(year_date)
+        yts2 = URL_YTS_2 + title_dash.lower() + '-' + str(year_date)
 
         if movie.status != 'Released' and movie.release_date < timezone.now().date():
             movie_detailed = search_detailed_movies(movie.movie_id)
@@ -31,6 +41,8 @@ def movie_page(request):
             'text_color': text_color,
             'background': background,
             'movies_list_length': movies_list_length,
+            'yts1': yts1,
+            'yts2': yts2,
         }
         return render(request, 'movie_page.html', context)
 

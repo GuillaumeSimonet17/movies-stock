@@ -15,7 +15,6 @@ class Movie(models.Model):
     origin_country = models.CharField(max_length=255, null=True)
     production_companies = models.JSONField(null=True)
     status = models.CharField()
-    url_yts = models.URLField(null=True)
     dominant_color = models.CharField(max_length=7, null=True, blank=True)
 
 class FilePath(models.Model):
