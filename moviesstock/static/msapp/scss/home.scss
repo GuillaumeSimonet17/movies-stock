@@ -6,10 +6,15 @@
 
 button {
   cursor: pointer;
+  font-family: 'hollywood';
+  border: none;
 }
-*{
-  padding: 0;
+
+h1 {
+  font-family: 'hollywood';
+  font-size: 10em;
 }
+
 body {
   background: $wall-color;
   color: $primary-color;
@@ -121,23 +126,29 @@ body {
     flex-direction: column;
     align-items: center;
 
+    a {
+      font-family: 'hollywood';
+      text-decoration: none;
+      color: $primary-color;
+    }
     p {
       font-size: 1.3em;
     }
-  }
-
-  h1 {
+    a {
     margin: 20px 0 0 0;
     font-size: 5em;
     cursor: pointer;
+    }
+    a, h2 {
+      display: flex;
+      justify-content: center;
+    }
+    a, button {
+      font-family: 'hollywood', sans-serif;
+    }
   }
-  h1, h2 {
-    display: flex;
-    justify-content: center;
-  }
-  h1, button {
-    font-family: 'hollywood', sans-serif;
-  }
+
+
   h2 {
     margin-bottom: 50px;
   }

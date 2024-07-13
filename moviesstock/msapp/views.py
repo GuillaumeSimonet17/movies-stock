@@ -71,13 +71,12 @@ def home(request):
     if genre and genre != 'All':
         movies_in_list = movies_in_list.filter(genre_ids__contains=[{'name': genre}])
 
-    ordered_by = request.GET.get('ord')
-    ordered_selected = ordered_by
     order = '-id'
+    ordered_by = request.GET.get('ord')
     if ordered_by and ordered_by != 'Date added':
         if ordered_by == 'Year Asc':
             order = '-release_date'
-        if ordered_by == 'Year Dsc':
+        elif ordered_by == 'Year Dsc':
             order = 'release_date'
 
     movies_in_list = movies_in_list.order_by(order)
@@ -88,7 +87,7 @@ def home(request):
         'orders': ORDERS,
         'genre_selected': genre_selected,
         'ordered_selected': order,
-        'ordered_selected_value': ordered_selected,
+        'ordered_selected_value': ordered_by,
     }
     return render(request, 'home.html', context)
 

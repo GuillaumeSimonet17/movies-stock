@@ -3,8 +3,6 @@ function goToHomePage(id) {
 }
 
 function goToMoviePage(id, order, genres) {
-     console.log(order)
-     console.log(genres)
      window.location.href = '/movie_page/?query=' + id + '&ord=' + order + '&gnr=' + genres;
 }
 

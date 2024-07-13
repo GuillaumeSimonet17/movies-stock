@@ -28,26 +28,29 @@ def movie_page(request):
                 movie.status=movie_detailed.get('status') or None
                 movie.save()
 
-        order = request.GET.get('ord')
-        genre = request.GET.get('gnr')
         movies_list = MoviesList.objects.get(user=request.user)
         movies = movies_list.movies.all()
         movies_filtered = movies
+
+        order = '-id'
+        ordered_by = request.GET.get('ord')
+        genre = request.GET.get('gnr')
         if genre != 'All':
             movies_filtered = movies.filter(genre_ids__contains=[{'name': genre}])
-        for m in movies_filtered:
-            print(m.title)
-        movies_filtered = movies_filtered.order_by(order)
-        print('--------------')
-        for m in movies_filtered:
-            print(m.title)
 
+        if ordered_by and ordered_by != 'Date added':
+            if ordered_by == 'Year Asc':
+                order = '-release_date'
+            elif ordered_by == 'Year Dsc':
+                order = 'release_date'
+
+        movies_filtered = movies_filtered.order_by(order)
         movies = list(movies_filtered.values_list('id', flat=True))
         movies_list_length = len(movies)
 
         darkness = color_darkness(movie.dominant_color)
         text_color, background = get_text_background_colors(darkness, movie.dominant_color)
-
+        print(ordered_by)
         context = {
             'movie': movie,
             'movies_list': movies,
@@ -57,7 +60,9 @@ def movie_page(request):
             'yts1': yts1,
             'yts2': yts2,
             'genre_selected': genre,
-            'ordered_selected_value': order,
+
+            'ordered_selected': ordered_by,
+            'ordered_selected_value': ordered_by,
         }
         return render(request, 'movie_page.html', context)
 
