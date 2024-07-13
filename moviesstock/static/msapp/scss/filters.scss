@@ -1,0 +1,55 @@
+.filters_container {
+  width: 100%;
+  background: white;
+  margin-bottom: 20px;
+  display: flex;
+  justify-content: start;
+  position: relative;
+  height: 50px;
+
+  .filter_genre {
+    width: 150px;
+    z-index: 1000;
+    position: absolute;
+
+    #toggle_genres {
+      cursor: pointer;
+      margin-left: 20px;
+      width: 250px;
+      font-weight: bold;
+    }
+
+    #genres_list {
+      display: none;
+      height: 300px;
+
+      &.show_genres_list {
+        display: block;
+        overflow-y: auto;
+          box-shadow: rgba(177, 177, 177, 0.29) 0px 8px  24px;
+
+      }
+
+      &.show_genres_list::-webkit-scrollbar {
+        display: none;
+      }
+
+      li {
+        list-style-type: none;
+
+        a {
+          font-weight: bold;
+          padding: 10px 20px;
+          display: block;
+          text-decoration: none;
+          color: black;
+          background: white;
+
+          &:hover {
+            background-color: $wall-color;
+          }
+        }
+      }
+    }
+  }
+}

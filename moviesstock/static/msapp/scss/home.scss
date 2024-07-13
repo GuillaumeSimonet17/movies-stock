@@ -2,11 +2,14 @@
 @import 'movie_card_style';
 @import 'search_style';
 @import 'colors';
+@import 'filters';
 
 button {
   cursor: pointer;
 }
-
+*{
+  padding: 0;
+}
 body {
   background: $wall-color;
   color: $primary-color;

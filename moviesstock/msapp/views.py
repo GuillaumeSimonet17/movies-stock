@@ -6,6 +6,7 @@ from django.contrib.auth.decorators import login_required
 from django.views.decorators.csrf import csrf_exempt
 from .models import Movie, MoviesList, FilePath
 import deepl
+from django.db.models import Q
 
 from PIL import Image
 import numpy as np
@@ -24,18 +25,52 @@ API_KEY_DEEPL = os.getenv('API_KEY_DEEPL')
 
 URL_TMDB = 'https://api.themoviedb.org/3/'
 
+GENRES = [
+    'All',
+    'Action',
+    'Adventure',
+    'Animation',
+    'Biography',
+    'Comedy',
+    'Crime',
+    'Documentary',
+    'Drama',
+    'Family',
+    'Fantasy',
+    'Film Noir',
+    'Game Show',
+    'History',
+    'Horror',
+    'Musical',
+    'Music',
+    'Mystery',
+    'Romance',
+    'Sci-Fi',
+    'Short',
+    'Sport',
+    'Thriller',
+    'War',
+    'Western',
+]
 
 @login_required
 def home(request):
-    movies = Movie.objects.all()
     movies_list, created = MoviesList.objects.get_or_create(
         user=request.user,
         defaults={'name': request.user.username + '\'s list'}
     )
 
+    genre = request.GET.get('genre')
+    genre_selected = genre
+    movies_in_list = movies_list.movies.all()
+    if genre and genre != 'All':
+        movies_in_list = movies_in_list.filter(genre_ids__contains=[{'name': genre}])
+
     context = {
-        'movies': movies,
+        'movies': movies_in_list,
         'movies_list': movies_list.movies.all().order_by('-id'),
+        'genres': GENRES,
+        'genre_selected': genre_selected,
     }
     return render(request, 'home.html', context)
 

@@ -21,6 +21,15 @@ $(document).ready(function() {
             show_or_hide_search(movieSearchInput, searchContainer, 0)
         }
     });
+
+    let toggle_genres = $('#toggle_genres')
+    let genres_list = $('#genres_list')
+    console.log(toggle_genres)
+    console.log(genres_list)
+    toggle_genres.click(function() {
+        console.log('cououuuu')
+         genres_list.toggleClass('show_genres_list');
+    });
 });
 
 function isValidKey(key) {

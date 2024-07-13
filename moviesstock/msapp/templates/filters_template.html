@@ -1,0 +1,15 @@
+<div class="filters_container">
+    <div class="filter_genre">
+        {% if genre_selected and genre_selected != 'All' %}
+            <p id="toggle_genres">Filtrez par genre ({{ genre_selected }})</p>
+        {% else %}
+            <p id="toggle_genres">Filtrez par genre</p>
+        {% endif %}
+    
+        <ul id="genres_list">
+            {% for genre in genres %}
+                <li><a href="/?genre={{ genre }}">{{ genre }}</a></li>
+            {%  endfor %}
+        </ul>
+    </div>
+</div>
