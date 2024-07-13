@@ -13,13 +13,18 @@ import numpy as np
 from sklearn.cluster import KMeans
 from io import BytesIO
 from collections import Counter
+import os
+from dotenv import load_dotenv
 
+# Load environment variables from .env file
+load_dotenv()
+
+# Access environment variables
+API_KEY_TMDB = os.getenv('API_KEY_TMDB')
+API_KEY_DEEPL = os.getenv('API_KEY_DEEPL')
 
 URL_TMDB = 'https://api.themoviedb.org/3/'
 URL_YTS = 'https://en.yts-official.mx/movies/'
-
-API_KEY_TMDB = 'eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiI5MTA2MjRmYjZmOGNkMGEzMjc5YTk4ZmJhZDBkYTA4ZCIsIm5iZiI6MTcxOTYxNTIyNi42MTcyMzksInN1YiI6IjYyMTNhNzJkODEzODMxMDAxYzYxN2Q2NiIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.KHP_u0H2ra2mASaXmyeiEX-qQiyCfhCK_HSeNbDvyn8'
-API_KEY_DEEPL = '54f88a40-a6c4-4a68-bdee-460f77863eb4:fx'
 
 
 @login_required
