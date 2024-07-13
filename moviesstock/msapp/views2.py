@@ -28,21 +28,36 @@ def movie_page(request):
                 movie.status=movie_detailed.get('status') or None
                 movie.save()
 
+        order = request.GET.get('ord')
+        genre = request.GET.get('gnr')
         movies_list = MoviesList.objects.get(user=request.user)
-        movie_ids = list(movies_list.movies.values_list('id', flat=True))
-        movies_list_length = movies_list.movies.count()
+        movies = movies_list.movies.all()
+        movies_filtered = movies
+        if genre != 'All':
+            movies_filtered = movies.filter(genre_ids__contains=[{'name': genre}])
+        for m in movies_filtered:
+            print(m.title)
+        movies_filtered = movies_filtered.order_by(order)
+        print('--------------')
+        for m in movies_filtered:
+            print(m.title)
+
+        movies = list(movies_filtered.values_list('id', flat=True))
+        movies_list_length = len(movies)
 
         darkness = color_darkness(movie.dominant_color)
         text_color, background = get_text_background_colors(darkness, movie.dominant_color)
 
         context = {
             'movie': movie,
-            'movies_list': movie_ids,
+            'movies_list': movies,
             'text_color': text_color,
             'background': background,
             'movies_list_length': movies_list_length,
             'yts1': yts1,
             'yts2': yts2,
+            'genre_selected': genre,
+            'ordered_selected_value': order,
         }
         return render(request, 'movie_page.html', context)
 

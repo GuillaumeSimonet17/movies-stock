@@ -80,17 +80,15 @@ def home(request):
         if ordered_by == 'Year Dsc':
             order = 'release_date'
 
-    print(order)
-
     movies_in_list = movies_in_list.order_by(order)
 
     context = {
         'movies': movies_in_list,
-        # 'movies_list': movies_list.movies.all().order_by(order),
         'genres': GENRES,
         'orders': ORDERS,
         'genre_selected': genre_selected,
-        'ordered_selected': ordered_selected,
+        'ordered_selected': order,
+        'ordered_selected_value': ordered_selected,
     }
     return render(request, 'home.html', context)
 

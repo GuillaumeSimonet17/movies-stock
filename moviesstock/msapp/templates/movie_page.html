@@ -18,15 +18,16 @@
         {% include "header_template.html" %}
     </header>
     <main>
+    <p>COUOCU {{ movies }}</p>
         <div style="color: {{ text_color }}; background: {{ background }}" class="movie_page_container">
             <div class="head">
                 <p class="title">{{ movie.title }} ({{ movie.release_date.year }})</p>
                 <div class="btn_pass">
                     {% if movies_list_length > 1 %}
-                        <button style="color: {{ text_color }}" onclick="goToNextMoviePage({{ movies_list }}, {{ movie.id }})">
+                        <button style="color: {{ text_color }}" onclick="goToPreviousMoviePage({{ movies_list }}, {{ movie.id }}, '{{ ordered_selected_value|default:"-id"  }}', '{{ genre_selected|default:"All" }}')">
                             <
                         </button>
-                        <button style="color: {{ text_color }}" onclick="goToPreviousMoviePage({{ movies_list }}, {{ movie.id }})">
+                        <button style="color: {{ text_color }}" onclick="goToNextMoviePage({{ movies_list }}, {{ movie.id }}, '{{ ordered_selected_value|default:"-id"  }}', '{{ genre_selected|default:"All" }}')">
                             >
                         </button>
                     {% endif %}

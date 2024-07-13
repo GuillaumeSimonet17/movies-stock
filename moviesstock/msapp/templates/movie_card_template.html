@@ -1,5 +1,6 @@
 {% for movie in movies %}
-<div class="movie_card" onclick="goToMoviePage({{ movie.id }})">
+
+<div class="movie_card" onclick="goToMoviePage({{ movie.id }}, '{{ ordered_selected|default:"Date added"  }}', '{{ genre_selected|default:"All" }}')">
     <form action="{% url 'delete_movie' %}" method="post">
         <button type="submit" name='id' value={{movie.id}}>
             {% load static %}

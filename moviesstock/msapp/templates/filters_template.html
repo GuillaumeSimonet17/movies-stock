@@ -15,10 +15,10 @@
 
     <div class="ordered_by">
 
-        {% if ordered_selected and ordered_selected != 'All' %}
-            <p id="toggle_ordered">Ordonner par ({{ ordered_selected }})</p>
+        {% if ordered_selected_value and ordered_selected_value != 'Date added' %}
+            <p id="toggle_ordered">Ordered by ({{ ordered_selected_value }})</p>
         {% else %}
-            <p id="toggle_ordered">Ordonner par</p>
+            <p id="toggle_ordered">Ordered by</p>
         {% endif %}
 
         <ul id="ordered_list">
