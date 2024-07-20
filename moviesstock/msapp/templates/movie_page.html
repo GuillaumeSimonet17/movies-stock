@@ -24,11 +24,11 @@
         {% include "header_template.html" %}
     </header>
     <main>
-        <div class="container rounded-1 pb-4 movie_page_container"  style="color: {{ text_color }}; background: {{ background }}" >
+        <div class="container rounded-1 p-5 pt-3 movie_page_container"  style="color: {{ text_color }}; background: {{ background }}" >
             <div class="row d-flex head">
                 {% if movie.release_date.year %}
                     <div class="col-6 m-0 d-flex align-items-center">
-                        <p class="fw-bold m-0 fs-3 title">{{ movie.title }} ({{ movie.release_date.year }})</p>
+                        <p style="color: {{ text_color }}" class="fw-bold m-0 fs-3 title">{{ movie.title }} ({{ movie.release_date.year }})</p>
                     </div>
                 {% else %}
                     <p class="col-6 fs-3 title">{{ movie.title }}</p>
@@ -54,21 +54,15 @@
             <div class="row flex-row main_container">
 
                 <div class="col-12 col-md-4 justify-content-center left">
-                <div class="d-flex justify-content-center">
-                    <img class="img-fluid" id="poster" src="https://image.tmdb.org/t/p/w500{{ movie.poster_path }}" alt="{{ movie.title }} poster"/>
-                </div>
-                    <div class="row prods align-items-center justify-content-center p-2 mt-1">
-                        {% for prod in movie.production_companies %}
-                            {% if prod.logo_path %}
-                                <img class="img-fluid prod p-1" src="https://image.tmdb.org/t/p/w500{{ prod.logo_path }}" alt="{{ prod.name }} logo"/>
-                            {% endif %}
-                        {% endfor %}
+                    <div class="d-flex justify-content-center">
+                        <img class="img-fluid" id="poster" src="https://image.tmdb.org/t/p/w500{{ movie.poster_path }}" alt="{{ movie.title }} poster"/>
                     </div>
+                  
                 </div>
 
                 <div class="col-12 col-md-8 right">
                     <div class="row right_container">
-                        <div class="col-12 infos_container">
+                        <div class="col-12 col-md-6 infos_container">
                             <div class="dates">
                                 {% if movie.status != "Released" %}
                                     <p style="color: red; font-weight: bold">{{ movie.status }}</p>
@@ -89,26 +83,33 @@
                             {% endif %}
                             <p style="line-height: 1.5em"><span style="font-weight: bold">Casting</span> : {{ movie.actors }}</p>
                             <p><span style="font-weight: bold">Director</span> : {{ movie.directors }}</p>
+                            <div class="row prods align-items-center justify-content-center p-2 mt-1">
+                                {% for prod in movie.production_companies %}
+                                {% if prod.logo_path %}
+                                    <img style="max-width: 150px" class="img-fluid prod p-1" src="https://image.tmdb.org/t/p/w500{{ prod.logo_path }}" alt="{{ prod.name }} logo"/>
+                                {% endif %}
+                                {% endfor %}
+                            </div>
                         </div>
     
-                        <div class="col-12  links_container">
+                        <div class="col-12 col-md-6 links_container">
                             {% if yts1 %}
-                                <a style="background: {{ text_color }}; color: {{ movie.dominant_color  }}" href="{{ yts1 }}" target="_blank">Voir ou download sur YTS</a>
+                                <a class="border" style="background: {{ background }}; color: {{ text_color  }}" href="{{ yts1 }}" target="_blank">Voir ou download sur YTS</a>
                                 <br/>
-                                <a style="background: {{ text_color }}; color: {{ movie.dominant_color  }}" href="{{ yts2 }}" target="_blank">Voir ou download sur YTS 2</a>
+                                <a class="border" style="background: {{ background }}; color: {{ text_color  }}" href="{{ yts2 }}" target="_blank">Voir ou download sur YTS 2</a>
                                 <br/>
-                                <a style="background: {{ text_color }}; color: {{ movie.dominant_color  }}" href="https://fr.my-subs.net/search.php?key={{ movie.title }}" target="_blank">(Yts subtitle)</a>
+                                <a class="border" style="background: {{ background }}; color: {{ text_color  }}" href="https://fr.my-subs.net/search.php?key={{ movie.title }}" target="_blank">(Yts subtitle)</a>
                                 <br/>
                             {% endif %}
-                            <a style="background: {{ text_color }}; color: {{ movie.dominant_color  }}" href="https://wi-flix.xyz/?s={{ movie.title }}" target="_blank">Voir sur Wiflix</a>
+                            <a class="border" style="background: {{ background }}; color: {{ text_color  }}" href="https://wi-flix.xyz/?s={{ movie.title }}" target="_blank">Voir sur Wiflix</a>
                             <br/>
-                            <a style="background: {{ text_color }}; color: {{ movie.dominant_color  }}" href="https://filmoflix.to/film/{{ movie.title }}" target="_blank">Voir sur Filmoflix</a>
+                            <a class="border" style="background: {{ background }}; color: {{ text_color  }}" href="https://filmoflix.to/film/{{ movie.title }}" target="_blank">Voir sur Filmoflix</a>
                             <br/>
-                            <a style="background: {{ text_color }}; color: {{ movie.dominant_color  }}" href="https://www.yavroz.com" target="_blank">Chercher sur yavroz</a>
+                            <a class="border" style="background: {{ background }}; color: {{ text_color  }}" href="https://www.yavroz.com" target="_blank">Chercher sur yavroz</a>
                             <br/>
-                            <a style="background: {{ text_color }}; color: {{ movie.dominant_color  }}" href="https://www.youtube.com/results?search_query={{ movie.title }}" target="_blank">Bande Annonce</a>
+                            <a class="border" style="background: {{ background }}; color: {{ text_color  }}" href="https://www.youtube.com/results?search_query={{ movie.title }}" target="_blank">Bande Annonce</a>
                             <br/>
-                            <a style="background: {{ text_color }}; color: {{ movie.dominant_color  }}" href="https://www.google.com/search?q={{ movie.title }}" target="_blank">Voir sa page Google</a>
+                            <a class="border" style="background: {{ background }}; color: {{ text_color  }}" href="https://www.google.com/search?q={{ movie.title }}" target="_blank">Voir sa page Google</a>
                         </div>
                     </div>
 

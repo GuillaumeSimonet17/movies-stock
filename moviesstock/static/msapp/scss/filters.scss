@@ -26,6 +26,7 @@
     }
 
     #genres_list, #ordered_list {
+      border: 1px solid red;
       margin: 0;
       display: none;
       max-height: 295px;
@@ -47,6 +48,16 @@
       padding: 0;
       li {
         list-style-type: none;
+        transition: 0.15s ease-in-out;
+
+        &:hover {
+          //background: #910707;
+            transition: 0.4s ease-in-out;
+
+          a {
+            color: #fb9d27;
+          }
+        }
 
         a {
           font-weight: bold;

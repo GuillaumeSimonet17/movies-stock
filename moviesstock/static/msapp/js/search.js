@@ -74,7 +74,7 @@ function displayMovies(movies) {
         if (movie.poster_path) {
             let imageUrl = movie.poster_path ? 'https://image.tmdb.org/t/p/w500' + movie.poster_path : 'placeholder_image_url';
 
-            movieElement.innerHTML = '<img class="res_img" src="' + imageUrl + '" alt="' + movie.title + '"> <p class="res_title">' + movie.title + '</p>';
+            movieElement.innerHTML = '<img class=" res_img" src="' + imageUrl + '" alt="' + movie.title + '"> <p class="p-3 fs-2 res_title">' + movie.title + '</p>';
             resultsContainer.appendChild(movieElement);
 
             $(movieElement).on('click', function() {

@@ -3,7 +3,7 @@
     <form action="{% url 'delete_movie' %}" method="post">
         <button type="submit" name='id' value={{movie.id}}>
             {% load static %}
-            <img id="bin" src="{% static 'msapp/img/bin.png' %}" alt="bin icon">
+            <img class="d-flex img-fluid p-0 m-0" src="{% static 'msapp/img/close.png' %}" alt="bin icon">
         </button>
     </form>
     <img class="img-fluid" id="poster" src="https://image.tmdb.org/t/p/w500{{ movie.poster_path }}" alt="{{ movie.title }} poster"/>

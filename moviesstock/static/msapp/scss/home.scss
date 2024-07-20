@@ -15,6 +15,9 @@ h1 {
 }
 
 body {
+    &::-webkit-scrollbar, &::-webkit-scrollbar {
+      display: none;
+    }
   //background: $wall-color;
   color: $primary-color;
   font-family: "Segoe UI", system-ui, sans-serif;
