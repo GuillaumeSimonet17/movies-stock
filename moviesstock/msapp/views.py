@@ -216,18 +216,37 @@ def get_dominant_color(image_path, k=4):
     response = requests.get(image_path)
     image = Image.open(BytesIO(response.content))
 
-    image = image.resize((150, 150))
-    image_np = np.array(image)
+    def calculate_dominant_color(image):
+        # Convertir en RGB si l'image est en noir et blanc
+        if image.mode != 'RGB':
+            image = image.convert('RGB')
+        image_np = np.array(image)
+        half_height = image_np.shape[0] // 2
 
-    half_height = image_np.shape[0] // 2
-    top_half = image_np[:half_height, :, :]
-    pixels = top_half.reshape(-1, 3)
+        if image_np.ndim == 3:
+            top_half = image_np[:half_height, :, :]
+            pixels = top_half.reshape(-1, 3)
+        else:
+            top_half = image_np[:half_height, :]
+            pixels = top_half.reshape(-1, 1)
 
-    kmeans = KMeans(n_clusters=k)
-    kmeans.fit(pixels)
-    counts = Counter(kmeans.labels_)
-    most_common_cluster = counts.most_common(1)[0][0]
-    dominant_color = kmeans.cluster_centers_[most_common_cluster]
+        kmeans = KMeans(n_clusters=k)
+        kmeans.fit(pixels)
+        counts = Counter(kmeans.labels_)
+        most_common_cluster = counts.most_common(1)[0][0]
+        dominant_color = kmeans.cluster_centers_[most_common_cluster]
 
-    dominant_color_hex = '#%02x%02x%02x' % tuple(dominant_color.astype(int))
+        return dominant_color.astype(int)
+
+    dominant_color = calculate_dominant_color(image)
+    try:
+        dominant_color_hex = '#%02x%02x%02x' % tuple(dominant_color)
+    except TypeError:
+        dominant_color_hex = ''
+
+    if not dominant_color_hex:
+        image = image.resize((150, 150))
+        dominant_color = calculate_dominant_color(image)
+        dominant_color_hex = '#%02x%02x%02x' % tuple(dominant_color)
+
     return dominant_color_hex

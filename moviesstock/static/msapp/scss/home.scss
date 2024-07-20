@@ -15,7 +15,7 @@ h1 {
 }
 
 body {
-  background: $wall-color;
+  //background: $wall-color;
   color: $primary-color;
   font-family: "Segoe UI", system-ui, sans-serif;
   display: flex;
@@ -90,7 +90,7 @@ body {
 
     a,p {
       font-family: 'hollywood';
-      color: $wall-color;
+      //color: $wall-color;
       font-size: 3em;
     }
   }
@@ -105,7 +105,7 @@ body {
     align-items: center;
 
     input {
-      background: white;
+      //background: white;
       border: none;
       outline: none;
       padding: 10px;
@@ -120,23 +120,19 @@ body {
     width: 100%;
   }
 
-  header {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-
-    a {
-      font-family: 'hollywood';
-      text-decoration: none;
-      color: $primary-color;
-    }
-    p {
-      font-size: 1.3em;
-    }
-    a {
-    margin: 20px 0 0 0;
+  .title {
+    font-family: 'hollywood';
+    text-decoration: none;
+    color: $primary-color;
+    margin: 20px 0 0< 0;
     font-size: 5em;
     cursor: pointer;
+    &:hover {
+      color: $primary-color;
+    }
+
+    p {
+      font-size: 1.3em;
     }
     a, h2 {
       display: flex;

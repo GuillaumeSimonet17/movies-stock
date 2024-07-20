@@ -54,7 +54,6 @@ def movie_page(request):
 
         darkness = color_darkness(movie.dominant_color)
         text_color, background = get_text_background_colors(darkness, movie.dominant_color)
-        print(ordered_by)
         context = {
             'movie': movie,
             'movies_list': movies,

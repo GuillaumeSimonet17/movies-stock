@@ -1,21 +1,29 @@
 {% extends "base.html" %}
+{% load static %}
 
 {% block title %}Sign Up{% endblock %}
 
 {% block content %}
-<header>
-    <h1 onclick="goToHomePage()">Hollylist</h1>
-</header>
-<div class="signup_container">
-    <h2>Sign up</h2>
-    <form method="post">
-      {% csrf_token %}
-      {{ form }}
-      <button type="submit">Sign Up</button>
-    </form>
+    <div class="container-fluid p-0">
+        <img src="{% static 'msapp/img/img.png' %}" class="img-fluid" style="min-height: 100vh; position: fixed; z-index: -10; %});">
 
-    <a href="{% url 'login' %}">
-        <p>Already registered ? Login</p>
-    </a>
-</div>
+            <h1 class="row col-12 justify-content-center" onclick="goToHomePage()">Hollylist</h1>
+
+            <div class="signup_container">
+                <h2>Sign up</h2>
+                <form method="post">
+                  {% csrf_token %}
+                  {{ form }}
+                  <button type="submit">Sign Up</button>
+                </form>
+
+                <a class="mt-4 row justify-content-center" href="{% url 'login' %}">
+                    <p>Already registered ? Login</p>
+                </a>
+
+            </div>
+        </img>
+    </div>
+
+
 {% endblock %}

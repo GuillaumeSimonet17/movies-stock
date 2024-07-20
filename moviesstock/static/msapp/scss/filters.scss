@@ -1,11 +1,11 @@
 .filters_container {
   width: 100%;
-  background: white;
+  //background: white;
+  background: transparent;
   margin-bottom: 40px;
   display: flex;
   justify-content: center;
   text-align: center;
-  position: relative;
   height: 50px;
 
   .filter_genre, .ordered_by {
@@ -31,6 +31,7 @@
       max-height: 295px;
 
       &.show_genres_list, &.show_ordered_list {
+        background: black;
         display: flex;
         flex-direction: column;
         overflow-y: auto;
@@ -52,11 +53,11 @@
           padding: 10px 20px;
           display: block;
           text-decoration: none;
-          background: white;
+          //background: white;
           color: $primary-color;
 
           &:hover {
-            background-color: $wall-color;
+            //background-color: $wall-color;
           }
         }
       }

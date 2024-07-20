@@ -1,25 +1,30 @@
 {% extends "base.html" %}
+{% load static %}
 
 {% block title %}Home{% endblock %}
 
 {% block content %}
 {% if user.is_authenticated %}
 
-    <div class="logout_container">
-        <form action="{% url 'logout' %}" method="post">
-          {% csrf_token %}
-          <button type="submit">Leave</button>
-        </form>
-    </div>
-    <header>
-        {% include "header_template.html" %}
-        <h3 style="margin-top: 0px">Hey {{ user.username }}, just type a movie name on your keyboard</h3>
-    </header>
-    <main class="container-fluid">
-        {% include "search_template.html" %}
-        {% include "movies_list_template.html" %}
-    </main>
+    <div class="container-fluid p-0">
+        <img src="{% static 'msapp/img/img.png' %}" class="img-fluid" style="min-height: 100vh; position: fixed; z-index: -10; %});">
 
+            <div class="logout_container">
+                <form action="{% url 'logout' %}" method="post">
+                  {% csrf_token %}
+                  <button type="submit">Leave</button>
+                </form>
+            </div>
+            <header class="container-fluid">
+                {% include "header_template.html" %}
+            </header>
+
+            <main class="container-fluid">
+                {% include "search_template.html" %}
+                {% include "movies_list_template.html" %}
+            </main>
+        </img>
+    </div>
 {% else %}
 
 <a href="{% url 'login' %}" class="login_container">
