@@ -1,11 +1,8 @@
 
 .movie_card {
-  margin: 5px;
-  border-bottom: 1px solid lightgrey;
   cursor: pointer;
   transition: 0.5s ease-in-out;
   position: relative;
-  width: 350px;
 
   &:hover {
     transform: scale(1.02);
@@ -13,17 +10,7 @@
       opacity: 1;
     }
   }
-  @media (min-width: 750px) {
-      width: 200px;
-  }
 
-  @media (min-width: 550px) {
-      width: 250px;
-  }
-
-  #poster {
-    width: 100%;
-  }
   button {
     position: absolute;
     padding: 2px;

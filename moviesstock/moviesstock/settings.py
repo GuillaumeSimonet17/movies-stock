@@ -22,6 +22,7 @@ INSTALLED_APPS = [
     'django_sass',
     'sass_processor',
     'accounts',
+    'bootstrap5',
 ]
 
 MIDDLEWARE = [

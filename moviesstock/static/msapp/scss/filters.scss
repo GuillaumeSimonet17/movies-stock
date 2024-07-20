@@ -31,7 +31,8 @@
       max-height: 295px;
 
       &.show_genres_list, &.show_ordered_list {
-        display: block;
+        display: flex;
+        flex-direction: column;
         overflow-y: auto;
         border-top: 2px solid $primary-color;
 
@@ -41,6 +42,8 @@
         display: none;
       }
 
+      width: 100%;
+      padding: 0;
       li {
         list-style-type: none;
 

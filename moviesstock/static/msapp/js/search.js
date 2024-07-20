@@ -113,14 +113,7 @@ function get_images(movieId) {
 
 
 function show_or_hide_search(movieSearchInput, searchContainer, to_show) {
-    if (to_show) {
-        movieSearchInput.css('opacity', '1');
-        searchContainer.css('opacity', '1');
-    } else {
-        if (window.innerWidth > 480) {
-            movieSearchInput.css('opacity', '0');
-            searchContainer.css('opacity', '0');
-        }
+    if (!to_show) {
         movieSearchInput.empty()
         movieSearchInput.val('');
     }

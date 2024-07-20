@@ -16,11 +16,15 @@ def movie_page(request):
 
         title_no_punct = movie.title.translate(str.maketrans('', '', string.punctuation))
         title_dash = title_no_punct.replace(' ', '-')
-        year_date = movie.release_date.year
-        yts1 = URL_YTS_1 + title_dash + '-' + str(year_date)
-        yts2 = URL_YTS_2 + title_dash.lower() + '-' + str(year_date)
 
-        if movie.status != 'Released' and movie.release_date < timezone.now().date():
+        yts1 = ''
+        yts2 = ''
+        if movie.release_date and movie.release_date.year:
+            year_date = movie.release_date.year
+            yts1 = URL_YTS_1 + title_dash + '-' + str(year_date)
+            yts2 = URL_YTS_2 + title_dash.lower() + '-' + str(year_date)
+
+        if movie.status != 'Released' and movie.release_date and movie.release_date < timezone.now().date():
             movie_detailed = search_detailed_movies(movie.movie_id)
             if movie_detailed:
                 movie.release_date = movie_detailed.get('release_date') or None
@@ -57,8 +61,8 @@ def movie_page(request):
             'text_color': text_color,
             'background': background,
             'movies_list_length': movies_list_length,
-            'yts1': yts1,
-            'yts2': yts2,
+            'yts1': yts1 or None,
+            'yts2': yts2 or None,
             'genre_selected': genre,
 
             'ordered_selected': ordered_by,
