@@ -28,6 +28,7 @@
     .right {
       .right_container {
         .infos_container {
+          margin-top: 10px;
           .dates {
             p{
               margin-right: 10px;
@@ -35,6 +36,7 @@
           }
 
           .genres {
+            display: flex;
             .genre {
               margin-right: 10px;
               font-weight: bold;
@@ -43,8 +45,12 @@
 
         }
         .links_container {
+          display: flex;
+          flex-direction: column;
+          margin-top: 40px;
+          align-items: center;
           a {
-            padding: 10px 20px;
+            padding: 3px 15px;
             border-radius: 50px;
             transition: 0.2s ease-in-out;
             display: flex;

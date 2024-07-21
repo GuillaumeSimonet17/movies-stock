@@ -7,8 +7,9 @@
      <div class="container-fluid p-0">
         <img src="{% static 'msapp/img/img.png' %}" class="img-fluid" style="min-height: 100vh; position: fixed; z-index: -10; %});">
 
-            <h1 class="row col-12 justify-content-center" onclick="goToHomePage()">Hollylist</h1>
-
+            <div class="row f-flex  justify-content-center align-items-center">
+                <h1 class="w-auto" onclick="goToHomePage()">Hollylist</h1>
+            </div>
             <form class="login_form" method="post">
               {% csrf_token %}
               {{ form }}

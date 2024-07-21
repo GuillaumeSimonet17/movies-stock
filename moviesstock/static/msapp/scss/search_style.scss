@@ -5,7 +5,6 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  //background: $wall-color;
   z-index: 3000;
 
   #search_input {
@@ -16,28 +15,19 @@
   }
 
   #movies_results {
-    margin-top: 10px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
+    margin-top: 30px;
+    //background: #292929;
+    background: #6b7c8c;
 
     #res_container {
-      z-index: 20000;
-      display: flex;
-      background: black;
-      border-bottom: 1px solid #535353;
       cursor: pointer;
+      color: #cacaca;
 
       &:hover {
+        transition: 0.2s ease-in-out;
         font-weight: bold;
       }
     }
-    .res_title {
-      margin-left: 10px;
-    }
-    .res_img {
-      width: 100px;
-  }
 }
 
 }

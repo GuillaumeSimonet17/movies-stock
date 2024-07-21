@@ -1,6 +1,6 @@
 .filters_container {
   width: 100%;
-  //background: white;
+  //background: rgba(83, 81, 81, 0.4);
   background: transparent;
   margin-bottom: 40px;
   display: flex;
@@ -26,7 +26,6 @@
     }
 
     #genres_list, #ordered_list {
-      border: 1px solid red;
       margin: 0;
       display: none;
       max-height: 295px;
@@ -51,11 +50,12 @@
         transition: 0.15s ease-in-out;
 
         &:hover {
-          //background: #910707;
-            transition: 0.4s ease-in-out;
+          background: #300202;
 
           a {
-            color: #fb9d27;
+            transition: 0.2s ease-in-out;
+
+            color: #f86565;
           }
         }
 

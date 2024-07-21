@@ -3,22 +3,25 @@ $(document).ready(function() {
     let moviesRes = $('#movies_results')
     let searchContainer = $('.search_container')
     $(document).on('keydown', function(event) {
-        if (event.key === 'Escape' && movieSearchInput.val().length > 0) {
-            show_or_hide_search(movieSearchInput, searchContainer, 0)
+        if (event.key === 'Escape') {
+    console.log('yo1')
+            show_or_hide_search(movieSearchInput, searchContainer, moviesRes, 0)
         }
         if (isValidKey(event.key)) {
             movieSearchInput.focus();
-            show_or_hide_search(movieSearchInput, searchContainer, 1)
+            show_or_hide_search(movieSearchInput, searchContainer, moviesRes, 1)
         }
     });
 
     movieSearchInput.on('input', function() {
 
-        if (movieSearchInput.val().length > 0)
+        if (movieSearchInput.val().length > 0) {
             searchMovies(movieSearchInput.val());
+        show_or_hide_search(movieSearchInput, searchContainer, moviesRes, 1)
+    }
         else {
             moviesRes.empty()
-            show_or_hide_search(movieSearchInput, searchContainer, 0)
+            show_or_hide_search(movieSearchInput, searchContainer, moviesRes, 0)
         }
     });
 
@@ -63,7 +66,7 @@ function searchMovies(query) {
 function displayMovies(movies) {
     let resultsContainer = document.getElementById('movies_results');
     resultsContainer.innerHTML = '';
-    let limitedMovies = movies.slice(0, 5);
+    let limitedMovies = movies.slice(0, 15);
     let movieSearchInput = $('#search_input');
     let searchContainer = $('.search_container')
 
@@ -74,7 +77,11 @@ function displayMovies(movies) {
         if (movie.poster_path) {
             let imageUrl = movie.poster_path ? 'https://image.tmdb.org/t/p/w500' + movie.poster_path : 'placeholder_image_url';
 
-            movieElement.innerHTML = '<img class=" res_img" src="' + imageUrl + '" alt="' + movie.title + '"> <p class="p-3 fs-2 res_title">' + movie.title + '</p>';
+            movieElement.innerHTML = '' +
+                '<img class="mt-3 img-fluid" src="' + imageUrl + '" alt="' + movie.title + '">' +
+                '<p class="text-truncate p-2 mt-3 fs-5">' + movie.title + '</p>'
+            ;
+            movieElement.classList.add('col-6', 'col-md-3', 'col-lg-2');
             resultsContainer.appendChild(movieElement);
 
             $(movieElement).on('click', function() {
@@ -112,13 +119,17 @@ function get_images(movieId) {
 }
 
 
-function show_or_hide_search(movieSearchInput, searchContainer, to_show) {
+function show_or_hide_search(movieSearchInput, searchContainer, moviesRes, to_show) {
+    console.log('yo2')
     if (to_show) {
         movieSearchInput.css('opacity', '1');
         searchContainer.css('opacity', '1');
+        moviesRes.css('display', 'flex');
     } else {
-            // movieSearchInput.css('opacity', '0');
-            // searchContainer.css('opacity', '0');
+    console.log('yo3')
+        moviesRes.empty()
+        moviesRes.css('opacity', '1');
+        moviesRes.css('display', 'none');
         movieSearchInput.empty()
         movieSearchInput.val('');
     }
