@@ -87,7 +87,7 @@ def get_text_background_colors(darkness, dominant_color):
         background = '#FFFFFFA0'
     else:
         background = '#5C5C5C26'
-    print(text_darkness)
+
     if darkness < 0.1:
         background = '#FFFFFF84'
     if text_darkness > 0.8 and darkness < 0.1:

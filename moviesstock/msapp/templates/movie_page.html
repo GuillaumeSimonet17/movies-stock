@@ -15,7 +15,7 @@
     <link href="{% sass_src 'msapp/scss/movie_page.scss' %}" rel="stylesheet" type="text/css" />
     <link href="{% sass_src 'msapp/scss/home.scss' %}" rel="stylesheet" type="text/css" />
 
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"/>
     <script src="{% static 'msapp/js/go_to.js' %}"></script>
 
 </head>
@@ -57,12 +57,11 @@
                     <div class="d-flex justify-content-center">
                         <img class="img-fluid" id="poster" src="https://image.tmdb.org/t/p/w500{{ movie.poster_path }}" alt="{{ movie.title }} poster"/>
                     </div>
-                  
                 </div>
 
                 <div class="col-12 col-md-8 right">
                     <div class="row right_container">
-                        <div class="col-12 col-md-6 infos_container">
+                        <div class="col-12 col-lg-6 infos_container">
                             <div class="dates">
                                 {% if movie.status != "Released" %}
                                     <p style="color: red; font-weight: bold">{{ movie.status }}</p>
@@ -92,7 +91,7 @@
                             </div>
                         </div>
     
-                        <div class="col-12 col-md-6 links_container">
+                        <div class="col-12 col-lg-6 links_container">
                             {% if yts1 %}
                                 <a style="background: {{ background }}; color: {{ text_color  }}" href="{{ yts1 }}" target="_blank">Voir ou download sur YTS</a>
                                 <br/>
