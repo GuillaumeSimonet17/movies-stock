@@ -196,8 +196,6 @@ def add_movie(request):
             movie.save()
             movies_list.movies.add(movie)
 
-
-
             return JsonResponse({'movie_id': movie.id})
 
         return JsonResponse({'error': 'Requête invalide'}, status=400)

@@ -4,7 +4,6 @@ $(document).ready(function() {
     let searchContainer = $('.search_container')
     $(document).on('keydown', function(event) {
         if (event.key === 'Escape') {
-    console.log('yo1')
             show_or_hide_search(movieSearchInput, searchContainer, moviesRes, 0)
         }
         if (isValidKey(event.key)) {

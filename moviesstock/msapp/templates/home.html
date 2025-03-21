@@ -1,4 +1,4 @@
-    {% extends "base.html" %}
+{% extends "base.html" %}
 {% load static %}
 
 {% block title %}Home{% endblock %}
@@ -26,9 +26,9 @@
     </div>
 {% else %}
 
-<a href="{% url 'login' %}" class="login_container">
-    <p>Enter to hollylist</p>
-</a>
+    <a href="{% url 'login' %}" class="login_container">
+        <p>Enter to hollylist</p>
+    </a>
 
 {% endif %}
 {% endblock %}
