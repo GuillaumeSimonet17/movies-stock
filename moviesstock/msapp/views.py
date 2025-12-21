@@ -65,29 +65,38 @@ def home(request):
         defaults={'name': request.user.username + '\'s list'}
     )
 
-    genre = request.GET.get('gnr')
-    genre_selected = genre
+    genre_selected = request.GET.get('gnr', 'All')
+    ordered_selected_value = request.GET.get('ord', 'Date added')
+
     movies_in_list = movies_list.movies.all()
-    if genre and genre != 'All':
-        movies_in_list = movies_in_list.filter(genre_ids__contains=[{'name': genre}])
 
+    # Filtrer par genre si nécessaire
+    if genre_selected != 'All':
+        movies_in_list = movies_in_list.filter(genre_ids__contains=[{'name': genre_selected}])
+
+    # Trier
     order = '-id'
-    ordered_by = request.GET.get('ord')
-    if ordered_by and ordered_by != 'Date added':
-        if ordered_by == 'Year Asc':
-            order = '-release_date'
-        elif ordered_by == 'Year Dsc':
-            order = 'release_date'
-
+    if ordered_selected_value == 'Year Asc':
+        order = 'release_date'
+    elif ordered_selected_value == 'Year Dsc':
+        order = '-release_date'
     movies_in_list = movies_in_list.order_by(order)
 
+    # Construire un dictionnaire par genre
+    movies_by_genre = {}
+    for genre in GENRES:
+        if genre == 'All':
+            continue
+        genre_movies = [movie for movie in movies_in_list if any(g['name'] == genre for g in (movie.genre_ids or []))]
+        if genre_movies:
+            movies_by_genre[genre] = genre_movies
+
     context = {
-        'movies': movies_in_list,
+        'movies_by_genre': movies_by_genre,
         'genres': GENRES,
         'orders': ORDERS,
         'genre_selected': genre_selected,
-        'ordered_selected': order,
-        'ordered_selected_value': ordered_by,
+        'ordered_selected_value': ordered_selected_value,
     }
     return render(request, 'home.html', context)
 

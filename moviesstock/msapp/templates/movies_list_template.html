@@ -1,10 +1,19 @@
- <div class="container-fluid">
-     {% include "filters_template.html" %}
-     <div class="row mt-5 p-5 justify-content-center movies_list">
+<div class="container-fluid">
+    {% include "filters_template.html" %}
 
-        {% for movie in movies %}
-            {% include "movie_card_template.html" %}
-        {% endfor %}
-
-    </div>
+    {% for genre, movies in movies_by_genre.items %}
+        <div class="genre-container mb-5 position-relative">
+            <p class="genre-title fs-1">{{ genre }}</p>
+            <div class="slider-wrapper position-relative">
+                <div class="genre-slider d-flex" style="overflow-x:auto; scroll-behavior:smooth; gap:15px;">
+                    {% for movie in movies %}
+                        {% include "movie_card_template.html" %}
+                    {% endfor %}
+                </div>
+                <!-- Boutons superposés -->
+                <button class="slider-btn prev">&lt;</button>
+                <button class="slider-btn next">&gt;</button>
+            </div>
+        </div>
+    {% endfor %}
 </div>

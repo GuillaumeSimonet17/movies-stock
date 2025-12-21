@@ -1,3 +1,5 @@
+
+
 $(document).ready(function () {
     /* ================= SEARCH ================= */
     let movieSearchInput = $('#search_input');
