@@ -1,30 +1,82 @@
-<div class="m-0 filters_container">
+<div class="m-0 filters_container_mobile d-block d-lg-none">
+    <div class="filter_genre_mobile">
+        {% if genre_selected and genre_selected != 'All' %}
+            <p id="toggle_genres_mobile">Genres ({{ genre_selected }})
+                <span class="chevron_mobile">⌄</span>
+            </p>
+        {% else %}
+            <p id="toggle_genres_mobile">
+                Genres
+                <span class="chevron_mobile">⌄</span>
+            </p>
+        {% endif %}
+
+        <ul id="genres_list_mobile">
+            {% for genre in genres %}
+                <li><a href="/?ord={{ ordered_selected_value|default:"Date added" }}&gnr={{ genre }}">{{ genre }}</a>
+                </li>
+            {% endfor %}
+        </ul>
+    </div>
+
+    <div class="ordered_by_mobile">
+
+        {% if ordered_selected_value and ordered_selected_value != 'Date added' %}
+            <p id="toggle_ordered_mobile">Ordered by ({{ ordered_selected_value }})
+                <span class="chevron_mobile">⌄</span>
+            </p>
+        {% else %}
+            <p id="toggle_ordered_mobile">Ordered by
+                <span class="chevron_mobile">⌄</span>
+            </p>
+        {% endif %}
+
+        <ul id="ordered_list_mobile">
+            {% for order in orders %}
+                <li><a href="/?ord={{ order }}&gnr={{ genre_selected|default:"All" }}">{{ order }}</a></li>
+            {% endfor %}
+        </ul>
+    </div>
+</div>
+
+<div class="m-0 filters_container d-none d-lg-flex">
     <div class="filter_genre">
         {% if genre_selected and genre_selected != 'All' %}
-            <p id="toggle_genres">Genres ({{ genre_selected }})</p>
+            <p id="toggle_genres">Genres ({{ genre_selected }})
+                <span class="chevron">⌄</span>
+            </p>
         {% else %}
-            <p id="toggle_genres">Genres</p>
+            <p id="toggle_genres">
+                Genres
+                <span class="chevron">⌄</span>
+            </p>
         {% endif %}
 
         <ul id="genres_list">
             {% for genre in genres %}
-                <li><a href="/?ord={{ ordered_selected_value|default:"Date added" }}&gnr={{ genre }}">{{ genre }}</a></li>
-            {%  endfor %}
+                <li><a href="/?ord={{ ordered_selected_value|default:"Date added" }}&gnr={{ genre }}">{{ genre }}</a>
+                </li>
+            {% endfor %}
         </ul>
     </div>
 
     <div class="ordered_by">
 
         {% if ordered_selected_value and ordered_selected_value != 'Date added' %}
-            <p id="toggle_ordered">Ordered by ({{ ordered_selected_value }})</p>
+            <p id="toggle_ordered">Ordered by ({{ ordered_selected_value }})
+                <span class="chevron">⌄</span>
+            </p>
         {% else %}
-            <p id="toggle_ordered">Ordered by</p>
+            <p id="toggle_ordered">Ordered by
+                <span class="chevron">⌄</span>
+            </p>
         {% endif %}
 
         <ul id="ordered_list">
             {% for order in orders %}
                 <li><a href="/?ord={{ order }}&gnr={{ genre_selected|default:"All" }}">{{ order }}</a></li>
-            {%  endfor %}
+            {% endfor %}
         </ul>
     </div>
 </div>
+

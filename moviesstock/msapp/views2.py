@@ -8,7 +8,7 @@ from django.contrib.auth.decorators import login_required
 import colorsys
 import string
 
-URL_YTS_1 = 'https://en.yts-official.mx/movies/'
+URL_YTS_1 = 'https://www.yts-official.cc/movies/'
 URL_YTS_2 = 'https://yts.rs/movie/'
 
 @login_required

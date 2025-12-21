@@ -109,7 +109,8 @@ def search_movies(request):
 
             except requests.exceptions.RequestException as e:
                 print(f"Error fetching data from TMDb API: {e}")
-    return JsonResponse()
+    return JsonResponse({"results": []})
+
 
 @login_required
 def get_images_and_links(request):

@@ -9,15 +9,13 @@
 
   #search_input {
     background: none;
-    padding: 10px 20px;
+    padding: 7px 20px;
     outline: none;
-    font-size: 1em;
   }
 
   #movies_results {
     margin-top: 30px;
-    //background: #292929;
-    background: #6b7c8c;
+    background: #171717;
 
     #res_container {
       cursor: pointer;
@@ -28,6 +26,6 @@
         font-weight: bold;
       }
     }
-}
+  }
 
 }

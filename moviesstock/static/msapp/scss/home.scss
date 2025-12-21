@@ -28,6 +28,29 @@ body {
   width: 100%;
   overflow-x: hidden;
 
+.page-wrapper {
+    position: relative;
+    min-height: 100vh;
+    background-image: url("/static/msapp/img/img.png");
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+}
+
+.page-wrapper::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    background: rgba(25, 25, 25, 0.65);
+    z-index: 0;
+}
+
+.page-wrapper > * {
+    position: relative;
+    z-index: 1;
+}
+
+
   main {
     display: flex;
     align-items: center;

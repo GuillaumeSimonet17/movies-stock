@@ -4,15 +4,14 @@
 {% block title %}Home{% endblock %}
 
 {% block content %}
-{% if user.is_authenticated %}
+    {% if user.is_authenticated %}
 
-    <div class="container-fluid p-0">
-        <img src="{% static 'msapp/img/img.png' %}" class="img-fluid" style="min-height: 100vh; position: fixed; z-index: -10; %});">
+        <div class="container-fluid p-0 page-wrapper">
 
-             <form class="position-absolute top-0 end-0 p-3" action="{% url 'logout' %}" method="post">
+            <form class="position-absolute top-0 end-0 p-3" action="{% url 'logout' %}" method="post">
                 {% csrf_token %}
                 <button type="submit">EXIT</button>
-             </form>
+            </form>
 
             <header class="container-fluid">
                 {% include "header_template.html" %}
@@ -22,13 +21,12 @@
                 {% include "search_template.html" %}
                 {% include "movies_list_template.html" %}
             </main>
-        </img>
-    </div>
-{% else %}
+        </div>
+    {% else %}
 
-    <a href="{% url 'login' %}" class="login_container">
-        <p>Enter to hollylist</p>
-    </a>
+        <a href="{% url 'login' %}" class="login_container">
+            <p>Enter to hollylist</p>
+        </a>
 
-{% endif %}
+    {% endif %}
 {% endblock %}

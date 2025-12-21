@@ -1,8 +1,8 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Movie Stock</title>
 
     {% load bootstrap5 %}
@@ -12,114 +12,151 @@
 
     {% load sass_tags %}
     {% load static %}
-    <link href="{% sass_src 'msapp/scss/movie_page.scss' %}" rel="stylesheet" type="text/css" />
-    <link href="{% sass_src 'msapp/scss/home.scss' %}" rel="stylesheet" type="text/css" />
-
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"/>
+    <link href="{% sass_src 'msapp/scss/movie_page.scss' %}" rel="stylesheet" type="text/css"/>
+    <link href="{% sass_src 'msapp/scss/home.scss' %}" rel="stylesheet" type="text/css"/>
+    <link
+            rel="stylesheet"
+            href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
+    />
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="{% static 'msapp/js/go_to.js' %}"></script>
 
 </head>
 <body style="background: {{ movie.dominant_color }}">
-    <header>
-        {% include "header_template.html" %}
-    </header>
-    <main>
-        <div class="container rounded-1 p-5 pt-3 movie_page_container"  style="color: {{ text_color }}; background: {{ background }}" >
-            <div class="row d-flex head">
-                {% if movie.release_date.year %}
-                    <div class="col-6 m-0 d-flex align-items-center">
-                        <p style="color: {{ text_color }}" class="fw-bold m-0 fs-3 title">{{ movie.title }} ({{ movie.release_date.year }})</p>
-                    </div>
-                {% else %}
-                    <p class="col-6 fs-3 title">{{ movie.title }}</p>
+<header>
+    {% include "header_template.html" %}
+</header>
+<main>
+    <div class="container rounded-1 p-3 p-md-5 pt-2 pt-md-3 movie_page_container"
+         style="color: {{ text_color }}; background: {{ background }}">
+        <div class="row d-flex head">
+            {% if movie.release_date.year %}
+                <div class="col-12 col-md-6 m-0 d-flex align-items-center mb-2 mb-md-0">
+                    <p style="color: {{ text_color }}" class="fw-bold m-0 fs-4 fs-md-3 title">{{ movie.title }}
+                        ({{ movie.release_date.year }})</p>
+                </div>
+            {% else %}
+                <p class="col-12 col-md-6 fs-4 fs-md-3 title mb-2 mb-md-0">{{ movie.title }}</p>
+            {% endif %}
+
+            <div class="col-12 col-md-6 d-flex flex-row justify-content-between justify-content-md-end btn_pass">
+                {% if movies_list_length > 1 %}
+                    <button class="fs-1 py-0" style="color: {{ text_color }}"
+                            onclick="goToPreviousMoviePage({{ movies_list }}, {{ movie.id }}, '{{ ordered_selected_value|default:"Date added" }}', '{{ genre_selected|default:"All" }}')">
+                        <
+                    </button>
                 {% endif %}
-
-                <div class="col-6 d-flex flex-row justify-content-end btn_pass">
-                    {% if movies_list_length > 1 %}
-                        <button style="color: {{ text_color }}" onclick="goToPreviousMoviePage({{ movies_list }}, {{ movie.id }}, '{{ ordered_selected_value|default:"Date added"  }}', '{{ genre_selected|default:"All" }}')">
-                            <
-                        </button>
-                        <button style="color: {{ text_color }}" onclick="goToNextMoviePage({{ movies_list }}, {{ movie.id }}, '{{ ordered_selected_value|default:"Date added"  }}', '{{ genre_selected|default:"All" }}')">
-                            >
-                        </button>
-                    {% endif %}
-                    <form action="{% url 'delete_movie' %}" method="post">
-                        <button style="color: {{ text_color }}" type="submit" name='id' value={{movie.id}}>
-                            saw it
-                        </button>
-                    </form>
-                </div>
-            </div>
-
-            <div class="row flex-row main_container">
-
-                <div class="col-12 col-md-4 justify-content-center left">
-                    <div class="d-flex justify-content-center">
-                        <img class="img-fluid" id="poster" src="https://image.tmdb.org/t/p/w500{{ movie.poster_path }}" alt="{{ movie.title }} poster"/>
-                    </div>
-                </div>
-
-                <div class="col-12 col-md-8 right">
-                    <div class="row right_container">
-                        <div class="col-12 col-lg-6 infos_container">
-                            <div class="dates">
-                                {% if movie.status != "Released" %}
-                                    <p style="color: red; font-weight: bold">{{ movie.status }}</p>
-                                {% endif %}
-                                {% if movie.status != "Released" %}
-                                    <p>Release date : <span style="font-weight: bold">{{ movie.release_date }}</span></p>
-                                {% endif %}
-                            </div>
-                            <div class="genres">
-                                {% for genre in movie.genre_ids %}
-                                    <p class="genre">{{ genre.name }}</p>
-                                {% endfor %}
-                            </div>
-                            
-                            <p style="line-height: 1.5em"><span style="font-weight: bold; text-decoration: underline;">Synopsis</span> : {{ movie.overview }}</p>
-                            {% if movie.budget %}
-                                <p>Budget : {{ movie.budget }} $ </p>
-                            {% endif %}
-                            <p style="line-height: 1.5em"><span style="font-weight: bold">Casting</span> : {{ movie.actors }}</p>
-                            <p><span style="font-weight: bold">Director</span> : {{ movie.directors }}</p>
-                            <div class="row prods align-items-center justify-content-center p-2 mt-1">
-                                {% for prod in movie.production_companies %}
-                                {% if prod.logo_path %}
-                                    <img style="max-width: 150px" class="img-fluid prod p-1" src="https://image.tmdb.org/t/p/w500{{ prod.logo_path }}" alt="{{ prod.name }} logo"/>
-                                {% endif %}
-                                {% endfor %}
-                            </div>
-                        </div>
-    
-                        <div class="col-12 col-lg-6 links_container">
-                            {% if yts1 %}
-                                <a style="background: {{ background }}; color: {{ text_color  }}" href="{{ yts1 }}" target="_blank">Voir ou download sur YTS</a>
-                                <br/>
-                                <a style="background: {{ background }}; color: {{ text_color  }}" href="{{ yts2 }}" target="_blank">Voir ou download sur YTS 2</a>
-                                <br/>
-                                <a style="background: {{ background }}; color: {{ text_color  }}" href="https://fr.my-subs.net/search.php?key={{ movie.title }}" target="_blank">(Yts subtitle)</a>
-                                <br/>
-                            {% endif %}
-                            <a style="background: {{ background }}; color: {{ text_color  }}" href="https://wi-flix.xyz/?s={{ movie.title }}" target="_blank">Voir sur Wiflix</a>
-                            <br/>
-                            <a style="background: {{ background }}; color: {{ text_color  }}" href="https://filmoflix.to/film/{{ movie.title }}" target="_blank">Voir sur Filmoflix</a>
-                            <br/>
-                            <a style="background: {{ background }}; color: {{ text_color  }}" href="https://www.yavroz.com" target="_blank">Chercher sur yavroz</a>
-                            <br/>
-                            <a style="background: {{ background }}; color: {{ text_color  }}" href="https://www.youtube.com/results?search_query={{ movie.title }}" target="_blank">Bande Annonce</a>
-                            <br/>
-                            <a style="background: {{ background }}; color: {{ text_color  }}" href="https://www.google.com/search?q={{ movie.title }}" target="_blank">Voir sa page Google</a>
-                        </div>
-                    </div>
-
-                </div>
+                <form action="{% url 'delete_movie' %}" method="post"
+                      class="d-flex justify-content-center align-items-center">
+                    <button style="color: {{ text_color }}" type="submit" name='id' value={{ movie.id }}>
+                        saw it
+                    </button>
+                </form>
+                {% if movies_list_length > 1 %}
+                    <button class="fs-1 py-0" style="color: {{ text_color }}"
+                            onclick="goToNextMoviePage({{ movies_list }}, {{ movie.id }}, '{{ ordered_selected_value|default:"Date added" }}', '{{ genre_selected|default:"All" }}')">
+                        >
+                    </button>
+                {% endif %}
             </div>
         </div>
-        <div class="backdrops">
+
+        <div class="row flex-row main_container mt-3">
+
+            <div class="col-12 col-md-4 justify-content-center left mb-3 mb-md-0">
+                <div class="d-flex justify-content-center">
+                    <img class="img-fluid" id="poster" src="https://image.tmdb.org/t/p/w500{{ movie.poster_path }}"
+                         alt="{{ movie.title }} poster"/>
+                </div>
+            </div>
+
+            <div class="col-12 col-md-8 right">
+                <div class="row right_container">
+                    <div class="col-12 col-lg-6 infos_container">
+                        <div class="dates">
+                            {% if movie.status != "Released" %}
+                                <p style="color: red; font-weight: bold">{{ movie.status }}</p>
+                            {% endif %}
+                            {% if movie.status != "Released" %}
+                                <p>Release date : <span style="font-weight: bold">{{ movie.release_date }}</span></p>
+                            {% endif %}
+                        </div>
+                        <div class="genres">
+                            {% for genre in movie.genre_ids %}
+                                <p class="genre">{{ genre.name }}</p>
+                            {% endfor %}
+                        </div>
+
+                        <p style="line-height: 1.5em"><span style="font-weight: bold; text-decoration: underline;">Synopsis</span>
+                            : {{ movie.overview }}</p>
+                        {% if movie.budget %}
+                            <p>Budget : {{ movie.budget }} $ </p>
+                        {% endif %}
+                        <p style="line-height: 1.5em"><span style="font-weight: bold">Casting</span>
+                            : {{ movie.actors }}</p>
+                        <p><span style="font-weight: bold">Director</span> : {{ movie.directors }}</p>
+                        <div class="row prods align-items-center justify-content-center p-2 mt-1">
+                            {% for prod in movie.production_companies %}
+                                {% if prod.logo_path %}
+                                    <img style="max-width: 150px" class="img-fluid prod p-1"
+                                         src="https://image.tmdb.org/t/p/w500{{ prod.logo_path }}"
+                                         alt="{{ prod.name }} logo"/>
+                                {% endif %}
+                            {% endfor %}
+                        </div>
+                    </div>
+
+                    <div class="col-12 col-lg-6 links_container mt-4 mt-lg-0">
+                        <div class="d-flex justify-content-center align-items-center mb-3">
+                            <a
+                                    style="background: {{ background }}; color: {{ text_color }};"
+                                    href="https://www.youtube.com/results?search_query={{ movie.title }}+bande+annonce"
+                                    target="_blank"
+                                    title="Bande-annonce"
+                            >
+                                <i class="fa-brands fa-youtube fa-2x"></i>
+                            </a>
+
+                            <br/>
+
+                            <a
+                                    style="background: {{ background }}; color: {{ text_color }};"
+                                    href="https://www.google.com/search?q={{ movie.title }}"
+                                    target="_blank"
+                                    title="Voir sur Google"
+                            >
+                                <i class="fa-brands fa-google fa-2x"></i>
+                            </a>
+
+                        </div>
+                        <a style="background: {{ background }}; color: {{ text_color }}"
+                           href="https://www.avobiv.com"
+                           target="_blank">Chercher sur avobiv</a>
+                        {% if yts1 %}
+                            <a style="background: {{ background }}; color: {{ text_color }}" href="{{ yts1 }}"
+                               target="_blank">Voir ou download sur YTS</a>
+                            <a style="background: {{ background }}; color: {{ text_color }}" href="{{ yts2 }}"
+                               target="_blank">Voir ou download sur YTS 2</a>
+                            <br/>
+                            <a style="background: {{ background }}; color: {{ text_color }}"
+                               href="https://fr.my-subs.net/search.php?key={{ movie.title }}" target="_blank">(Yts
+                                subtitle)</a>
+                            <a style="background: {{ background }}; color: {{ text_color }}"
+                               href="https://yts-subs.com/search/{{ movie.title }}" target="_blank">(Yts
+                                subtitle)</a>
+                            <br/>
+                        {% endif %}
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+    <div class="backdrops">
         {% for file_path in movie.file_paths.all %}
-            <img src="https://image.tmdb.org/t/p/w500{{ file_path.file_path }}"" alt="Image">
+            <img src="https://image.tmdb.org/t/p/w500{{ file_path.file_path }}" alt="Image">
         {% endfor %}
     </div>
-    </main>
+</main>
 </body>
 </html>
