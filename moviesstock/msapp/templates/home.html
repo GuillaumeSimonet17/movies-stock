@@ -5,16 +5,17 @@
 
 {% block content %}
     {% if user.is_authenticated %}
-
         <div class="container-fluid p-0 page-wrapper">
 
-            <form class="position-absolute top-0 end-0 p-3" action="{% url 'logout' %}" method="post">
-                {% csrf_token %}
-                <button type="submit">EXIT</button>
-            </form>
 
-            <header class="container-fluid">
+            <header class="container-fluid d-flex">
                 {% include "header_template.html" %}
+                <button id="mode-toggle" class="btn fs-1" style="color: {{ text_color }}">🌓</button>
+                <form class="top-0 end-0 p-3 d-flex align-items-center" action="{% url 'logout' %}" method="post">
+                    {% csrf_token %}
+                    <button type="submit" style="background: transparent">EXIT</button>
+
+                </form>
             </header>
 
             <main class="container-fluid">
@@ -22,6 +23,8 @@
                 {% include "movies_list_template.html" %}
             </main>
         </div>
+        <script src="{% static 'msapp/js/light_dark_mode.js' %}"></script>
+
     {% else %}
 
         <a href="{% url 'login' %}" class="login_container">

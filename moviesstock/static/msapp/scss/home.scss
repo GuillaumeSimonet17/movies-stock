@@ -20,17 +20,16 @@ body {
   }
 
   #mode-toggle {
-    margin-left: -48px;
-    margin-top: 10px;
+    z-index: 1000;
   }
 
   &.light-mode {
     background-color: $wall-color;
-    color: #ba1818;
+    color: #370202;
 
     .movie-card {
       background: $wall-color;
-      color: #000;
+      color: #370202;
     }
 
     .genre-slider {
@@ -263,7 +262,3 @@ body {
   }
 }
 
-.genre-title {
-  font-family: 'hollywood', sans-serif;
-  border-bottom: 1px solid $primary-color;
-}
