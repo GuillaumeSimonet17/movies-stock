@@ -8,14 +8,15 @@
         <div class="container-fluid p-0 page-wrapper">
 
 
-            <header class="container-fluid d-flex">
+            <header class="container-fluid d-flex justify-content-between">
                 {% include "header_template.html" %}
-                <button id="mode-toggle" class="btn fs-1" style="color: {{ text_color }}">🌓</button>
-                <form class="top-0 end-0 p-3 d-flex align-items-center" action="{% url 'logout' %}" method="post">
-                    {% csrf_token %}
-                    <button type="submit" style="background: transparent">EXIT</button>
-
-                </form>
+                <div class="d-flex">
+                    <button id="mode-toggle" class="btn fs-1" style="color: {{ text_color }}">🌓</button>
+                    <form class="top-0 end-0 p-3 d-flex align-items-center" action="{% url 'logout' %}" method="post">
+                        {% csrf_token %}
+                        <button type="submit" style="background: transparent">EXIT</button>
+                    </form>
+                </div>
             </header>
 
             <main class="container-fluid">
