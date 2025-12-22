@@ -8,7 +8,6 @@ function goToMoviePage(id, order, genres) {
 
 function goToNextMoviePage(movies_list, id, order, genres) {
      let nextId = -1;
-     console.log(movies_list);
      for (let i = 0; i < movies_list.length; i++) {
           if (movies_list[i] == id) {
                if (i + 1 < movies_list.length) {

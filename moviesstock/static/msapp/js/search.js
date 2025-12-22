@@ -1,41 +1,30 @@
 $(document).ready(function () {
     /* ================= SEARCH ================= */
-   let movieInput = $('#search_input');
+    let movieInput = $('#search_input');
     let tvInput = $('#search_input_tv');
     let results = $('#movies_results');
     let searchContainer = $('.search_container');
 
-    // ESC pour fermer
     $(document).on('keydown', function (event) {
-        if (event.key === 'Escape') {
-            hideSearch();
-        }
+        if (event.key === 'Escape') hideSearch();
     });
 
-    /* ===== MOVIES SEARCH ===== */
     movieInput.on('input', function () {
         let value = movieInput.val().trim();
-        tvInput.val(''); // reset l’autre input
-
+        tvInput.val('');
         if (value.length > 0) {
             searchTMDB('/search_movies/', value, 'movie');
             showSearch();
-        } else {
-            hideSearch();
-        }
+        } else hideSearch();
     });
 
-    /* ===== TV SEARCH ===== */
     tvInput.on('input', function () {
         let value = tvInput.val().trim();
         movieInput.val('');
-
         if (value.length > 0) {
             searchTMDB('/search_tv/', value, 'tv');
             showSearch();
-        } else {
-            hideSearch();
-        }
+        } else hideSearch();
     });
 
     function showSearch() {
@@ -49,62 +38,66 @@ $(document).ready(function () {
         tvInput.val('');
     }
 
-    /* ================= FILTERS (DESKTOP + MOBILE) ================= */
-    function initFilters(toggleGenres, genresList, toggleOrdered, orderedList) {
-        // Toggle genres
+    /* ================= FILTERS ================= */
+    function initFilters(toggleGenres, genresList, toggleOrdered, orderedList, toggleTVorMovie, tvOrMovieList) {
+        // Genres
         toggleGenres.on('click', function (e) {
             e.stopPropagation();
-            orderedList.removeClass('show_ordered_list');
-            orderedList.removeClass('show_ordered_list_mobile');
-            genresList.toggleClass('show_genres_list');
-            genresList.toggleClass('show_genres_list_mobile');
+            orderedList.removeClass('show_ordered_list show_ordered_list_mobile');
+            tvOrMovieList.removeClass('show_tv_or_movie_list show_tv_or_movie_list_mobile');
+            genresList.toggleClass('show_genres_list show_genres_list_mobile');
         });
 
-        // Toggle ordered
+        // Ordered
         toggleOrdered.on('click', function (e) {
             e.stopPropagation();
-            genresList.removeClass('show_genres_list');
-            genresList.removeClass('show_genres_list_mobile');
-            orderedList.toggleClass('show_ordered_list');
-            orderedList.toggleClass('show_ordered_list_mobile');
+            genresList.removeClass('show_genres_list show_genres_list_mobile');
+            tvOrMovieList.removeClass('show_tv_or_movie_list show_tv_or_movie_list_mobile');
+            orderedList.toggleClass('show_ordered_list show_ordered_list_mobile');
         });
 
-        // Empêche la fermeture au clic sur les listes
-        genresList.on('click', function (e) {
+        // TV or Movie
+        toggleTVorMovie.on('click', function (e) {
             e.stopPropagation();
+            genresList.removeClass('show_genres_list show_genres_list_mobile');
+            orderedList.removeClass('show_ordered_list show_ordered_list_mobile');
+            tvOrMovieList.toggleClass('show_tv_or_movie_list show_tv_or_movie_list_mobile');
         });
-        orderedList.on('click', function (e) {
-            e.stopPropagation();
+
+        // Prevent closing when clicking inside lists
+        [genresList, orderedList, tvOrMovieList].forEach(list => {
+            list.on('click', function (e) {
+                e.stopPropagation();
+            });
         });
     }
 
-    // DESKTOP
+    // Desktop filters
     initFilters(
         $('#toggle_genres'),
         $('#genres_list'),
         $('#toggle_ordered'),
-        $('#ordered_list')
+        $('#ordered_list'),
+        $('#toggle_tv_or_movie'),
+        $('#tv_or_movie_list')
     );
 
-    // MOBILE
+    // Mobile filters
     initFilters(
         $('#toggle_genres_mobile'),
         $('#genres_list_mobile'),
         $('#toggle_ordered_mobile'),
-        $('#ordered_list_mobile')
+        $('#ordered_list_mobile'),
+        $('#toggle_tv_or_movie_mobile'),
+        $('#tv_or_movie_list_mobile')
     );
 
-    /* ================= CLIC HORS DROPDOWN ================= */
-    $(document).on('click', function (e) {
-        $('.show_genres_list').removeClass('show_genres_list');
-        $('.show_ordered_list').removeClass('show_ordered_list');
+    // Click outside to close
+    $(document).on('click', function () {
+        $('.show_genres_list, .show_ordered_list, .show_tv_or_movie_list').removeClass('show_genres_list show_ordered_list show_tv_or_movie_list show_genres_list_mobile show_ordered_list_mobile show_tv_or_movie_list_mobile');
     });
 });
 
-/* ================= VALIDATION CLÉ ================= */
-// function isValidKey(key) {
-//     return /^[a-zA-Z0-9]$/.test(key);
-// }
 
 /* ================= AJAX SEARCH ================= */
 function searchTMDB(url, query, type) {

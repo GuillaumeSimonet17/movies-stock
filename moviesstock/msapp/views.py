@@ -68,6 +68,7 @@ def home(request):
 
     genre_selected = request.GET.get('gnr', 'All')
     ordered_selected_value = request.GET.get('ord', 'Date added')
+    tv_or_movie_selected = request.GET.get('tv_or_movie', 'All')
 
     movies_in_list = movies_list.movies.all()
 
@@ -76,6 +77,12 @@ def home(request):
         movies_in_list = movies_in_list.filter(genre_ids__contains=[{'name': genre_selected}])
     if genre_selected == 'No genre':
         movies_in_list = movies_in_list.filter(genre_ids=[])
+
+    if tv_or_movie_selected != 'All':
+        if tv_or_movie_selected == 'Series':
+            movies_in_list = movies_in_list.filter(is_tv=True)
+        else:
+            movies_in_list = movies_in_list.filter(is_tv=False)
 
     # Trier
     order = '-id'
@@ -111,6 +118,7 @@ def home(request):
         'genres': GENRES,
         'orders': ORDERS,
         'genre_selected': genre_selected,
+        'tv_or_movie_selected': tv_or_movie_selected,
         'ordered_selected_value': ordered_selected_value,
     }
     return render(request, 'home.html', context)
@@ -241,6 +249,7 @@ def add_movie(request):
                 production_companies=movie_detailed.get('production_companies') or None,
                 status=movie_detailed.get('status'),
                 dominant_color=dominant_color,
+                is_tv=True if type == 'tv' else False,
             )
             movie.save()
             movies_list.movies.add(movie)

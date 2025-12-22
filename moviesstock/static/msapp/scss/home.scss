@@ -1,4 +1,5 @@
 @import 'movie_card_style';
+@import 'movie_page';
 @import 'search_style';
 @import 'colors';
 @import 'filters';
@@ -26,10 +27,10 @@ body {
   &.light-mode {
     background-color: $wall-color;
 
-    #genres_list, #ordered_list {
+    #genres_list, #ordered_list , #tv_or_movie_list{
       background: $wall-color;
 
-      &.show_genres_list, &.show_ordered_list {
+      &.show_genres_list, &.show_ordered_list,  &.show_tv_or_movie_list {
         background: $wall-color;
       }
 
@@ -70,10 +71,10 @@ body {
     background-color: #121212;
     color: #f6f6f6;
 
-    #genres_list, #ordered_list {
+    #genres_list, #ordered_list, #tv_or_movie_list {
       background: black;
 
-      &.show_genres_list, &.show_ordered_list {
+      &.show_genres_list, &.show_ordered_list,  &.show_tv_or_movie_list {
         background: black;
       }
 

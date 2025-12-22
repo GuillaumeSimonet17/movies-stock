@@ -1,5 +1,6 @@
 @import "colors";
 
+/* ================= DESKTOP ================= */
 .filters_container {
   width: 100%;
   background: transparent;
@@ -9,7 +10,7 @@
   text-align: center;
   height: 60px;
 
-  .filter_genre, .ordered_by {
+  .filter_genre, .ordered_by, .tv_or_movie {
     margin-left: 20px;
     width: 250px;
     border-bottom: 1px solid $primary-color;
@@ -22,8 +23,7 @@
       font-size: 1.2em;
     }
 
-
-    #toggle_genres, #toggle_ordered {
+    #toggle_genres, #toggle_ordered, #toggle_tv_or_movie {
       margin: 0;
       display: flex;
       justify-content: center;
@@ -34,36 +34,84 @@
       font-weight: bold;
     }
 
-    #genres_list, #ordered_list {
-      margin: 0;
+    /* Genres list */
+    #genres_list {
       display: none;
       max-height: 395px;
+      width: 100%;
+      padding: 0;
 
-      &.show_genres_list, &.show_ordered_list {
+      &.show_genres_list {
         display: flex;
         flex-direction: column;
         overflow-y: auto;
         border-top: 2px solid $primary-color;
-
       }
 
-      &.show_genres_list::-webkit-scrollbar, &.show_ordered_list::-webkit-scrollbar {
+      &.show_genres_list::-webkit-scrollbar {
         display: none;
       }
 
+      li {
+        list-style-type: none;
+        a {
+          font-weight: bold;
+          padding: 10px 20px;
+          display: block;
+          text-decoration: none;
+        }
+      }
+    }
+
+    /* Ordered list */
+    #ordered_list {
+      display: none;
+      max-height: 395px;
       width: 100%;
       padding: 0;
 
+      &.show_ordered_list {
+        display: flex;
+        flex-direction: column;
+        overflow-y: auto;
+        border-top: 2px solid $primary-color;
+      }
+
+      &.show_ordered_list::-webkit-scrollbar {
+        display: none;
+      }
+
       li {
         list-style-type: none;
-        transition: 0.15s ease-in-out;
-
-        &:hover {
-          a {
-            transition: 0.2s ease-in-out;
-          }
+        a {
+          font-weight: bold;
+          padding: 10px 20px;
+          display: block;
+          text-decoration: none;
         }
+      }
+    }
 
+    /* TV or Movie list */
+    #tv_or_movie_list {
+      display: none;
+      max-height: 395px;
+      width: 100%;
+      padding: 0;
+
+      &.show_tv_or_movie_list {
+        display: flex;
+        flex-direction: column;
+        overflow-y: auto;
+        border-top: 2px solid $primary-color;
+      }
+
+      &.show_tv_or_movie_list::-webkit-scrollbar {
+        display: none;
+      }
+
+      li {
+        list-style-type: none;
         a {
           font-weight: bold;
           padding: 10px 20px;
@@ -75,7 +123,7 @@
   }
 }
 
-
+/* ================= MOBILE ================= */
 .filters_container_mobile {
   width: 100%;
   background: transparent;
@@ -85,7 +133,7 @@
   justify-content: center;
   text-align: center;
 
-  .filter_genre_mobile, .ordered_by_mobile {
+  .filter_genre_mobile, .ordered_by_mobile, .tv_or_movie_mobile {
     margin-left: 10px;
     width: 100%;
     z-index: 1000;
@@ -96,8 +144,7 @@
       font-size: 1.5em;
     }
 
-
-    #toggle_genres_mobile, #toggle_ordered_mobile {
+    #toggle_genres_mobile, #toggle_ordered_mobile, #toggle_tv_or_movie_mobile {
       margin: 0;
       display: flex;
       justify-content: space-between;
@@ -108,50 +155,92 @@
       font-weight: bold;
     }
 
-    #genres_list_mobile, #ordered_list_mobile {
-      margin: 0;
+    /* Genres list */
+    #genres_list_mobile {
       display: none;
       max-height: 700px;
+      width: 100%;
+      padding: 0;
 
-      &.show_genres_list_mobile, &.show_ordered_list_mobile {
+      &.show_genres_list_mobile {
         display: flex;
         flex-direction: column;
         overflow-y: auto;
         border-top: 2px solid $primary-color;
-
       }
 
-      &.show_genres_list_mobile::-webkit-scrollbar, &.show_ordered_list_mobile::-webkit-scrollbar {
+      &.show_genres_list_mobile::-webkit-scrollbar {
         display: none;
       }
 
-      width: 100%;
-      padding: 0;
-
       li {
         list-style-type: none;
-        transition: 0.15s ease-in-out;
-
-        &:hover {
-          background: #300202;
-
-          a {
-            transition: 0.2s ease-in-out;
-
-            color: #f86565;
-          }
-        }
-
         a {
           font-weight: bold;
           padding: 10px 20px;
           display: block;
           text-decoration: none;
           color: $primary-color;
+        }
+      }
+    }
 
-          &:hover {
-            //background-color: $wall-color;
-          }
+    /* Ordered list */
+    #ordered_list_mobile {
+      display: none;
+      max-height: 700px;
+      width: 100%;
+      padding: 0;
+
+      &.show_ordered_list_mobile {
+        display: flex;
+        flex-direction: column;
+        overflow-y: auto;
+        border-top: 2px solid $primary-color;
+      }
+
+      &.show_ordered_list_mobile::-webkit-scrollbar {
+        display: none;
+      }
+
+      li {
+        list-style-type: none;
+        a {
+          font-weight: bold;
+          padding: 10px 20px;
+          display: block;
+          text-decoration: none;
+          color: $primary-color;
+        }
+      }
+    }
+
+    /* TV or Movie list */
+    #tv_or_movie_list_mobile {
+      display: none;
+      max-height: 700px;
+      width: 100%;
+      padding: 0;
+
+      &.show_tv_or_movie_list_mobile {
+        display: flex;
+        flex-direction: column;
+        overflow-y: auto;
+        border-top: 2px solid $primary-color;
+      }
+
+      &.show_tv_or_movie_list_mobile::-webkit-scrollbar {
+        display: none;
+      }
+
+      li {
+        list-style-type: none;
+        a {
+          font-weight: bold;
+          padding: 10px 20px;
+          display: block;
+          text-decoration: none;
+          color: $primary-color;
         }
       }
     }

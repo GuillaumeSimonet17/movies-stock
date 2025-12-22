@@ -1,111 +1,3 @@
-@font-face {
-  font-family: 'hollywood';
-  src: url("../fonts/HollywoodHills.ttf") format("truetype"); }
-
-.filters_container {
-  width: 100%;
-  background: transparent;
-  margin-bottom: 40px;
-  display: flex;
-  justify-content: center;
-  text-align: center;
-  height: 60px; }
-  .filters_container .filter_genre, .filters_container .ordered_by {
-    margin-left: 20px;
-    width: 250px;
-    border-bottom: 1px solid #ba1818;
-    z-index: 1000;
-    font-size: 1.2em;
-    padding: 10px; }
-    .filters_container .filter_genre .chevron, .filters_container .ordered_by .chevron {
-      margin-left: auto;
-      font-size: 1.2em; }
-    .filters_container .filter_genre #toggle_genres, .filters_container .filter_genre #toggle_ordered, .filters_container .ordered_by #toggle_genres, .filters_container .ordered_by #toggle_ordered {
-      margin: 0;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 50px;
-      cursor: pointer;
-      width: 250px;
-      font-weight: bold; }
-    .filters_container .filter_genre #genres_list, .filters_container .filter_genre #ordered_list, .filters_container .ordered_by #genres_list, .filters_container .ordered_by #ordered_list {
-      margin: 0;
-      display: none;
-      max-height: 395px;
-      width: 100%;
-      padding: 0; }
-      .filters_container .filter_genre #genres_list.show_genres_list, .filters_container .filter_genre #genres_list.show_ordered_list, .filters_container .filter_genre #ordered_list.show_genres_list, .filters_container .filter_genre #ordered_list.show_ordered_list, .filters_container .ordered_by #genres_list.show_genres_list, .filters_container .ordered_by #genres_list.show_ordered_list, .filters_container .ordered_by #ordered_list.show_genres_list, .filters_container .ordered_by #ordered_list.show_ordered_list {
-        display: flex;
-        flex-direction: column;
-        overflow-y: auto;
-        border-top: 2px solid #ba1818; }
-      .filters_container .filter_genre #genres_list.show_genres_list::-webkit-scrollbar, .filters_container .filter_genre #genres_list.show_ordered_list::-webkit-scrollbar, .filters_container .filter_genre #ordered_list.show_genres_list::-webkit-scrollbar, .filters_container .filter_genre #ordered_list.show_ordered_list::-webkit-scrollbar, .filters_container .ordered_by #genres_list.show_genres_list::-webkit-scrollbar, .filters_container .ordered_by #genres_list.show_ordered_list::-webkit-scrollbar, .filters_container .ordered_by #ordered_list.show_genres_list::-webkit-scrollbar, .filters_container .ordered_by #ordered_list.show_ordered_list::-webkit-scrollbar {
-        display: none; }
-      .filters_container .filter_genre #genres_list li, .filters_container .filter_genre #ordered_list li, .filters_container .ordered_by #genres_list li, .filters_container .ordered_by #ordered_list li {
-        list-style-type: none;
-        transition: 0.15s ease-in-out; }
-        .filters_container .filter_genre #genres_list li:hover a, .filters_container .filter_genre #ordered_list li:hover a, .filters_container .ordered_by #genres_list li:hover a, .filters_container .ordered_by #ordered_list li:hover a {
-          transition: 0.2s ease-in-out; }
-        .filters_container .filter_genre #genres_list li a, .filters_container .filter_genre #ordered_list li a, .filters_container .ordered_by #genres_list li a, .filters_container .ordered_by #ordered_list li a {
-          font-weight: bold;
-          padding: 10px 20px;
-          display: block;
-          text-decoration: none; }
-
-.filters_container_mobile {
-  width: 100%;
-  background: transparent;
-  margin-bottom: 40px;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  text-align: center; }
-  .filters_container_mobile .filter_genre_mobile, .filters_container_mobile .ordered_by_mobile {
-    margin-left: 10px;
-    width: 100%;
-    z-index: 1000;
-    font-size: 3em; }
-    .filters_container_mobile .filter_genre_mobile .chevron_mobile, .filters_container_mobile .ordered_by_mobile .chevron_mobile {
-      margin-left: auto;
-      font-size: 1.5em; }
-    .filters_container_mobile .filter_genre_mobile #toggle_genres_mobile, .filters_container_mobile .filter_genre_mobile #toggle_ordered_mobile, .filters_container_mobile .ordered_by_mobile #toggle_genres_mobile, .filters_container_mobile .ordered_by_mobile #toggle_ordered_mobile {
-      margin: 0;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      height: 130px;
-      cursor: pointer;
-      width: 100%;
-      font-weight: bold; }
-    .filters_container_mobile .filter_genre_mobile #genres_list_mobile, .filters_container_mobile .filter_genre_mobile #ordered_list_mobile, .filters_container_mobile .ordered_by_mobile #genres_list_mobile, .filters_container_mobile .ordered_by_mobile #ordered_list_mobile {
-      margin: 0;
-      display: none;
-      max-height: 700px;
-      width: 100%;
-      padding: 0; }
-      .filters_container_mobile .filter_genre_mobile #genres_list_mobile.show_genres_list_mobile, .filters_container_mobile .filter_genre_mobile #genres_list_mobile.show_ordered_list_mobile, .filters_container_mobile .filter_genre_mobile #ordered_list_mobile.show_genres_list_mobile, .filters_container_mobile .filter_genre_mobile #ordered_list_mobile.show_ordered_list_mobile, .filters_container_mobile .ordered_by_mobile #genres_list_mobile.show_genres_list_mobile, .filters_container_mobile .ordered_by_mobile #genres_list_mobile.show_ordered_list_mobile, .filters_container_mobile .ordered_by_mobile #ordered_list_mobile.show_genres_list_mobile, .filters_container_mobile .ordered_by_mobile #ordered_list_mobile.show_ordered_list_mobile {
-        display: flex;
-        flex-direction: column;
-        overflow-y: auto;
-        border-top: 2px solid #ba1818; }
-      .filters_container_mobile .filter_genre_mobile #genres_list_mobile.show_genres_list_mobile::-webkit-scrollbar, .filters_container_mobile .filter_genre_mobile #genres_list_mobile.show_ordered_list_mobile::-webkit-scrollbar, .filters_container_mobile .filter_genre_mobile #ordered_list_mobile.show_genres_list_mobile::-webkit-scrollbar, .filters_container_mobile .filter_genre_mobile #ordered_list_mobile.show_ordered_list_mobile::-webkit-scrollbar, .filters_container_mobile .ordered_by_mobile #genres_list_mobile.show_genres_list_mobile::-webkit-scrollbar, .filters_container_mobile .ordered_by_mobile #genres_list_mobile.show_ordered_list_mobile::-webkit-scrollbar, .filters_container_mobile .ordered_by_mobile #ordered_list_mobile.show_genres_list_mobile::-webkit-scrollbar, .filters_container_mobile .ordered_by_mobile #ordered_list_mobile.show_ordered_list_mobile::-webkit-scrollbar {
-        display: none; }
-      .filters_container_mobile .filter_genre_mobile #genres_list_mobile li, .filters_container_mobile .filter_genre_mobile #ordered_list_mobile li, .filters_container_mobile .ordered_by_mobile #genres_list_mobile li, .filters_container_mobile .ordered_by_mobile #ordered_list_mobile li {
-        list-style-type: none;
-        transition: 0.15s ease-in-out; }
-        .filters_container_mobile .filter_genre_mobile #genres_list_mobile li:hover, .filters_container_mobile .filter_genre_mobile #ordered_list_mobile li:hover, .filters_container_mobile .ordered_by_mobile #genres_list_mobile li:hover, .filters_container_mobile .ordered_by_mobile #ordered_list_mobile li:hover {
-          background: #300202; }
-          .filters_container_mobile .filter_genre_mobile #genres_list_mobile li:hover a, .filters_container_mobile .filter_genre_mobile #ordered_list_mobile li:hover a, .filters_container_mobile .ordered_by_mobile #genres_list_mobile li:hover a, .filters_container_mobile .ordered_by_mobile #ordered_list_mobile li:hover a {
-            transition: 0.2s ease-in-out;
-            color: #f86565; }
-        .filters_container_mobile .filter_genre_mobile #genres_list_mobile li a, .filters_container_mobile .filter_genre_mobile #ordered_list_mobile li a, .filters_container_mobile .ordered_by_mobile #genres_list_mobile li a, .filters_container_mobile .ordered_by_mobile #ordered_list_mobile li a {
-          font-weight: bold;
-          padding: 10px 20px;
-          display: block;
-          text-decoration: none;
-          color: #ba1818; }
-
 .movies_list {
   row-gap: 20px;
   column-gap: 20px; }
@@ -238,7 +130,7 @@
   flex-direction: column;
   align-items: center;
   z-index: 3000; }
-  .search_container #search_input , #search_input_tv {
+  .search_container #search_input, .search_container #search_input_tv {
     background: none;
     padding: 7px 20px;
     outline: none;
@@ -250,6 +142,193 @@
       .search_container #movies_results #res_container:hover {
         transition: 0.2s ease-in-out;
         font-weight: bold; }
+
+@font-face {
+  font-family: 'hollywood';
+  src: url("../fonts/HollywoodHills.ttf") format("truetype"); }
+
+@font-face {
+  font-family: 'hollywood';
+  src: url("../fonts/HollywoodHills.ttf") format("truetype"); }
+
+/* ================= DESKTOP ================= */
+.filters_container {
+  width: 100%;
+  background: transparent;
+  margin-bottom: 40px;
+  display: flex;
+  justify-content: center;
+  text-align: center;
+  height: 60px; }
+  .filters_container .filter_genre, .filters_container .ordered_by, .filters_container .tv_or_movie {
+    margin-left: 20px;
+    width: 250px;
+    border-bottom: 1px solid #ba1818;
+    z-index: 1000;
+    font-size: 1.2em;
+    padding: 10px;
+    /* Genres list */
+    /* Ordered list */
+    /* TV or Movie list */ }
+    .filters_container .filter_genre .chevron, .filters_container .ordered_by .chevron, .filters_container .tv_or_movie .chevron {
+      margin-left: auto;
+      font-size: 1.2em; }
+    .filters_container .filter_genre #toggle_genres, .filters_container .filter_genre #toggle_ordered, .filters_container .filter_genre #toggle_tv_or_movie, .filters_container .ordered_by #toggle_genres, .filters_container .ordered_by #toggle_ordered, .filters_container .ordered_by #toggle_tv_or_movie, .filters_container .tv_or_movie #toggle_genres, .filters_container .tv_or_movie #toggle_ordered, .filters_container .tv_or_movie #toggle_tv_or_movie {
+      margin: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 50px;
+      cursor: pointer;
+      width: 250px;
+      font-weight: bold; }
+    .filters_container .filter_genre #genres_list, .filters_container .ordered_by #genres_list, .filters_container .tv_or_movie #genres_list {
+      display: none;
+      max-height: 395px;
+      width: 100%;
+      padding: 0; }
+      .filters_container .filter_genre #genres_list.show_genres_list, .filters_container .ordered_by #genres_list.show_genres_list, .filters_container .tv_or_movie #genres_list.show_genres_list {
+        display: flex;
+        flex-direction: column;
+        overflow-y: auto;
+        border-top: 2px solid #ba1818; }
+      .filters_container .filter_genre #genres_list.show_genres_list::-webkit-scrollbar, .filters_container .ordered_by #genres_list.show_genres_list::-webkit-scrollbar, .filters_container .tv_or_movie #genres_list.show_genres_list::-webkit-scrollbar {
+        display: none; }
+      .filters_container .filter_genre #genres_list li, .filters_container .ordered_by #genres_list li, .filters_container .tv_or_movie #genres_list li {
+        list-style-type: none; }
+        .filters_container .filter_genre #genres_list li a, .filters_container .ordered_by #genres_list li a, .filters_container .tv_or_movie #genres_list li a {
+          font-weight: bold;
+          padding: 10px 20px;
+          display: block;
+          text-decoration: none; }
+    .filters_container .filter_genre #ordered_list, .filters_container .ordered_by #ordered_list, .filters_container .tv_or_movie #ordered_list {
+      display: none;
+      max-height: 395px;
+      width: 100%;
+      padding: 0; }
+      .filters_container .filter_genre #ordered_list.show_ordered_list, .filters_container .ordered_by #ordered_list.show_ordered_list, .filters_container .tv_or_movie #ordered_list.show_ordered_list {
+        display: flex;
+        flex-direction: column;
+        overflow-y: auto;
+        border-top: 2px solid #ba1818; }
+      .filters_container .filter_genre #ordered_list.show_ordered_list::-webkit-scrollbar, .filters_container .ordered_by #ordered_list.show_ordered_list::-webkit-scrollbar, .filters_container .tv_or_movie #ordered_list.show_ordered_list::-webkit-scrollbar {
+        display: none; }
+      .filters_container .filter_genre #ordered_list li, .filters_container .ordered_by #ordered_list li, .filters_container .tv_or_movie #ordered_list li {
+        list-style-type: none; }
+        .filters_container .filter_genre #ordered_list li a, .filters_container .ordered_by #ordered_list li a, .filters_container .tv_or_movie #ordered_list li a {
+          font-weight: bold;
+          padding: 10px 20px;
+          display: block;
+          text-decoration: none; }
+    .filters_container .filter_genre #tv_or_movie_list, .filters_container .ordered_by #tv_or_movie_list, .filters_container .tv_or_movie #tv_or_movie_list {
+      display: none;
+      max-height: 395px;
+      width: 100%;
+      padding: 0; }
+      .filters_container .filter_genre #tv_or_movie_list.show_tv_or_movie_list, .filters_container .ordered_by #tv_or_movie_list.show_tv_or_movie_list, .filters_container .tv_or_movie #tv_or_movie_list.show_tv_or_movie_list {
+        display: flex;
+        flex-direction: column;
+        overflow-y: auto;
+        border-top: 2px solid #ba1818; }
+      .filters_container .filter_genre #tv_or_movie_list.show_tv_or_movie_list::-webkit-scrollbar, .filters_container .ordered_by #tv_or_movie_list.show_tv_or_movie_list::-webkit-scrollbar, .filters_container .tv_or_movie #tv_or_movie_list.show_tv_or_movie_list::-webkit-scrollbar {
+        display: none; }
+      .filters_container .filter_genre #tv_or_movie_list li, .filters_container .ordered_by #tv_or_movie_list li, .filters_container .tv_or_movie #tv_or_movie_list li {
+        list-style-type: none; }
+        .filters_container .filter_genre #tv_or_movie_list li a, .filters_container .ordered_by #tv_or_movie_list li a, .filters_container .tv_or_movie #tv_or_movie_list li a {
+          font-weight: bold;
+          padding: 10px 20px;
+          display: block;
+          text-decoration: none; }
+
+/* ================= MOBILE ================= */
+.filters_container_mobile {
+  width: 100%;
+  background: transparent;
+  margin-bottom: 40px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  text-align: center; }
+  .filters_container_mobile .filter_genre_mobile, .filters_container_mobile .ordered_by_mobile, .filters_container_mobile .tv_or_movie_mobile {
+    margin-left: 10px;
+    width: 100%;
+    z-index: 1000;
+    font-size: 3em;
+    /* Genres list */
+    /* Ordered list */
+    /* TV or Movie list */ }
+    .filters_container_mobile .filter_genre_mobile .chevron_mobile, .filters_container_mobile .ordered_by_mobile .chevron_mobile, .filters_container_mobile .tv_or_movie_mobile .chevron_mobile {
+      margin-left: auto;
+      font-size: 1.5em; }
+    .filters_container_mobile .filter_genre_mobile #toggle_genres_mobile, .filters_container_mobile .filter_genre_mobile #toggle_ordered_mobile, .filters_container_mobile .filter_genre_mobile #toggle_tv_or_movie_mobile, .filters_container_mobile .ordered_by_mobile #toggle_genres_mobile, .filters_container_mobile .ordered_by_mobile #toggle_ordered_mobile, .filters_container_mobile .ordered_by_mobile #toggle_tv_or_movie_mobile, .filters_container_mobile .tv_or_movie_mobile #toggle_genres_mobile, .filters_container_mobile .tv_or_movie_mobile #toggle_ordered_mobile, .filters_container_mobile .tv_or_movie_mobile #toggle_tv_or_movie_mobile {
+      margin: 0;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      height: 130px;
+      cursor: pointer;
+      width: 100%;
+      font-weight: bold; }
+    .filters_container_mobile .filter_genre_mobile #genres_list_mobile, .filters_container_mobile .ordered_by_mobile #genres_list_mobile, .filters_container_mobile .tv_or_movie_mobile #genres_list_mobile {
+      display: none;
+      max-height: 700px;
+      width: 100%;
+      padding: 0; }
+      .filters_container_mobile .filter_genre_mobile #genres_list_mobile.show_genres_list_mobile, .filters_container_mobile .ordered_by_mobile #genres_list_mobile.show_genres_list_mobile, .filters_container_mobile .tv_or_movie_mobile #genres_list_mobile.show_genres_list_mobile {
+        display: flex;
+        flex-direction: column;
+        overflow-y: auto;
+        border-top: 2px solid #ba1818; }
+      .filters_container_mobile .filter_genre_mobile #genres_list_mobile.show_genres_list_mobile::-webkit-scrollbar, .filters_container_mobile .ordered_by_mobile #genres_list_mobile.show_genres_list_mobile::-webkit-scrollbar, .filters_container_mobile .tv_or_movie_mobile #genres_list_mobile.show_genres_list_mobile::-webkit-scrollbar {
+        display: none; }
+      .filters_container_mobile .filter_genre_mobile #genres_list_mobile li, .filters_container_mobile .ordered_by_mobile #genres_list_mobile li, .filters_container_mobile .tv_or_movie_mobile #genres_list_mobile li {
+        list-style-type: none; }
+        .filters_container_mobile .filter_genre_mobile #genres_list_mobile li a, .filters_container_mobile .ordered_by_mobile #genres_list_mobile li a, .filters_container_mobile .tv_or_movie_mobile #genres_list_mobile li a {
+          font-weight: bold;
+          padding: 10px 20px;
+          display: block;
+          text-decoration: none;
+          color: #ba1818; }
+    .filters_container_mobile .filter_genre_mobile #ordered_list_mobile, .filters_container_mobile .ordered_by_mobile #ordered_list_mobile, .filters_container_mobile .tv_or_movie_mobile #ordered_list_mobile {
+      display: none;
+      max-height: 700px;
+      width: 100%;
+      padding: 0; }
+      .filters_container_mobile .filter_genre_mobile #ordered_list_mobile.show_ordered_list_mobile, .filters_container_mobile .ordered_by_mobile #ordered_list_mobile.show_ordered_list_mobile, .filters_container_mobile .tv_or_movie_mobile #ordered_list_mobile.show_ordered_list_mobile {
+        display: flex;
+        flex-direction: column;
+        overflow-y: auto;
+        border-top: 2px solid #ba1818; }
+      .filters_container_mobile .filter_genre_mobile #ordered_list_mobile.show_ordered_list_mobile::-webkit-scrollbar, .filters_container_mobile .ordered_by_mobile #ordered_list_mobile.show_ordered_list_mobile::-webkit-scrollbar, .filters_container_mobile .tv_or_movie_mobile #ordered_list_mobile.show_ordered_list_mobile::-webkit-scrollbar {
+        display: none; }
+      .filters_container_mobile .filter_genre_mobile #ordered_list_mobile li, .filters_container_mobile .ordered_by_mobile #ordered_list_mobile li, .filters_container_mobile .tv_or_movie_mobile #ordered_list_mobile li {
+        list-style-type: none; }
+        .filters_container_mobile .filter_genre_mobile #ordered_list_mobile li a, .filters_container_mobile .ordered_by_mobile #ordered_list_mobile li a, .filters_container_mobile .tv_or_movie_mobile #ordered_list_mobile li a {
+          font-weight: bold;
+          padding: 10px 20px;
+          display: block;
+          text-decoration: none;
+          color: #ba1818; }
+    .filters_container_mobile .filter_genre_mobile #tv_or_movie_list_mobile, .filters_container_mobile .ordered_by_mobile #tv_or_movie_list_mobile, .filters_container_mobile .tv_or_movie_mobile #tv_or_movie_list_mobile {
+      display: none;
+      max-height: 700px;
+      width: 100%;
+      padding: 0; }
+      .filters_container_mobile .filter_genre_mobile #tv_or_movie_list_mobile.show_tv_or_movie_list_mobile, .filters_container_mobile .ordered_by_mobile #tv_or_movie_list_mobile.show_tv_or_movie_list_mobile, .filters_container_mobile .tv_or_movie_mobile #tv_or_movie_list_mobile.show_tv_or_movie_list_mobile {
+        display: flex;
+        flex-direction: column;
+        overflow-y: auto;
+        border-top: 2px solid #ba1818; }
+      .filters_container_mobile .filter_genre_mobile #tv_or_movie_list_mobile.show_tv_or_movie_list_mobile::-webkit-scrollbar, .filters_container_mobile .ordered_by_mobile #tv_or_movie_list_mobile.show_tv_or_movie_list_mobile::-webkit-scrollbar, .filters_container_mobile .tv_or_movie_mobile #tv_or_movie_list_mobile.show_tv_or_movie_list_mobile::-webkit-scrollbar {
+        display: none; }
+      .filters_container_mobile .filter_genre_mobile #tv_or_movie_list_mobile li, .filters_container_mobile .ordered_by_mobile #tv_or_movie_list_mobile li, .filters_container_mobile .tv_or_movie_mobile #tv_or_movie_list_mobile li {
+        list-style-type: none; }
+        .filters_container_mobile .filter_genre_mobile #tv_or_movie_list_mobile li a, .filters_container_mobile .ordered_by_mobile #tv_or_movie_list_mobile li a, .filters_container_mobile .tv_or_movie_mobile #tv_or_movie_list_mobile li a {
+          font-weight: bold;
+          padding: 10px 20px;
+          display: block;
+          text-decoration: none;
+          color: #ba1818; }
 
 button {
   cursor: pointer;
@@ -275,15 +354,15 @@ body {
     z-index: 1000; }
   body.light-mode {
     background-color: #F6F6F6; }
-    body.light-mode #genres_list, body.light-mode #ordered_list {
+    body.light-mode #genres_list, body.light-mode #ordered_list, body.light-mode #tv_or_movie_list {
       background: #F6F6F6; }
-      body.light-mode #genres_list.show_genres_list, body.light-mode #genres_list.show_ordered_list, body.light-mode #ordered_list.show_genres_list, body.light-mode #ordered_list.show_ordered_list {
+      body.light-mode #genres_list.show_genres_list, body.light-mode #genres_list.show_ordered_list, body.light-mode #genres_list.show_tv_or_movie_list, body.light-mode #ordered_list.show_genres_list, body.light-mode #ordered_list.show_ordered_list, body.light-mode #ordered_list.show_tv_or_movie_list, body.light-mode #tv_or_movie_list.show_genres_list, body.light-mode #tv_or_movie_list.show_ordered_list, body.light-mode #tv_or_movie_list.show_tv_or_movie_list {
         background: #F6F6F6; }
-      body.light-mode #genres_list li:hover, body.light-mode #ordered_list li:hover {
+      body.light-mode #genres_list li:hover, body.light-mode #ordered_list li:hover, body.light-mode #tv_or_movie_list li:hover {
         background: white; }
-        body.light-mode #genres_list li:hover a, body.light-mode #ordered_list li:hover a {
+        body.light-mode #genres_list li:hover a, body.light-mode #ordered_list li:hover a, body.light-mode #tv_or_movie_list li:hover a {
           color: #f86565; }
-      body.light-mode #genres_list li a, body.light-mode #ordered_list li a {
+      body.light-mode #genres_list li a, body.light-mode #ordered_list li a, body.light-mode #tv_or_movie_list li a {
         color: #ba1818; }
     body.light-mode #movies_results {
       background: white; }
@@ -297,15 +376,15 @@ body {
   body.dark-mode {
     background-color: #121212;
     color: #f6f6f6; }
-    body.dark-mode #genres_list, body.dark-mode #ordered_list {
+    body.dark-mode #genres_list, body.dark-mode #ordered_list, body.dark-mode #tv_or_movie_list {
       background: black; }
-      body.dark-mode #genres_list.show_genres_list, body.dark-mode #genres_list.show_ordered_list, body.dark-mode #ordered_list.show_genres_list, body.dark-mode #ordered_list.show_ordered_list {
+      body.dark-mode #genres_list.show_genres_list, body.dark-mode #genres_list.show_ordered_list, body.dark-mode #genres_list.show_tv_or_movie_list, body.dark-mode #ordered_list.show_genres_list, body.dark-mode #ordered_list.show_ordered_list, body.dark-mode #ordered_list.show_tv_or_movie_list, body.dark-mode #tv_or_movie_list.show_genres_list, body.dark-mode #tv_or_movie_list.show_ordered_list, body.dark-mode #tv_or_movie_list.show_tv_or_movie_list {
         background: black; }
-      body.dark-mode #genres_list li:hover, body.dark-mode #ordered_list li:hover {
+      body.dark-mode #genres_list li:hover, body.dark-mode #ordered_list li:hover, body.dark-mode #tv_or_movie_list li:hover {
         background: #300202; }
-        body.dark-mode #genres_list li:hover a, body.dark-mode #ordered_list li:hover a {
+        body.dark-mode #genres_list li:hover a, body.dark-mode #ordered_list li:hover a, body.dark-mode #tv_or_movie_list li:hover a {
           color: #f86565; }
-      body.dark-mode #genres_list li a, body.dark-mode #ordered_list li a {
+      body.dark-mode #genres_list li a, body.dark-mode #ordered_list li a, body.dark-mode #tv_or_movie_list li a {
         color: #ba1818; }
     body.dark-mode #movies_results {
       background: #1e1e1e; }
