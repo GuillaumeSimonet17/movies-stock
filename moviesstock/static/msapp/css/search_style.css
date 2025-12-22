@@ -1,0 +1,22 @@
+@font-face {
+  font-family: 'hollywood';
+  src: url("../fonts/HollywoodHills.ttf") format("truetype"); }
+
+.search_container {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  z-index: 3000; }
+  .search_container #search_input {
+    background: none;
+    padding: 7px 20px;
+    outline: none;
+    color: #ba1818; }
+  .search_container #movies_results {
+    margin-top: 30px; }
+    .search_container #movies_results #res_container {
+      cursor: pointer; }
+      .search_container #movies_results #res_container:hover {
+        transition: 0.2s ease-in-out;
+        font-weight: bold; }

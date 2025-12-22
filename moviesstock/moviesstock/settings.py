@@ -19,8 +19,8 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'msapp',
-    'django_sass',
-    'sass_processor',
+#    'django_sass',
+#    'sass_processor',
     'accounts',
     'bootstrap5',
 ]
