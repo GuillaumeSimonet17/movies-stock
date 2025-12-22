@@ -1,32 +1,53 @@
-
-
 $(document).ready(function () {
     /* ================= SEARCH ================= */
-    let movieSearchInput = $('#search_input');
-    let moviesRes = $('#movies_results');
+   let movieInput = $('#search_input');
+    let tvInput = $('#search_input_tv');
+    let results = $('#movies_results');
     let searchContainer = $('.search_container');
 
-    // Keydown global
+    // ESC pour fermer
     $(document).on('keydown', function (event) {
         if (event.key === 'Escape') {
-            show_or_hide_search(movieSearchInput, searchContainer, moviesRes, 0);
-        }
-        if (isValidKey(event.key)) {
-            movieSearchInput.focus();
-            show_or_hide_search(movieSearchInput, searchContainer, moviesRes, 1);
+            hideSearch();
         }
     });
 
-    // Input search
-    movieSearchInput.on('input', function () {
-        if (movieSearchInput.val().length > 0) {
-            searchMovies(movieSearchInput.val());
-            show_or_hide_search(movieSearchInput, searchContainer, moviesRes, 1);
+    /* ===== MOVIES SEARCH ===== */
+    movieInput.on('input', function () {
+        let value = movieInput.val().trim();
+        tvInput.val(''); // reset l’autre input
+
+        if (value.length > 0) {
+            searchTMDB('/search_movies/', value, 'movie');
+            showSearch();
         } else {
-            moviesRes.empty();
-            show_or_hide_search(movieSearchInput, searchContainer, moviesRes, 0);
+            hideSearch();
         }
     });
+
+    /* ===== TV SEARCH ===== */
+    tvInput.on('input', function () {
+        let value = tvInput.val().trim();
+        movieInput.val('');
+
+        if (value.length > 0) {
+            searchTMDB('/search_tv/', value, 'tv');
+            showSearch();
+        } else {
+            hideSearch();
+        }
+    });
+
+    function showSearch() {
+        searchContainer.css('opacity', '1');
+        results.css('display', 'flex');
+    }
+
+    function hideSearch() {
+        results.empty().hide();
+        movieInput.val('');
+        tvInput.val('');
+    }
 
     /* ================= FILTERS (DESKTOP + MOBILE) ================= */
     function initFilters(toggleGenres, genresList, toggleOrdered, orderedList) {
@@ -81,69 +102,67 @@ $(document).ready(function () {
 });
 
 /* ================= VALIDATION CLÉ ================= */
-function isValidKey(key) {
-    return /^[a-zA-Z0-9]$/.test(key);
-}
+// function isValidKey(key) {
+//     return /^[a-zA-Z0-9]$/.test(key);
+// }
 
 /* ================= AJAX SEARCH ================= */
-function searchMovies(query) {
+function searchTMDB(url, query, type) {
     $.ajax({
-        url: '/search_movies/',
+        url: url,
         method: 'GET',
-        data: {query: query},
+        data: { query: query },
         success: function (response) {
-            displayMovies(response.results);
+            displayResults(response.results, type);
         },
-        error: function (xhr, status, error) {
-            console.error('Error fetching movies:', error);
+        error: function (err) {
+            console.error('Search error:', err);
         }
     });
 }
 
-function displayMovies(movies) {
-    let resultsContainer = $('#movies_results');
-    resultsContainer.empty();
 
-    let limitedMovies = movies.slice(0, 6);
+function displayResults(items, type) {
+    let container = $('#movies_results');
+    container.empty();
 
-    limitedMovies.forEach(function (movie) {
-        if (!movie.poster_path) return;
+    items.slice(0, 6).forEach(item => {
+        if (!item.poster_path) return;
 
-        let imageUrl = 'https://image.tmdb.org/t/p/w500' + movie.poster_path;
-        let movieElement = $('<div>', {class: 'col-6 col-lg-2 mt-3', id: 'res_container'});
+        let title = type === 'tv' ? item.name : item.title;
+        let imageUrl = 'https://image.tmdb.org/t/p/w500' + item.poster_path;
 
-        movieElement.html(`
-            <img class="img-fluid" src="${imageUrl}" alt="${movie.title}">
-            <p class="text-truncate p-2 mt-3 fs-5">${movie.title}</p>
+        let el = $(`
+            <div class="col-6 col-lg-2 mt-3 result-card" style="cursor:pointer;">
+                <img class="img-fluid" src="${imageUrl}">
+                <p class="text-truncate p-2 mt-3 fs-5">${title}</p>
+            </div>
         `);
 
-        movieElement.on('click', function () {
-            $.ajax({
-                url: '/add_movie/',
-                method: 'POST',
-                data: {id: movie.id},
-                success: function (response) {
-                    console.log('Réponse du serveur :', response);
-                    resultsContainer.empty();
-                    window.location.href = '/';
-                    get_images(response.movie_id);
-                },
-                error: function (xhr, status, error) {
-                    console.error('Erreur lors de la requête :', error);
-                }
+        el.on('click', function () {
+            $.post('/add_movie/', {
+                id: item.id,
+                type: type
+            }).done(function (response) {
+                get_images(response.movie_id, type);
+
+                container.empty();
+                window.location.href = '/';
+            }).fail(function (xhr) {
+                console.error('Erreur add_movie', xhr.responseText);
             });
         });
 
-        resultsContainer.append(movieElement);
+        container.append(el);
     });
 }
 
 /* ================= AJAX GET IMAGES ================= */
-function get_images(movieId) {
+function get_images(movieId, type) {
     $.ajax({
         url: '/get_images/',
         method: 'GET',
-        data: {movie_id: movieId},
+        data: {movie_id: movieId, type: type},
         success: function (response) {
             console.log('Réponse du serveur :', response.message);
         },

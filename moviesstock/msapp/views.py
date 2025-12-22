@@ -51,6 +51,7 @@ GENRES = [
     'Thriller',
     'War',
     'Western',
+    'No genre',
 ]
 ORDERS = [
     'Year Asc',
@@ -71,8 +72,10 @@ def home(request):
     movies_in_list = movies_list.movies.all()
 
     # Filtrer par genre si nécessaire
-    if genre_selected != 'All':
+    if genre_selected != 'All' and genre_selected != 'No genre':
         movies_in_list = movies_in_list.filter(genre_ids__contains=[{'name': genre_selected}])
+    if genre_selected == 'No genre':
+        movies_in_list = movies_in_list.filter(genre_ids=[])
 
     # Trier
     order = '-id'
@@ -82,12 +85,24 @@ def home(request):
         order = '-release_date'
     movies_in_list = movies_in_list.order_by(order)
 
-    # Construire un dictionnaire par genre
     movies_by_genre = {}
+
     for genre in GENRES:
         if genre == 'All':
             continue
-        genre_movies = [movie for movie in movies_in_list if any(g['name'] == genre for g in (movie.genre_ids or []))]
+
+        if genre == 'No genre':
+            genre_movies = [
+                movie for movie in movies_in_list
+                if not movie.genre_ids
+            ]
+        else:
+            genre_movies = [
+                movie for movie in movies_in_list
+                if isinstance(movie.genre_ids, list)
+                   and any(g.get('name') == genre for g in movie.genre_ids)
+            ]
+
         if genre_movies:
             movies_by_genre[genre] = genre_movies
 
@@ -120,11 +135,29 @@ def search_movies(request):
                 print(f"Error fetching data from TMDb API: {e}")
     return JsonResponse({"results": []})
 
+@login_required
+def search_tv(request):
+    query = request.GET.get('query')
+    if not query:
+        return JsonResponse({"results": []})
+
+    url = f'{URL_TMDB}search/tv?query={query}'
+    headers = {
+        'accept': 'application/json',
+        "Authorization": "Bearer " + API_KEY_TMDB,
+    }
+
+    response = requests.get(url, headers=headers)
+    return JsonResponse(response.json())
 
 @login_required
 def get_images_and_links(request):
     movie = Movie.objects.get(pk=request.GET.get('movie_id'))
-    url = f'{URL_TMDB}movie/{movie.movie_id}/images'
+    type = request.GET.get('type')
+    if type == 'tv':
+        url = f'{URL_TMDB}tv/{movie.movie_id}/images'
+    else:
+        url = f'{URL_TMDB}movie/{movie.movie_id}/images'
     headers = {
         'accept': 'application/json',
         "Authorization": "Bearer " + API_KEY_TMDB,
@@ -142,6 +175,7 @@ def get_images_and_links(request):
         for file_path in all_file_paths:
             FilePath.objects.create(movie=movie, file_path=file_path)
 
+        synopsis_translate = None
         if movie.overview:
             translator = deepl.Translator(API_KEY_DEEPL)
             synopsis_translate = translator.translate_text(movie.overview, target_lang="FR")
@@ -175,8 +209,13 @@ def search_detailed_movies(url):
 def add_movie(request):
     if request.method == 'POST':
         movie_id = request.POST.get('id')
-        movie_detailed = search_detailed_movies(f'{URL_TMDB}movie/{movie_id}')
-        actors_directors = search_detailed_movies(f'{URL_TMDB}movie/{movie_id}/credits')
+        type = request.POST.get('type')
+        if type == 'tv':
+            movie_detailed = search_detailed_movies(f'{URL_TMDB}tv/{movie_id}')
+            actors_directors = search_detailed_movies(f'{URL_TMDB}tv/{movie_id}/credits')
+        else:
+            movie_detailed = search_detailed_movies(f'{URL_TMDB}movie/{movie_id}')
+            actors_directors = search_detailed_movies(f'{URL_TMDB}movie/{movie_id}/credits')
         actors = [actor['name'] for actor in actors_directors['cast'][:5]]
         directors = [crew['name'] for crew in actors_directors['crew'] if crew['job'] == 'Director']
         actors_combined = ', '.join(actors)
@@ -190,10 +229,10 @@ def add_movie(request):
 
             movie = Movie(
                 movie_id=movie_detailed.get('id'),
-                title=movie_detailed.get('title'),
+                title=movie_detailed.get('name') if type == 'tv' else movie_detailed.get('title'),
                 poster_path=movie_detailed.get('poster_path'),
                 release_date=movie_detailed.get('release_date') or None,
-                genre_ids=movie_detailed.get('genres') or None,
+                genre_ids=movie_detailed.get('genres') or [],
                 overview=movie_detailed.get('overview') or None,
                 actors=actors_combined,
                 directors=directors_combined,

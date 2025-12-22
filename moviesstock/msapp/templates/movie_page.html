@@ -34,7 +34,9 @@
                         ({{ movie.release_date.year }})</p>
                 </div>
             {% else %}
-                <p class="col-12 col-md-6 fs-4 fs-md-3 title mb-2 mb-md-0">{{ movie.title }}</p>
+                <div class="col-12 col-md-6 m-0 d-flex align-items-center mb-2 mb-md-0">
+                    <p style="color: {{ text_color }}" class="fw-bold m-0 fs-4 fs-md-3 title">{{ movie.title }}
+                </div>
             {% endif %}
 
             <div class="col-12 col-md-6 d-flex flex-row justify-content-between justify-content-md-end btn_pass">
@@ -75,7 +77,7 @@
                             {% if movie.status != "Released" %}
                                 <p style="color: red; font-weight: bold">{{ movie.status }}</p>
                             {% endif %}
-                            {% if movie.status != "Released" %}
+                            {% if movie.status != "Released" and movie.release_date %}
                                 <p>Release date : <span style="font-weight: bold">{{ movie.release_date }}</span></p>
                             {% endif %}
                         </div>
@@ -85,8 +87,11 @@
                             {% endfor %}
                         </div>
 
-                        <p style="line-height: 1.5em"><span style="font-weight: bold; text-decoration: underline;">Synopsis</span>
-                            : {{ movie.overview }}</p>
+                        {% if movie.overview %}
+                            <p style="line-height: 1.5em"><span style="font-weight: bold; text-decoration: underline;">Synopsis</span>
+                                : {{ movie.overview }}</p>
+                        {% endif %}
+
                         {% if movie.budget %}
                             <p>Budget : {{ movie.budget }} $ </p>
                         {% endif %}
