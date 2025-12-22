@@ -12,9 +12,11 @@
         {% endif %}
 
         <ul id="tv_or_movie_list_mobile">
-            <li><a href="/?ord={{ tv_or_movie_selected|default:"All" }}&tv_or_movie=Movie">Movies</a>
+            <li><a href="/?ord={{ ordered_selected_value|default:"Date added" }}&gnr={{ genre_selected|default:"All" }}&tv_or_movie=All">All</a>
             </li>
-            <li><a href="/?ord={{ tv_or_movie_selected|default:"All" }}&tv_or_movie=Series">Series</a>
+            <li><a href="/?ord={{ ordered_selected_value|default:"Date added" }}&gnr={{ genre_selected|default:"All" }}&tv_or_movie=Movies">Movies</a>
+            </li>
+            <li><a href="/?ord={{ ordered_selected_value|default:"Date added" }}&gnr={{ genre_selected|default:"All" }}&tv_or_movie=Series">Series</a>
             </li>
         </ul>
     </div>
@@ -33,7 +35,7 @@
 
         <ul id="genres_list_mobile">
             {% for genre in genres %}
-                <li><a href="/?ord={{ ordered_selected_value|default:"Date added" }}&gnr={{ genre }}">{{ genre }}</a>
+                <li><a href="/?ord={{ ordered_selected_value|default:"Date added" }}&gnr={{ genre }}&tv_or_movie={{ tv_or_movie_selected|default:"All" }}">{{ genre }}</a>
                 </li>
             {% endfor %}
         </ul>
@@ -53,7 +55,7 @@
 
         <ul id="ordered_list_mobile">
             {% for order in orders %}
-                <li><a href="/?ord={{ order }}&gnr={{ genre_selected|default:"All" }}">{{ order }}</a></li>
+                <li><a href="/?ord={{ order }}&gnr={{ genre_selected|default:"All" }}&tv_or_movie={{ tv_or_movie_selected|default:"All" }}">{{ order }}</a></li>
             {% endfor %}
         </ul>
     </div>
@@ -73,11 +75,11 @@
         {% endif %}
 
         <ul id="tv_or_movie_list">
-            <li><a href="/?ord={{ tv_or_movie_selected|default:"All" }}&tv_or_movie=All">All</a>
+            <li><a href="/?ord={{ ordered_selected_value|default:"Date added" }}&gnr={{ genre_selected|default:"All" }}&tv_or_movie=All">All</a>
             </li>
-            <li><a href="/?ord={{ tv_or_movie_selected|default:"All" }}&tv_or_movie=Movie">Movies</a>
+            <li><a href="/?ord={{ ordered_selected_value|default:"Date added" }}&gnr={{ genre_selected|default:"All" }}&tv_or_movie=Movies">Movies</a>
             </li>
-            <li><a href="/?ord={{ tv_or_movie_selected|default:"All" }}&tv_or_movie=Series">Series</a>
+            <li><a href="/?ord={{ ordered_selected_value|default:"Date added" }}&gnr={{ genre_selected|default:"All" }}&tv_or_movie=Series">Series</a>
             </li>
         </ul>
     </div>
@@ -96,7 +98,7 @@
 
         <ul id="genres_list">
             {% for genre in genres %}
-                <li><a href="/?ord={{ ordered_selected_value|default:"Date added" }}&gnr={{ genre }}">{{ genre }}</a>
+                <li><a href="/?ord={{ ordered_selected_value|default:"Date added" }}&gnr={{ genre }}&tv_or_movie={{ tv_or_movie_selected|default:"All" }}">{{ genre }}</a>
                 </li>
             {% endfor %}
         </ul>
@@ -116,7 +118,7 @@
 
         <ul id="ordered_list">
             {% for order in orders %}
-                <li><a href="/?ord={{ order }}&gnr={{ genre_selected|default:"All" }}">{{ order }}</a></li>
+                <li><a href="/?ord={{ order }}&gnr={{ genre_selected|default:"All" }}&tv_or_movie={{ tv_or_movie_selected|default:"All" }}">{{ order }}</a></li>
             {% endfor %}
         </ul>
     </div>
