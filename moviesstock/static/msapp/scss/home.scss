@@ -25,7 +25,36 @@ body {
 
   &.light-mode {
     background-color: $wall-color;
-    color: #370202;
+
+    #genres_list, #ordered_list {
+      background: $wall-color;
+
+      &.show_genres_list, &.show_ordered_list {
+        background: $wall-color;
+      }
+
+      li {
+        &:hover {
+          background: white;
+
+          a {
+            color: #f86565;
+          }
+        }
+
+        a {
+          color: $primary-color;
+        }
+      }
+    }
+
+    #movies_results {
+      background: white;
+
+      #res_container {
+        color: #370202;
+      }
+    }
 
     .movie-card {
       background: $wall-color;
@@ -40,6 +69,36 @@ body {
   &.dark-mode {
     background-color: #121212;
     color: #f6f6f6;
+
+    #genres_list, #ordered_list {
+      background: black;
+
+      &.show_genres_list, &.show_ordered_list {
+        background: black;
+      }
+
+      li {
+        &:hover {
+          background: #300202;
+
+          a {
+            color: #f86565;
+          }
+        }
+
+        a {
+          color: $primary-color;
+        }
+      }
+    }
+
+    #movies_results {
+      background: #1e1e1e;
+
+      #res_container {
+        color: #cacaca;
+      }
+    }
 
     .movie-card {
       background: #1e1e1e;

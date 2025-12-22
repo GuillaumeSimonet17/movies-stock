@@ -104,7 +104,7 @@ function displayMovies(movies) {
     let resultsContainer = $('#movies_results');
     resultsContainer.empty();
 
-    let limitedMovies = movies.slice(0, 15);
+    let limitedMovies = movies.slice(0, 6);
 
     limitedMovies.forEach(function (movie) {
         if (!movie.poster_path) return;

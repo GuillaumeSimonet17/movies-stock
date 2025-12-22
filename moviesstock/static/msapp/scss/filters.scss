@@ -9,10 +9,11 @@
 
   .filter_genre, .ordered_by {
     margin-left: 20px;
-    width: 200px;
+    width: 250px;
     border-bottom: 1px solid $primary-color;
     z-index: 1000;
     font-size: 1.2em;
+    padding: 10px;
 
     .chevron {
       margin-left: auto;
@@ -27,7 +28,7 @@
       align-items: center;
       height: 50px;
       cursor: pointer;
-      width: 200px;
+      width: 250px;
       font-weight: bold;
     }
 
@@ -37,7 +38,6 @@
       max-height: 395px;
 
       &.show_genres_list, &.show_ordered_list {
-        background: black;
         display: flex;
         flex-direction: column;
         overflow-y: auto;
@@ -57,12 +57,8 @@
         transition: 0.15s ease-in-out;
 
         &:hover {
-          background: #300202;
-
           a {
             transition: 0.2s ease-in-out;
-
-            color: #f86565;
           }
         }
 
@@ -71,12 +67,6 @@
           padding: 10px 20px;
           display: block;
           text-decoration: none;
-          //background: white;
-          color: $primary-color;
-
-          &:hover {
-            //background-color: $wall-color;
-          }
         }
       }
     }
@@ -122,7 +112,6 @@
       max-height: 700px;
 
       &.show_genres_list_mobile, &.show_ordered_list_mobile {
-        background: black;
         display: flex;
         flex-direction: column;
         overflow-y: auto;

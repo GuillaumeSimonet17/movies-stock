@@ -11,15 +11,14 @@
     background: none;
     padding: 7px 20px;
     outline: none;
+    color: $primary-color;
   }
 
   #movies_results {
     margin-top: 30px;
-    background: #171717;
 
     #res_container {
       cursor: pointer;
-      color: #cacaca;
 
       &:hover {
         transition: 0.2s ease-in-out;
