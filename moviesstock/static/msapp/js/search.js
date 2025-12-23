@@ -1,7 +1,13 @@
 $(document).ready(function () {
     /* ================= SEARCH ================= */
+    // Desktop
     let movieInput = $('#search_input');
     let tvInput = $('#search_input_tv');
+
+    // Mobile
+    let movieInputMobile = $('#search_input_mobile');
+    let tvInputMobile = $('#search_input_tv_mobile');
+
     let results = $('#movies_results');
     let searchContainer = $('.search_container');
 
@@ -9,23 +15,24 @@ $(document).ready(function () {
         if (event.key === 'Escape') hideSearch();
     });
 
-    movieInput.on('input', function () {
-        let value = movieInput.val().trim();
-        tvInput.val('');
-        if (value.length > 0) {
-            searchTMDB('/search_movies/', value, 'movie');
-            showSearch();
-        } else hideSearch();
-    });
+    function handleInput(inputField, otherField, url, type) {
+        inputField.on('input', function () {
+            let value = inputField.val().trim();
+            otherField.val('');
+            if (value.length > 0) {
+                searchTMDB(url, value, type);
+                showSearch();
+            } else hideSearch();
+        });
+    }
 
-    tvInput.on('input', function () {
-        let value = tvInput.val().trim();
-        movieInput.val('');
-        if (value.length > 0) {
-            searchTMDB('/search_tv/', value, 'tv');
-            showSearch();
-        } else hideSearch();
-    });
+    // Desktop
+    handleInput(movieInput, tvInput, '/search_movies/', 'movie');
+    handleInput(tvInput, movieInput, '/search_tv/', 'tv');
+
+    // Mobile
+    handleInput(movieInputMobile, tvInputMobile, '/search_movies/', 'movie');
+    handleInput(tvInputMobile, movieInputMobile, '/search_tv/', 'tv');
 
     function showSearch() {
         searchContainer.css('opacity', '1');
@@ -36,6 +43,8 @@ $(document).ready(function () {
         results.empty().hide();
         movieInput.val('');
         tvInput.val('');
+        movieInputMobile.val('');
+        tvInputMobile.val('');
     }
 
     /* ================= FILTERS ================= */

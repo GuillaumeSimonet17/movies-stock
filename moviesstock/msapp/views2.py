@@ -56,6 +56,7 @@ def movie_page(request):
 
         darkness = color_darkness(movie.dominant_color)
         text_color, background = get_text_background_colors(darkness, movie.dominant_color)
+
         context = {
             'movie': movie,
             'movies_list': movies,
@@ -74,8 +75,10 @@ def movie_page(request):
 def get_text_background_colors(darkness, dominant_color):
     if darkness < 0.1:
         text_color = '#E6E6E6FF'
-    elif 0.1 < darkness < 0.4:
-        text_color = lighten_color(dominant_color, 100)
+    elif 0.1 < darkness < 0.17:
+        text_color = lighten_color(dominant_color, 350)
+    elif 0.17 < darkness < 0.4:
+        text_color = lighten_color(dominant_color, 250)
     elif 0.4 < darkness < 0.6:
         text_color = darken_color(dominant_color, 50)
     else:

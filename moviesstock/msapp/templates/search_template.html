@@ -1,7 +1,11 @@
-<div class="container-fluid search_container mt-5">
-    <div class="row d-flex justify-content-around">
-        <input class="col-12 col-lg-5 fs-3 mt-2 rounded rounded-3 border-1 border-dark" id="search_input" type="text" placeholder="search a movie"/>
-        <input class="col-12 col-lg-5 fs-3 mt-2 rounded rounded-3 border-1 border-dark" id="search_input_tv" type="text" placeholder="search a serie"/>
+<div class="container-fluid search_container">
+    <div class="row d-flex w-100 justify-content-center d-none d-lg-flex">
+        <input class="col-5 me-3 fs-3 rounded rounded-3 border-1 border-dark search_input" id="search_input" type="text" placeholder="search a movie"/>
+        <input class="col-5 fs-3 rounded rounded-3 border-1 border-dark search_input_tv" id="search_input_tv" type="text" placeholder="search a serie"/>
+    </div>
+    <div class="row d-flex w-100 justify-content-around d-lg-none d-flex">
+        <input class="col-12 col-lg-5 mt-2 rounded rounded-3 border-1 border-dark search_input_mobile" id="search_input_mobile" type="text" placeholder="search a movie"/>
+        <input class="col-12 col-lg-5 mt-2 rounded rounded-3 border-1 border-dark search_input_tv_mobile" id="search_input_tv_mobile" type="text" placeholder="search a serie"/>
     </div>
     <div class="row d-flex flex-wrap" id="movies_results"></div>
 </div>

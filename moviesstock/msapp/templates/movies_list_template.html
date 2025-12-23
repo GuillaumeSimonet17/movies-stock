@@ -2,8 +2,9 @@
     {% include "filters_template.html" %}
 
     {% for genre, movies in movies_by_genre.items %}
-        <div class="genre-container mb-5 position-relative">
-            <p class="genre-title fs-2">{{ genre }}</p>
+        <div class="genre-container my-5 position-relative">
+            <p class="genre-title genre_title d-none d-lg-flex">{{ genre }}</p>
+            <p class="genre-title genre_title_mobile d-flex d-lg-none">{{ genre }}</p>
             <div class="slider-wrapper position-relative">
                 <div class="genre-slider d-flex" style="overflow-x:auto; scroll-behavior:smooth; gap:15px;">
                     {% for movie in movies %}
