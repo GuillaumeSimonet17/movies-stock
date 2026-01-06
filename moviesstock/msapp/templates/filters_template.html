@@ -1,63 +1,93 @@
-<div class="m-0 filters_container_mobile d-block d-lg-none">
-    <div class="tv_or_movie_mobile">
-        {% if tv_or_movie_selected and tv_or_movie_selected != 'All' %}
-            <p id="toggle_tv_or_movie_mobile">{{ tv_or_movie_selected }}
-                <span class="chevron_mobile">⌄</span>
-            </p>
-        {% else %}
-            <p id="toggle_tv_or_movie_mobile">
-                All
-                <span class="chevron_mobile">⌄</span>
-            </p>
-        {% endif %}
+<div class="filters_accordion d-block d-lg-none">
+    <div class="filters_accordion_header" id="toggle_filters_mobile">
+        <div>
+            Filters
+            <span class="filters_active" style="font-style: italic !important; font-weight: lighter !important;">
+            {% if tv_or_movie_selected != "All" %}
+                · {{ tv_or_movie_selected }}
+            {% endif %}
 
-        <ul id="tv_or_movie_list_mobile">
-            <li><a href="/?ord={{ ordered_selected_value|default:"Date added" }}&gnr={{ genre_selected|default:"All" }}&tv_or_movie=All">All</a>
-            </li>
-            <li><a href="/?ord={{ ordered_selected_value|default:"Date added" }}&gnr={{ genre_selected|default:"All" }}&tv_or_movie=Movies">Movies</a>
-            </li>
-            <li><a href="/?ord={{ ordered_selected_value|default:"Date added" }}&gnr={{ genre_selected|default:"All" }}&tv_or_movie=Series">Series</a>
-            </li>
-        </ul>
+                {% if genre_selected != "All" %}
+                    · {{ genre_selected }}
+                {% endif %}
+
+                {% if ordered_selected_value != "Date added" %}
+                    · {{ ordered_selected_value }}
+                {% endif %}
+        </span>
+        </div>
+        <span class="chevron_mobile" style="font-size: 1.5em;">⌄</span>
     </div>
 
-    <div class="filter_genre_mobile">
-        {% if genre_selected and genre_selected != 'All' %}
-            <p id="toggle_genres_mobile">Genres ({{ genre_selected }})
-                <span class="chevron_mobile">⌄</span>
-            </p>
-        {% else %}
-            <p id="toggle_genres_mobile">
-                Genres
-                <span class="chevron_mobile">⌄</span>
-            </p>
-        {% endif %}
+    <div class="filters_accordion_content" id="filters_content_mobile">
+        <div class="m-0 filters_container_mobile d-block d-lg-none">
+            <div class="tv_or_movie_mobile">
+                {% if tv_or_movie_selected and tv_or_movie_selected != 'All' %}
+                    <p id="toggle_tv_or_movie_mobile">{{ tv_or_movie_selected }}
+                        <span class="chevron_mobile">⌄</span>
+                    </p>
+                {% else %}
+                    <p id="toggle_tv_or_movie_mobile">
+                        All
+                        <span class="chevron_mobile">⌄</span>
+                    </p>
+                {% endif %}
 
-        <ul id="genres_list_mobile">
-            {% for genre in genres %}
-                <li><a href="/?ord={{ ordered_selected_value|default:"Date added" }}&gnr={{ genre }}&tv_or_movie={{ tv_or_movie_selected|default:"All" }}">{{ genre }}</a>
-                </li>
-            {% endfor %}
-        </ul>
-    </div>
+                <ul id="tv_or_movie_list_mobile">
+                    <li>
+                        <a href="/?ord={{ ordered_selected_value|default:"Date added" }}&gnr={{ genre_selected|default:"All" }}&tv_or_movie=All">All</a>
+                    </li>
+                    <li>
+                        <a href="/?ord={{ ordered_selected_value|default:"Date added" }}&gnr={{ genre_selected|default:"All" }}&tv_or_movie=Movies">Movies</a>
+                    </li>
+                    <li>
+                        <a href="/?ord={{ ordered_selected_value|default:"Date added" }}&gnr={{ genre_selected|default:"All" }}&tv_or_movie=Series">Series</a>
+                    </li>
+                </ul>
+            </div>
 
-    <div class="ordered_by_mobile">
+            <div class="filter_genre_mobile">
+                {% if genre_selected and genre_selected != 'All' %}
+                    <p id="toggle_genres_mobile">Genres ({{ genre_selected }})
+                        <span class="chevron_mobile">⌄</span>
+                    </p>
+                {% else %}
+                    <p id="toggle_genres_mobile">
+                        Genres
+                        <span class="chevron_mobile">⌄</span>
+                    </p>
+                {% endif %}
 
-        {% if ordered_selected_value and ordered_selected_value != 'Date added' %}
-            <p id="toggle_ordered_mobile">Ordered by ({{ ordered_selected_value }})
-                <span class="chevron_mobile">⌄</span>
-            </p>
-        {% else %}
-            <p id="toggle_ordered_mobile">Ordered by
-                <span class="chevron_mobile">⌄</span>
-            </p>
-        {% endif %}
+                <ul id="genres_list_mobile">
+                    {% for genre in genres %}
+                        <li>
+                            <a href="/?ord={{ ordered_selected_value|default:"Date added" }}&gnr={{ genre }}&tv_or_movie={{ tv_or_movie_selected|default:"All" }}">{{ genre }}</a>
+                        </li>
+                    {% endfor %}
+                </ul>
+            </div>
 
-        <ul id="ordered_list_mobile">
-            {% for order in orders %}
-                <li><a href="/?ord={{ order }}&gnr={{ genre_selected|default:"All" }}&tv_or_movie={{ tv_or_movie_selected|default:"All" }}">{{ order }}</a></li>
-            {% endfor %}
-        </ul>
+            <div class="ordered_by_mobile">
+
+                {% if ordered_selected_value and ordered_selected_value != 'Date added' %}
+                    <p id="toggle_ordered_mobile">Ordered by ({{ ordered_selected_value }})
+                        <span class="chevron_mobile">⌄</span>
+                    </p>
+                {% else %}
+                    <p id="toggle_ordered_mobile">Ordered by
+                        <span class="chevron_mobile">⌄</span>
+                    </p>
+                {% endif %}
+
+                <ul id="ordered_list_mobile">
+                    {% for order in orders %}
+                        <li>
+                            <a href="/?ord={{ order }}&gnr={{ genre_selected|default:"All" }}&tv_or_movie={{ tv_or_movie_selected|default:"All" }}">{{ order }}</a>
+                        </li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
     </div>
 </div>
 
@@ -75,11 +105,14 @@
         {% endif %}
 
         <ul id="tv_or_movie_list">
-            <li><a href="/?ord={{ ordered_selected_value|default:"Date added" }}&gnr={{ genre_selected|default:"All" }}&tv_or_movie=All">All</a>
+            <li>
+                <a href="/?ord={{ ordered_selected_value|default:"Date added" }}&gnr={{ genre_selected|default:"All" }}&tv_or_movie=All">All</a>
             </li>
-            <li><a href="/?ord={{ ordered_selected_value|default:"Date added" }}&gnr={{ genre_selected|default:"All" }}&tv_or_movie=Movies">Movies</a>
+            <li>
+                <a href="/?ord={{ ordered_selected_value|default:"Date added" }}&gnr={{ genre_selected|default:"All" }}&tv_or_movie=Movies">Movies</a>
             </li>
-            <li><a href="/?ord={{ ordered_selected_value|default:"Date added" }}&gnr={{ genre_selected|default:"All" }}&tv_or_movie=Series">Series</a>
+            <li>
+                <a href="/?ord={{ ordered_selected_value|default:"Date added" }}&gnr={{ genre_selected|default:"All" }}&tv_or_movie=Series">Series</a>
             </li>
         </ul>
     </div>
@@ -98,7 +131,8 @@
 
         <ul id="genres_list">
             {% for genre in genres %}
-                <li><a href="/?ord={{ ordered_selected_value|default:"Date added" }}&gnr={{ genre }}&tv_or_movie={{ tv_or_movie_selected|default:"All" }}">{{ genre }}</a>
+                <li>
+                    <a href="/?ord={{ ordered_selected_value|default:"Date added" }}&gnr={{ genre }}&tv_or_movie={{ tv_or_movie_selected|default:"All" }}">{{ genre }}</a>
                 </li>
             {% endfor %}
         </ul>
@@ -118,7 +152,9 @@
 
         <ul id="ordered_list">
             {% for order in orders %}
-                <li><a href="/?ord={{ order }}&gnr={{ genre_selected|default:"All" }}&tv_or_movie={{ tv_or_movie_selected|default:"All" }}">{{ order }}</a></li>
+                <li>
+                    <a href="/?ord={{ order }}&gnr={{ genre_selected|default:"All" }}&tv_or_movie={{ tv_or_movie_selected|default:"All" }}">{{ order }}</a>
+                </li>
             {% endfor %}
         </ul>
     </div>

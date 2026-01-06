@@ -72,29 +72,51 @@ def home(request):
     ordered_selected_value = request.GET.get('ord', 'Date added')
     tv_or_movie_selected = request.GET.get('tv_or_movie', 'All')
 
-    movies_in_list = movies_list.movies.all()
+    # ================= BASE QUERYSET =================
+    base_queryset = movies_list.movies.all()
 
-    # Filtrer par genre si nécessaire
+    # ----- Genre filter -----
     if genre_selected != 'All' and genre_selected != 'No genre':
-        movies_in_list = movies_in_list.filter(genre_ids__contains=[{'name': genre_selected}])
-    if genre_selected == 'No genre':
-        movies_in_list = movies_in_list.filter(genre_ids=[])
+        base_queryset = base_queryset.filter(
+            genre_ids__contains=[{'name': genre_selected}]
+        )
+    elif genre_selected == 'No genre':
+        base_queryset = base_queryset.filter(genre_ids=[])
 
+    # ----- TV / Movie filter -----
     if tv_or_movie_selected != 'All':
-        if tv_or_movie_selected == 'Series':
-            movies_in_list = movies_in_list.filter(is_tv=True)
-        else:
-            movies_in_list = movies_in_list.filter(is_tv=False)
+        base_queryset = base_queryset.filter(
+            is_tv=(tv_or_movie_selected == 'Series')
+        )
 
-    # Trier
-    order = '-id'
+    # ================= ORDER =================
+    order = '-id'  # Date added
     if ordered_selected_value == 'Year Asc':
         order = 'release_date'
     elif ordered_selected_value == 'Year Dsc':
         order = '-release_date'
-    movies_in_list = movies_in_list.order_by(order)
 
+    # ================= LATEST (10 derniers ajoutés) =================
+    latest_ids = list(
+        base_queryset
+        .order_by('-id')
+        .values_list('id', flat=True)[:10]
+    )
+
+    latest_movies = (
+        base_queryset
+        .filter(id__in=latest_ids)
+        .order_by(order)
+    )
+
+    # ================= MAIN LIST =================
+    movies_in_list = base_queryset.order_by(order)
+
+    # ================= GROUP BY GENRE =================
     movies_by_genre = {}
+
+    if latest_movies:
+        movies_by_genre['Latest'] = latest_movies
 
     for genre in GENRES:
         if genre == 'All':
@@ -109,7 +131,7 @@ def home(request):
             genre_movies = [
                 movie for movie in movies_in_list
                 if isinstance(movie.genre_ids, list)
-                   and any(g.get('name') == genre for g in movie.genre_ids)
+                and any(g.get('name') == genre for g in movie.genre_ids)
             ]
 
         if genre_movies:
@@ -123,6 +145,7 @@ def home(request):
         'tv_or_movie_selected': tv_or_movie_selected,
         'ordered_selected_value': ordered_selected_value,
     }
+
     return render(request, 'home.html', context)
 
 @login_required

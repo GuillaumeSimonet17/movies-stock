@@ -342,6 +342,38 @@
           text-decoration: none;
           color: #BA1818; }
 
+.filters_accordion {
+  width: 100%;
+  margin-bottom: 20px;
+  /* ===== OPEN STATE ===== */
+  /* ===== HEADER ===== */
+  /* ===== CONTENT (SLIDE) ===== */ }
+  .filters_accordion.open .filters_accordion_content {
+    max-height: 2000px;
+    opacity: 1;
+    padding-top: 15px; }
+  .filters_accordion.open .chevron,
+  .filters_accordion.open .chevron_mobile {
+    transform: rotate(180deg); }
+  .filters_accordion .filters_accordion_header {
+    cursor: pointer;
+    font-weight: bold;
+    font-size: 3em;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px;
+    border-bottom: 2px solid #BA1818; }
+    .filters_accordion .filters_accordion_header .chevron,
+    .filters_accordion .filters_accordion_header .chevron_mobile {
+      transition: transform 0.2s ease; }
+  .filters_accordion .filters_accordion_content {
+    max-height: 0;
+    overflow: hidden;
+    opacity: 0;
+    padding-top: 0;
+    transition: max-height 0.35s ease, opacity 0.2s ease, padding 0.2s ease; }
+
 button {
   cursor: pointer;
   font-family: 'hollywood';
@@ -390,6 +422,8 @@ body {
   body.dark-mode {
     background-color: #121212;
     color: #f6f6f6; }
+    body.dark-mode .filters_accordion_content {
+      background: #1e1e1e; }
     body.dark-mode .search_container {
       background: #1e1e1e; }
     body.dark-mode #genres_list, body.dark-mode #ordered_list, body.dark-mode #tv_or_movie_list {

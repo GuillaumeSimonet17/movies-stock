@@ -5,12 +5,9 @@ $(document).ready(function () {
         let nextBtn = $(this).find('.slider-btn.next');
 
         if (slider[0].scrollWidth > slider[0].clientWidth) {
-            console.log('show')
             prevBtn.show();
             nextBtn.show();
         } else {
-            console.log('hide')
-
             prevBtn.hide();
             nextBtn.hide();
         }

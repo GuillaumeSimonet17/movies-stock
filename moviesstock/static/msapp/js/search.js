@@ -113,7 +113,7 @@ function searchTMDB(url, query, type) {
     $.ajax({
         url: url,
         method: 'GET',
-        data: { query: query },
+        data: {query: query},
         success: function (response) {
             displayResults(response.results, type);
         },
@@ -186,3 +186,14 @@ function show_or_hide_search(movieSearchInput, searchContainer, moviesRes, to_sh
         movieSearchInput.val('');
     }
 }
+
+/* ================= FILTERS ACCORDION ================= */
+
+$(document).ready(function () {
+
+    $('#toggle_filters_mobile').on('click', function (e) {
+        e.stopPropagation();
+        $(this).closest('.filters_accordion').toggleClass('open');
+    });
+
+});
