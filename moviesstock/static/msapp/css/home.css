@@ -374,6 +374,24 @@
     padding-top: 0;
     transition: max-height 0.35s ease, opacity 0.2s ease, padding 0.2s ease; }
 
+.random-movie-icon {
+  font-size: 2rem;
+  position: absolute;
+  right: 100px;
+  cursor: pointer;
+  text-decoration: none;
+  transition: transform 0.2s ease; }
+
+.random-movie-icon-mobile {
+  font-size: 5rem;
+  margin-left: 12px;
+  cursor: pointer;
+  text-decoration: none;
+  transition: transform 0.2s ease; }
+
+.random-movie-icon:hover {
+  transform: rotate(20deg) scale(1.1); }
+
 button {
   cursor: pointer;
   font-family: 'hollywood';

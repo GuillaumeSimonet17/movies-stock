@@ -337,3 +337,15 @@ def get_dominant_color(image_path, k=4):
         dominant_color_hex = '#%02x%02x%02x' % tuple(dominant_color)
 
     return dominant_color_hex
+
+
+
+@login_required
+def random_movie(request):
+    movies = MoviesList.objects.get(user=request.user).movies.all()
+
+    if not movies.exists():
+        return redirect('/')
+
+    movie = movies.order_by('?').first()
+    return redirect(f'/movie_page/?query={movie.id}')

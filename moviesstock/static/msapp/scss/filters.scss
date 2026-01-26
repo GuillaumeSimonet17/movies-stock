@@ -296,3 +296,24 @@
   }
 }
 
+
+.random-movie-icon {
+    font-size: 2rem;
+    position: absolute;
+    right: 100px;
+    cursor: pointer;
+    text-decoration: none;
+    transition: transform 0.2s ease;
+}
+
+.random-movie-icon-mobile {
+    font-size: 5rem;
+    margin-left: 12px;
+    cursor: pointer;
+    text-decoration: none;
+    transition: transform 0.2s ease;
+}
+
+.random-movie-icon:hover {
+    transform: rotate(20deg) scale(1.1);
+}

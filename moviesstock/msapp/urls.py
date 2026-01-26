@@ -12,4 +12,5 @@ urlpatterns = [
     path('add_movie/', views.add_movie, name='add_movie'),
     path('get_images/', views.get_images_and_links, name='get_images'),
     path('delete_movie/',views.delete_movie,name="delete_movie"),
+    path('random_movie/', views.random_movie, name='random_movie'),
 ]
