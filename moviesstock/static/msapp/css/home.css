@@ -398,6 +398,8 @@ body {
     z-index: 1000; }
   body.light-mode {
     background-color: #F6F6F6; }
+    body.light-mode .filters_accordion_content {
+      background: white; }
     body.light-mode .search_container {
       background: white; }
     body.light-mode #genres_list, body.light-mode #ordered_list, body.light-mode #tv_or_movie_list {

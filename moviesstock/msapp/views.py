@@ -242,6 +242,12 @@ def search_detailed_movies(url):
 def add_movie(request):
     if request.method == 'POST':
         movie_id = request.POST.get('id')
+        if Movie.objects.filter(movie_id=movie_id).exists():
+            return JsonResponse(
+                {'error': 'Ce film est déjà dans ta liste'},
+                status=409
+            )
+
         type = request.POST.get('type')
         if type == 'tv':
             movie_detailed = search_detailed_movies(f'{URL_TMDB}tv/{movie_id}')

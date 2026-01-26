@@ -27,6 +27,10 @@ body {
   &.light-mode {
     background-color: $wall-color;
 
+    .filters_accordion_content {
+      background: white;
+    }
+
     .search_container {
       background: white;
     }

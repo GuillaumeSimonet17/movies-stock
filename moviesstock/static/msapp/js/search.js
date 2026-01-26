@@ -147,11 +147,29 @@ function displayResults(items, type) {
                 type: type
             }).done(function (response) {
                 get_images(response.movie_id, type);
-
                 container.empty();
                 window.location.href = '/';
             }).fail(function (xhr) {
-                console.error('Erreur add_movie', xhr.responseText);
+                const status = xhr.status;
+                const data = xhr.responseJSON;
+
+                const message = data?.error || 'Film déjà présent';
+
+                if (status === 409) {
+                    $('#flash-message')
+                        .stop(true, true)
+                        .text(message)
+                        .fadeIn()
+                        .delay(2500)
+                        .fadeOut();
+                } else {
+                    $('#flash-message')
+                        .stop(true, true)
+                        .text('Erreur serveur 😕')
+                        .fadeIn()
+                        .delay(2500)
+                        .fadeOut();
+                }
             });
         });
 

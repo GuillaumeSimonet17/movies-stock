@@ -3,7 +3,7 @@ from django.contrib.auth.models import User
 
 
 class Movie(models.Model):
-    movie_id = models.IntegerField(null=True)
+    movie_id = models.IntegerField(null=True, unique=True)
     title = models.CharField(max_length=255)
     poster_path = models.CharField(max_length=255)
     release_date = models.DateField(blank=True, null=True)
