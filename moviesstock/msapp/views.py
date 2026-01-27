@@ -290,13 +290,20 @@ def add_movie(request):
         return JsonResponse({'error': 'Requête invalide'}, status=400)
 
 
+
 @csrf_exempt
 def delete_movie(request):
     if request.method == 'POST':
-        movie_to_delete = Movie.objects.get(pk=request.POST.get('id'))
-        movie_to_delete.delete()
-        return redirect(reverse('home'))
-    return render(request, 'home.html')
+        movie_id = request.POST.get('id')
+
+        movie = Movie.objects.filter(pk=movie_id).first()
+        if not movie:
+            return redirect('home')
+
+        movie.delete()
+        return redirect('home')
+
+    return redirect('home')
 
 
 def get_dominant_color(image_path, k=4):
