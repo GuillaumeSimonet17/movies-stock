@@ -53,6 +53,14 @@
                         saw it
                     </button>
                 </form>
+                {% if request.GET.random == '1' %}
+                    <a href="{% url 'random_movie' %}"
+                       class="ms-3"
+                       title="Film aléatoire"
+                       style="color: {{ text_color }}; text-decoration: none; font-size: 1.5rem;">
+                        🎲
+                    </a>
+                {% endif %}
                 {% if movies_list_length > 1 %}
                     <button class="fs-1 py-0" style="color: {{ text_color }}"
                             onclick="goToNextMoviePage({{ movies_list }}, {{ movie.id }}, '{{ ordered_selected_value|default:"Date added" }}', '{{ genre_selected|default:"All" }}')">

@@ -355,4 +355,4 @@ def random_movie(request):
         return redirect('/')
 
     movie = movies.order_by('?').first()
-    return redirect(f'/movie_page/?query={movie.id}')
+    return redirect(f'/movie_page/?query={movie.id}&random=1')
