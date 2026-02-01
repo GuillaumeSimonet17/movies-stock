@@ -3,7 +3,7 @@ from io import text_encoding
 from django.utils import timezone
 from django.shortcuts import redirect, render, reverse
 from .models import Movie, MoviesList
-from .views import search_detailed_movies
+from .views import search_detailed_movies, home
 from django.contrib.auth.decorators import login_required
 import colorsys
 import string
@@ -14,7 +14,10 @@ URL_YTS_2 = 'https://yts.rs/movie/'
 @login_required
 def movie_page(request):
     if request.method == 'GET' and 'query' in request.GET:
-        movie = Movie.objects.get(pk=request.GET.get('query'))
+        try:
+            movie = Movie.objects.get(pk=request.GET.get('query'))
+        except Movie.DoesNotExist:
+            return redirect('home')
 
         title_no_punct = movie.title.translate(str.maketrans('', '', string.punctuation))
         title_dash = title_no_punct.replace(' ', '-')
