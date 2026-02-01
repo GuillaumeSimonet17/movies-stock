@@ -140,29 +140,33 @@
                             </a>
 
                         </div>
+
                         {% if not movie.is_tv %}
                             <a style="background: {{ background }}; color: {{ text_color }}; border: 0.5px solid {{ text_color }}"
                                href="https://www.avobiv.com"
                                target="_blank">Chercher sur avobiv</a>
                         {% endif %}
-                           <a style="background: {{ background }}; color: {{ text_color }}; border: 0.5px solid {{ text_color }}"
-                               href="https://movielair.cc/"
-                               target="_blank">Chercher sur movielair</a>
+
+                        <a style="background: {{ background }}; color: {{ text_color }}; border: 0.5px solid {{ text_color }}"
+                           href="https://movielair.cc/"
+                           target="_blank">Chercher sur movielair</a>
+
                         {% if yts1 %}
-                            <a style="background: {{ background }}; color: {{ text_color }}; border: 0.5px solid {{ text_color }}"
+                            <a class="mt-3" style="background: {{ background }}; color: {{ text_color }}; border: 0.5px solid {{ text_color }}"
                                href="{{ yts1 }}"
                                target="_blank">Voir ou download sur YTS</a>
                             <a style="background: {{ background }}; color: {{ text_color }}; border: 0.5px solid {{ text_color }}"
                                href="{{ yts2 }}"
                                target="_blank">Voir ou download sur YTS 2</a>
-                            <br/>
-                            <a style="background: {{ background }}; color: {{ text_color }}; border: 0.5px solid {{ text_color }}"
-                               href="https://fr.my-subs.net/search.php?key={{ movie.title }}; border: 0.5px solid {{ text_color }}"
-                               target="_blank">(Yts
-                                subtitle)</a>
-                            <a style="background: {{ background }}; color: {{ text_color }}; border: 0.5px solid {{ text_color }}"
-                               href="https://yts-subs.com/search/{{ movie.title }}" target="_blank">(Yts
-                                subtitle)</a>
+                            <div class="d-flex align-items-center gap-3">
+                                <a style="background: {{ background }}; color: {{ text_color }}; border: 0.5px solid {{ text_color }}"
+                                   href="https://fr.my-subs.net/search.php?key={{ movie.title }}; border: 0.5px solid {{ text_color }}"
+                                   target="_blank">(Yts
+                                    subtitle)</a>
+                                <a style="background: {{ background }}; color: {{ text_color }}; border: 0.5px solid {{ text_color }}"
+                                   href="https://yts-subs.com/search/{{ movie.title }}" target="_blank">(Yts
+                                    subtitle)</a>
+                            </div>
                             <br/>
                         {% endif %}
                     </div>
