@@ -140,9 +140,14 @@
                             </a>
 
                         </div>
-                        <a style="background: {{ background }}; color: {{ text_color }}; border: 0.5px solid {{ text_color }}"
-                           href="https://www.avobiv.com"
-                           target="_blank">Chercher sur avobiv</a>
+                        {% if not movie.is_tv %}
+                            <a style="background: {{ background }}; color: {{ text_color }}; border: 0.5px solid {{ text_color }}"
+                               href="https://www.avobiv.com"
+                               target="_blank">Chercher sur avobiv</a>
+                        {% endif %}
+                           <a style="background: {{ background }}; color: {{ text_color }}; border: 0.5px solid {{ text_color }}"
+                               href="https://movielair.cc/"
+                               target="_blank">Chercher sur movielair</a>
                         {% if yts1 %}
                             <a style="background: {{ background }}; color: {{ text_color }}; border: 0.5px solid {{ text_color }}"
                                href="{{ yts1 }}"
