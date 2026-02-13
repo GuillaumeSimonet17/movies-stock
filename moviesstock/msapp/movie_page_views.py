@@ -1,9 +1,7 @@
-from io import text_encoding
-
 from django.utils import timezone
 from django.shortcuts import redirect, render, reverse
 from .models import Movie, MoviesList
-from .views import search_detailed_movies, home
+from .movies_list_views import search_detailed_movies, home
 from django.contrib.auth.decorators import login_required
 import colorsys
 import string

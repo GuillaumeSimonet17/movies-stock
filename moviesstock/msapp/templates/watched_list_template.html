@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Watched Movies{% endblock %}
+
+{% block content %}
+    {% if user.is_authenticated %}
+        <div class="container-fluid p-0 page-wrapper">
+
+            <header class="container-fluid d-flex justify-content-between">
+                {% include "header_template.html" %}
+            </header>
+
+            <main class="container-fluid">
+                <h2 class="mt-5 mb-5 ms-5 w-100">🎬 Watched Movies</h2>
+
+                {% if watched_movies %}
+                    <div class="row w-100">
+                        {% for item in watched_movies %}
+                            <div class="col-5 col-lg-2 mb-4 text-center d-flex flex-column justify-content-between">
+
+                                <img src="https://image.tmdb.org/t/p/w500{{ item.movie.poster_path }}"
+                                     class="img-fluid rounded shadow"
+                                     alt="{{ item.movie.title }}">
+
+                                <p class="mt-2">{{ item.movie.title }}</p>
+
+                                <small class="text-muted">
+                                    watched {{ item.watched_at|date:"d M Y" }}
+                                </small>
+
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <p>You haven't watched any movies yet 👀</p>
+                {% endif %}
+
+            </main>
+        </div>
+        <script src="{% static 'msapp/js/light_dark_mode.js' %}"></script>
+
+    {% else %}
+
+        <a href="{% url 'login' %}" class="login_container">
+            <p>Enter to hollylist</p>
+        </a>
+
+    {% endif %}
+{% endblock %}

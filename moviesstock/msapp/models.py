@@ -29,3 +29,14 @@ class MoviesList(models.Model):
 
 class UserProfile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, null=True)
+
+class WatchedMovie(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="watched_movies")
+    movie = models.ForeignKey(Movie, on_delete=models.CASCADE, related_name="watched_by")
+    watched_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        unique_together = ('user', 'movie')
+
+    def __str__(self):
+        return f"{self.user.username} watched {self.movie.title}"

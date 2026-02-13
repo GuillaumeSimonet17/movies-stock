@@ -1,25 +1,17 @@
 from django.http import JsonResponse
 import requests
 from django.shortcuts import redirect, render
-from django.urls import reverse
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.csrf import csrf_exempt
-from .models import Movie, MoviesList, FilePath
+from .models import Movie, MoviesList, FilePath, WatchedMovie
 import deepl
-from django.db.models import Q
-
-from PIL import Image
-import numpy as np
-from sklearn.cluster import KMeans
-from io import BytesIO
-from collections import Counter
 import os
 from dotenv import load_dotenv
 
-# Load environment variables from .env file
+from .utils import get_dominant_color, search_detailed_movies
+
 load_dotenv()
 
-# Access environment variables
 API_KEY_TMDB = os.getenv('API_KEY_TMDB')
 API_KEY_DEEPL = os.getenv('API_KEY_DEEPL')
 
@@ -225,28 +217,25 @@ def get_images_and_links(request):
     except requests.exceptions.RequestException as e:
         print(f"Error fetching data from TMDb API: {e}")
 
-def search_detailed_movies(url):
-    headers = {
-        'accept': 'application/json',
-        "Authorization": "Bearer " + API_KEY_TMDB,
-    }
-    try:
-        response = requests.get(url, headers=headers)
-        response.raise_for_status()
-        data = response.json()
-        return data
-    except requests.exceptions.RequestException as e:
-        print(f"Error fetching data from TMDb API: {e}")
-
 @csrf_exempt
 def add_movie(request):
     if request.method == 'POST':
         movie_id = request.POST.get('id')
-        if Movie.objects.filter(movie_id=movie_id).exists():
+        movies_list = MoviesList.objects.get(user=request.user)
+
+        if not movie_id:
+            return JsonResponse({'error': 'movie_id missing'}, status=400)
+
+        if movies_list.movies.filter(movie_id=movie_id).exists():
             return JsonResponse(
                 {'error': 'Ce film est déjà dans ta liste'},
                 status=409
             )
+
+        existing_movie = Movie.objects.filter(movie_id=movie_id).first()
+        if existing_movie:
+            movies_list.movies.add(existing_movie)
+            return JsonResponse({'movie_id': existing_movie.id})
 
         type = request.POST.get('type')
         if type == 'tv':
@@ -261,7 +250,6 @@ def add_movie(request):
         directors_combined = ', '.join(directors)
 
         if movie_detailed:
-            movies_list = MoviesList.objects.get(user=request.user)
 
             image_path = 'https://image.tmdb.org/t/p/w500' + movie_detailed.get('poster_path')
             dominant_color = get_dominant_color(image_path)
@@ -289,63 +277,64 @@ def add_movie(request):
 
         return JsonResponse({'error': 'Requête invalide'}, status=400)
 
+@csrf_exempt
+def add_to_watched_list(request):
+    if request.method != "POST":
+        return JsonResponse({"error": "POST request required"}, status=400)
 
+    movie_id = request.POST.get("id")
+
+    if not movie_id:
+        return JsonResponse({"error": "movie_id is required"}, status=400)
+
+    try:
+        movie = Movie.objects.get(id=movie_id)
+    except Movie.DoesNotExist:
+        return JsonResponse({"error": "Movie not found"}, status=404)
+
+    watched, created = WatchedMovie.objects.get_or_create(
+        user=request.user,
+        movie=movie
+    )
+
+    try:
+        movies_list = MoviesList.objects.get(user=request.user)
+        movies_list.movies.remove(movie)
+    except MoviesList.DoesNotExist:
+        pass
+
+    if created:
+        return redirect('home')
+    else:
+        return redirect('home')
 
 @csrf_exempt
 def delete_movie(request):
     if request.method == 'POST':
         movie_id = request.POST.get('id')
 
+        if not movie_id:
+            return redirect('home')
+
         movie = Movie.objects.filter(pk=movie_id).first()
         if not movie:
             return redirect('home')
 
-        movie.delete()
+        try:
+            movies_list = MoviesList.objects.get(user=request.user)
+            movies_list.movies.remove(movie)
+            if (
+                    not movie.movies_lists.exists()
+                    and not movie.watched_by.exists()
+            ):
+                movie.delete()
+
+        except MoviesList.DoesNotExist:
+            pass
+
         return redirect('home')
 
     return redirect('home')
-
-
-def get_dominant_color(image_path, k=4):
-    response = requests.get(image_path)
-    image = Image.open(BytesIO(response.content))
-
-    def calculate_dominant_color(image):
-        # Convertir en RGB si l'image est en noir et blanc
-        if image.mode != 'RGB':
-            image = image.convert('RGB')
-        image_np = np.array(image)
-        half_height = image_np.shape[0] // 2
-
-        if image_np.ndim == 3:
-            top_half = image_np[:half_height, :, :]
-            pixels = top_half.reshape(-1, 3)
-        else:
-            top_half = image_np[:half_height, :]
-            pixels = top_half.reshape(-1, 1)
-
-        kmeans = KMeans(n_clusters=k)
-        kmeans.fit(pixels)
-        counts = Counter(kmeans.labels_)
-        most_common_cluster = counts.most_common(1)[0][0]
-        dominant_color = kmeans.cluster_centers_[most_common_cluster]
-
-        return dominant_color.astype(int)
-
-    dominant_color = calculate_dominant_color(image)
-    try:
-        dominant_color_hex = '#%02x%02x%02x' % tuple(dominant_color)
-    except TypeError:
-        dominant_color_hex = ''
-
-    if not dominant_color_hex:
-        image = image.resize((150, 150))
-        dominant_color = calculate_dominant_color(image)
-        dominant_color_hex = '#%02x%02x%02x' % tuple(dominant_color)
-
-    return dominant_color_hex
-
-
 
 @login_required
 def random_movie(request):
