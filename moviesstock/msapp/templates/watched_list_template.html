@@ -10,14 +10,22 @@
             <header class="container-fluid d-flex justify-content-between">
                 {% include "header_template.html" %}
             </header>
-
             <main class="container-fluid">
-                <h2 class="mt-5 mb-5 ms-5 w-100">🎬 Watched Movies</h2>
 
+                <h2 class="mt-5 mb-3 ms-5 w-100">🎬 Watched Movies ({{ watched_movies_length }})</h2>
+
+                <div class="ms-5 mb-4">
+                    <a href="{% url 'watched_list' %}" class="btn btn-outline-light btn-sm me-2">All</a>
+                    <a href="?group=year" class="btn btn-outline-light btn-sm me-2">Year</a>
+                    <a href="?group=month" class="btn btn-outline-light btn-sm me-2">Month</a>
+                    <a href="?group=week" class="btn btn-outline-light btn-sm">Week</a>
+                </div>
+
+                {# ========= LISTE COMPLETE ========= #}
                 {% if watched_movies %}
                     <div class="row w-100">
                         {% for item in watched_movies %}
-                            <div class="col-6 col-lg-2 mb-4 text-center d-flex flex-column justify-content-between">
+                            <div class="col-6 col-lg-2 mb-4 text-center">
 
                                 <img src="https://image.tmdb.org/t/p/w500{{ item.movie.poster_path }}"
                                      class="img-fluid rounded shadow"
@@ -32,12 +40,75 @@
                             </div>
                         {% endfor %}
                     </div>
-                {% else %}
+                {% endif %}
+
+                {# ========= VERSION GROUPEE ========= #}
+                {% if grouped_watched %}
+                    <div class="accordion px-2 w-100" id="watchedAccordion">
+
+                        {% for period, movies in grouped_watched.items %}
+                            <div class="accordion-item text-light border-0 mb-3">
+
+                                <h2 class="accordion-header">
+                                    <button class="accordion-button collapsed bg-secondary text-light fs-4"
+                                            type="button"
+                                            data-bs-toggle="collapse"
+                                            data-bs-target="#collapse{{ forloop.counter }}">
+
+                                        {% if group_by == "year" %}
+                                            {{ period|date:"Y" }}
+                                        {% elif group_by == "month" %}
+                                            {{ period|date:"F Y" }}
+                                        {% elif group_by == "week" %}
+                                            Week {{ period|date:"W Y" }}
+                                        {% endif %}
+
+                                        <span class="ms-3 text-light fs-4">
+                                            ({{ movies|length }})
+                                        </span>
+                                    </button>
+                                </h2>
+
+                                <div id="collapse{{ forloop.counter }}"
+                                     class="accordion-collapse collapse"
+                                     data-bs-parent="#watchedAccordion">
+
+                                    <div class="accordion-body">
+                                        <div class="row">
+
+                                            {% for item in movies %}
+                                                <div class="col-6 col-lg-2 mb-4 text-center">
+
+                                                    <img src="https://image.tmdb.org/t/p/w500{{ item.movie.poster_path }}"
+                                                         class="img-fluid rounded shadow">
+
+                                                    <p class="mt-2">{{ item.movie.title }}</p>
+
+                                                    <small class="text-muted">
+                                                        {{ item.watched_at|date:"d M Y" }}
+                                                    </small>
+
+                                                </div>
+                                            {% endfor %}
+
+                                        </div>
+                                    </div>
+
+                                </div>
+                            </div>
+                        {% endfor %}
+
+                    </div>
+                {% endif %}
+
+                {% if not watched_movies and not grouped_watched %}
                     <p>You haven't watched any movies yet 👀</p>
                 {% endif %}
 
             </main>
+
         </div>
+
         <script src="{% static 'msapp/js/light_dark_mode.js' %}"></script>
 
     {% else %}
