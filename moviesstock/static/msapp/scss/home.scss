@@ -27,6 +27,15 @@ body {
   &.light-mode {
     background-color: $wall-color;
 
+    .accordion-body {
+      background: white;
+    }
+
+    .groupby_watched {
+      color: black;
+      border: 1px solid black;
+    }
+
     .filters_accordion_content {
       background: white;
     }
@@ -78,6 +87,15 @@ body {
   &.dark-mode {
     background-color: #121212;
     color: #f6f6f6;
+
+    .accordion-body, .collapse {
+      background: #1e1e1e;
+    }
+
+    .groupby_watched {
+      color: white;
+      border: 1px solid white;
+    }
 
     .filters_accordion_content {
       background: #1e1e1e;

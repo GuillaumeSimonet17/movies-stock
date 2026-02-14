@@ -15,10 +15,10 @@
                 <h2 class="mt-5 mb-3 ms-5 w-100">🎬 Watched Movies ({{ watched_movies_length }})</h2>
 
                 <div class="ms-5 mb-4">
-                    <a href="{% url 'watched_list' %}" class="btn btn-outline-light btn-sm me-2">All</a>
-                    <a href="?group=year" class="btn btn-outline-light btn-sm me-2">Year</a>
-                    <a href="?group=month" class="btn btn-outline-light btn-sm me-2">Month</a>
-                    <a href="?group=week" class="btn btn-outline-light btn-sm">Week</a>
+                    <a href="{% url 'watched_list' %}" class="btn btn-outline-light btn-sm me-2 groupby_watched">All</a>
+                    <a href="?group=year" class="btn btn-outline-light btn-sm me-2 groupby_watched">Year</a>
+                    <a href="?group=month" class="btn btn-outline-light btn-sm me-2 groupby_watched">Month</a>
+                    <a href="?group=week" class="btn btn-outline-light btn-sm groupby_watched">Week</a>
                 </div>
 
                 {# ========= LISTE COMPLETE ========= #}

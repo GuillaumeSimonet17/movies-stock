@@ -416,6 +416,11 @@ body {
     z-index: 1000; }
   body.light-mode {
     background-color: #F6F6F6; }
+    body.light-mode .accordion-body {
+      background: white; }
+    body.light-mode .groupby_watched {
+      color: black;
+      border: 1px solid black; }
     body.light-mode .filters_accordion_content {
       background: white; }
     body.light-mode .search_container {
@@ -442,6 +447,11 @@ body {
   body.dark-mode {
     background-color: #121212;
     color: #f6f6f6; }
+    body.dark-mode .accordion-body, body.dark-mode .collapse {
+      background: #1e1e1e; }
+    body.dark-mode .groupby_watched {
+      color: white;
+      border: 1px solid white; }
     body.dark-mode .filters_accordion_content {
       background: #1e1e1e; }
     body.dark-mode .search_container {
