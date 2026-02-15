@@ -1,0 +1,246 @@
+.movie-detail-page {
+    min-height: 100vh;
+    background: var(--bg-primary);
+    width: 100%;
+
+}
+
+.movie_page_container {
+    box-shadow: rgba(177, 177, 177, 0.29) 0px 8px 24px;
+    border-radius: 16px;
+}
+
+.movie-hero {
+    padding: 40px 20px;
+    color: var(--text-primary);
+    width: 100%;
+}
+
+.movie-content {
+    width: 100%;
+    margin: 0;
+    display: grid;
+    grid-template-columns: 300px 1fr;
+    gap: 40px;
+    padding: 0 20px;
+}
+
+.movie-poster-section {
+    position: sticky;
+    top: 80px;
+    height: fit-content;
+}
+
+.poster-image {
+    width: 100%;
+    border-radius: 12px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+}
+
+.movie-info-section {
+    padding-bottom: 20px;
+}
+
+.movie-title {
+    font-size: 36px;
+    margin: 0 0 20px 0;
+    font-weight: bold;
+    color: var(--text-primary);
+}
+
+.movie-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+    margin-bottom: 20px;
+    font-size: 16px;
+    color: var(--text-primary);
+}
+
+.meta-item {
+    padding: 6px 12px;
+    background: var(--bg-tertiary);
+    border-radius: 6px;
+    color: var(--text-primary);
+}
+
+.movie-genres {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 25px;
+}
+
+.genre {
+    color: var(--text-primary);
+    font-weight: bold;
+    background: rgba(255, 255, 255, 0.1);
+    padding: 4px 12px;
+    border-radius: 15px;
+    font-size: 0.85rem;
+}
+
+.movie-section {
+    margin-bottom: 25px;
+}
+
+.movie-section h3 {
+    font-size: 20px;
+    margin-bottom: 10px;
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.movie-section p {
+    line-height: 1.6;
+    opacity: 0.95;
+    color: var(--text-primary);
+}
+
+.movie-actions {
+    display: flex;
+    gap: 15px;
+    margin: 30px 0;
+}
+
+.btn-watched,
+.btn-delete {
+    padding: 12px 24px;
+    border: none;
+    border-radius: 10px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.btn-watched {
+    background: #28a745;
+    color: white;
+}
+
+.btn-watched:hover {
+    background: #218838;
+    transform: translateY(-2px);
+}
+
+.btn-delete {
+    background: #dc3545;
+    color: white;
+}
+
+.btn-delete:hover {
+    background: #c82333;
+    transform: translateY(-2px);
+}
+
+.links_container {
+    display: flex;
+    flex-direction: column;
+    margin-top: 20px;
+    align-items: center;
+    gap: 10px;
+}
+
+/* boutons */
+.btn-movie-page {
+    background: none;
+    font-family: "HollywoodHills", sans-serif;
+    font-size: 1.4rem;
+    transition: 0.1s ease-in-out;
+    cursor: pointer;
+}
+
+.btn-movie-page:hover {
+    transform: scale(1.03);
+}
+
+.links_container a {
+    padding: 8px 20px;
+    border-radius: 50px;
+    transition: 0.2s ease-in-out;
+    display: flex;
+    text-decoration: none;
+    font-size: 0.85rem;
+    width: 100%;
+    max-width: 300px;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+    backdrop-filter: blur(6px);
+}
+
+.links_container a:hover {
+    transform: scale(1.03);
+    border-color: rgba(255, 255, 255, 0.4);
+}
+
+.links_container a i {
+    font-size: 1.1rem;
+}
+
+.backdrops-section {
+    width: 100%;
+    margin: 0;
+    padding: 40px 20px;
+}
+
+.backdrops {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    margin-top: 30px;
+    padding: 0 15px;
+
+    img {
+        width: 100%;
+        max-width: 600px;
+        height: auto;
+        margin: 10px;
+        border-radius: 8px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+
+    }
+}
+
+.backdrop-image {
+    width: 100%;
+    border-radius: 10px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    transition: transform 0.2s ease;
+}
+
+/*.backdrop-image:hover {*/
+/*  transform: scale(1.05);*/
+/*}*/
+
+.loading-container,
+.error {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 60vh;
+    font-size: 18px;
+    color: var(--text-secondary);
+}
+
+@media (max-width: 968px) {
+    .movie-content {
+        grid-template-columns: 1fr;
+        gap: 30px;
+    }
+
+    .movie-poster-section {
+        position: static;
+        max-width: 300px;
+        margin: 0 auto;
+    }
+
+    .movie-title {
+        font-size: 28px;
+    }
+
+    .backdrops-grid {
+        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    }
+}
