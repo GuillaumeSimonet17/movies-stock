@@ -127,14 +127,13 @@
   justify-content: center;
   margin-top: 30px;
   padding: 0 15px;
+}
 
-  img {
-    width: 100%;
-    max-width: 600px;
-    height: auto;
-    margin: 10px;
-    border-radius: 8px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
-
-  }
+.backdrops img {
+  width: 100%;
+  max-width: 600px;
+  height: auto;
+  margin: 10px;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
 }

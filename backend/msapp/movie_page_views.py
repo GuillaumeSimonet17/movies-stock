@@ -27,6 +27,7 @@ def movie_page(request):
             yts1 = URL_YTS_1 + title_dash + '-' + str(year_date)
             yts2 = URL_YTS_2 + title_dash.lower() + '-' + str(year_date)
 
+        print('movie.status == ', movie.status)
         if movie.status != 'Released' and movie.release_date and movie.release_date < timezone.now().date():
             movie_detailed = search_detailed_movies(movie.movie_id)
             if movie_detailed:

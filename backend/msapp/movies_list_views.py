@@ -210,7 +210,7 @@ def get_images_and_links(request):
             budget_parsed = str(budget) + 'M'
             movie.budget = budget_parsed
 
-        movie.overview = synopsis_translate
+        movie.overview = synopsis_translate if synopsis_translate else movie.overview
         movie.save()
 
         return JsonResponse({'file_paths': all_file_paths})
