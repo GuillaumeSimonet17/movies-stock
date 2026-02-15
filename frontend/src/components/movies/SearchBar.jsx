@@ -1,13 +1,14 @@
-import { useState, useEffect } from 'react';
-import { movieService } from '../../services/movieService';
+import {useState, useEffect} from 'react';
+import {movieService} from '../../services/movieService';
 import './SearchBar.css';
 
-function SearchBar({ onMovieAdded }) {
+function SearchBar({onMovieAdded}) {
   const [query, setQuery] = useState('');
   const [results, setResults] = useState([]);
   const [loading, setLoading] = useState(false);
   const [searchType, setSearchType] = useState('movie');
   const [adding, setAdding] = useState(null);
+  const [errorMsg, setErrorMsg] = useState(null);
 
   useEffect(() => {
     if (query.length < 2) {
@@ -39,14 +40,25 @@ function SearchBar({ onMovieAdded }) {
       if (onMovieAdded) onMovieAdded();
     } catch (error) {
       console.error('Add movie error:', error);
-      alert(error.message || 'Failed to add movie');
+      setErrorMsg(error.message || 'Failed to add movie');
     } finally {
       setAdding(null);
     }
   };
 
+  useEffect(() => {
+    if (!errorMsg) return;
+
+    const timer = setTimeout(() => {
+      setErrorMsg(null);
+    }, 3000);
+
+    return () => clearTimeout(timer);
+  }, [errorMsg]);
+
   return (
     <div className="search-bar">
+      {errorMsg}
       <div className="search-controls col-12 col-md-6">
         <input
           type="text"
@@ -77,16 +89,14 @@ function SearchBar({ onMovieAdded }) {
       {results.length > 0 && (
         <div className="search-results">
           {results.map((movie) => (
-            <div key={movie.id} className="search-result-item" onClick={() => handleAddMovie(movie)}>
+            <div key={movie.id} className="search-result-item col-1" onClick={() => handleAddMovie(movie)}>
               {movie.poster_path && (
                 <img
-                  src={`https://image.tmdb.org/t/p/w92${movie.poster_path}`}
+                  src={`https://image.tmdb.org/t/p/w500${movie.poster_path}`}
                   alt={movie.title || movie.name}
                 />
               )}
               <div className="result-info">
-                <h4>{movie.title || movie.name}</h4>
-                <p>{movie.release_date || movie.first_air_date}</p>
                 <span>{adding === movie.id ? 'Adding...' : ''}</span>
               </div>
             </div>

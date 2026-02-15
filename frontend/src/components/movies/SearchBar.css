@@ -71,15 +71,17 @@
   overflow-y: auto;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
   z-index: 10;
+  display: flex;
+  height: 250px;
 }
 
 .search-result-item {
   display: flex;
   align-items: center;
   padding: 12px;
-  border-bottom: 1px solid var(--border-color, #eee);
   gap: 12px;
   transition: background 0.2s ease;
+  cursor: pointer;
 }
 
 .search-result-item:last-child {
@@ -91,8 +93,8 @@
 }
 
 .search-result-item img {
-  width: 60px;
-  height: 90px;
+  width: 100%;
+  height: 100%;
   object-fit: cover;
   border-radius: 6px;
 }

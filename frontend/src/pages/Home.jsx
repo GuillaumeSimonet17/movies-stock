@@ -140,11 +140,34 @@ function Home() {
                     {getGenreName(genreKey)}
                   </h3>
 
-                  <div className="movies-grid">
-                    {genreMovies.map(movie => (
-                      <MovieCard key={movie?.id || Math.random()} movie={movie}/>
-                    ))}
+                  <div className="slider-wrapper">
+                    <div className="genre-slider" >
+                      {genreMovies.map(movie => (
+                        <MovieCard key={movie?.id || Math.random()} movie={movie}/>
+                      ))}
+                    </div>
+
+                    <button
+                      className="slider-btn prev"
+                      onClick={(e) => {
+                        const slider = e.currentTarget.parentElement.querySelector('.genre-slider');
+                        slider.scrollBy({left: -600, behavior: 'smooth'});
+                      }}
+                    >
+                      ‹
+                    </button>
+
+                    <button
+                      className="slider-btn next"
+                      onClick={(e) => {
+                        const slider = e.currentTarget.parentElement.querySelector('.genre-slider');
+                        slider.scrollBy({left: 600, behavior: 'smooth'});
+                      }}
+                    >
+                      ›
+                    </button>
                   </div>
+
                 </div>
               ))}
           </div>

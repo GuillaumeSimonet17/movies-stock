@@ -10,7 +10,7 @@ function TopBar({ bgColor, textColor }) {
 
   const style = {
     background: bgColor || (theme === 'dark' ? '#111' : '#ffffff'),
-    color: textColor || (theme === 'dark' ? '#fff' : '#000'),
+    color: textColor || (theme === 'dark' ? '#BA1818' : '#000'),
   };
 
   return (

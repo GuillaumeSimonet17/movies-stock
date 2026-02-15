@@ -248,15 +248,6 @@ def get_movie_detail(request, movie_id):
                 {'error': 'Movie not in your list'},
                 status=status.HTTP_403_FORBIDDEN
             )
-        print('movie.status = ', movie.status)
-        # 🔄 Mise à jour si film sorti mais status faux
-        if movie.status != 'Released' and movie.release_date and movie.release_date < timezone.now().date():
-            movie_detailed = search_detailed_movies(movie.movie_id)
-            if movie_detailed:
-                movie.release_date = movie_detailed.get('release_date') or None
-                movie.budget = movie_detailed.get('budget') or None
-                movie.status = movie_detailed.get('status') or None
-                movie.save()
 
         # 🎬 Génération liens YTS
         yts1 = None
@@ -280,9 +271,6 @@ def get_movie_detail(request, movie_id):
         # 🎨 Couleurs dynamiques (MANQUAIT)
         darkness = color_darkness(movie.dominant_color)
         text_color, background = get_text_background_colors(darkness, movie.dominant_color)
-
-        print('text_color, background === ', text_color, background)
-
 
         # 🎬 Liste utilisateur filtrée
         movies = movies_list.movies.all()

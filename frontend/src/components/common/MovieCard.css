@@ -30,10 +30,14 @@
   left: 0;
   right: 0;
   background: linear-gradient(to top, rgba(0, 0, 0, 0.9), transparent);
-  padding: 15px;
+  padding-top: 15px;
+  padding-bottom: 15px;
+  padding-left: 5px;
+  padding-right: 5px;
   color: white;
   opacity: 0;
   transition: opacity 0.3s ease;
+  text-align: center;
 }
 
 .movie-card:hover .movie-overlay {
@@ -45,6 +49,15 @@
   font-size: 16px;
   font-weight: bold;
   color: white;
+  line-height: 1.2;
+}
+
+.movie-title.medium {
+  font-size: 24px;
+}
+
+.movie-title.x-small {
+  font-size: 12px;
 }
 
 .movie-year {
