@@ -143,7 +143,7 @@ function MovieDetailPage() {
     >
       <TopBar bgColor={movie.dominant_color} textColor={textColor}/>
 
-      <main className="container movie_page_container p-5 mt-5"
+      <main className="container movie_page_container p-5"
             style={{
               color: textColor,
               background: backgroundColor
