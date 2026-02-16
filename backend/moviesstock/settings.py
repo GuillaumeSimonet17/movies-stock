@@ -10,7 +10,7 @@ SECRET_KEY = 'django-insecure-1i14(8w2sndp=$3+smb5()q+h+!q5%1ayo4+&8xfi((0e890k0
 DEBUG = False
 
 ALLOWED_HOSTS = [
-    "http://hollylist.guillaume-simonet.com/",
+    "hollylist.guillaume-simonet.com",
     "localhost",
     "127.0.0.1",
 ]
