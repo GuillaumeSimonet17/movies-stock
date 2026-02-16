@@ -7,9 +7,9 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 SECRET_KEY = 'django-insecure-1i14(8w2sndp=$3+smb5()q+h+!q5%1ayo4+&8xfi((0e890k0'
 
-DEBUG = True
+DEBUG = False
 
-ALLOWED_HOSTS = ["*"]
+ALLOWED_HOSTS = ["http://hollylist.guillaume-simonet.com/"]
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -111,6 +111,7 @@ LOGOUT_REDIRECT_URL = "/"
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:5173",
     "http://127.0.0.1:5173",
+    "http://hollylist.guillaume-simonet.com/",
 ]
 
 CORS_ALLOW_CREDENTIALS = True
