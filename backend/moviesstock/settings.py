@@ -9,7 +9,11 @@ SECRET_KEY = 'django-insecure-1i14(8w2sndp=$3+smb5()q+h+!q5%1ayo4+&8xfi((0e890k0
 
 DEBUG = False
 
-ALLOWED_HOSTS = ["http://hollylist.guillaume-simonet.com/"]
+ALLOWED_HOSTS = [
+    "http://hollylist.guillaume-simonet.com/",
+    "localhost",
+    "127.0.0.1",
+]
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -62,7 +66,7 @@ DATABASES = {
         "NAME": "moviesstock",
         "USER": "guillaume",
         "PASSWORD": "admin",
-        "HOST": "postgres_moviesstock",
+        "HOST": "db",
         "PORT": "5432",
     }
 }
@@ -107,11 +111,10 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 LOGIN_REDIRECT_URL = "/"
 LOGOUT_REDIRECT_URL = "/"
 
-# CORS Configuration for React Frontend
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:5173",
     "http://127.0.0.1:5173",
-    "http://hollylist.guillaume-simonet.com/",
+    "https://hollylist.guillaume-simonet.com",
 ]
 
 CORS_ALLOW_CREDENTIALS = True
