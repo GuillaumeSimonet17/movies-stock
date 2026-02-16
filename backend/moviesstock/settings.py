@@ -62,7 +62,7 @@ DATABASES = {
         "NAME": "moviesstock",
         "USER": "guillaume",
         "PASSWORD": "admin",
-        "HOST": "db",
+        "HOST": "postgres_moviesstock",
         "PORT": "5432",
     }
 }
