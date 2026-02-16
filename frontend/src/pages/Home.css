@@ -97,6 +97,7 @@
 
 /* SLIDER */
 .genre-slider {
+    height: 300px;
     display: flex;
     flex-wrap: nowrap;
     overflow-x: auto;

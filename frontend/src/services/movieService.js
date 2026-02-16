@@ -2,9 +2,7 @@ import { api } from './api';
 
 export const movieService = {
   getMovies: (filters = {}) => {
-    console.log('filters', filters);
     const params = new URLSearchParams(filters).toString();
-    console.log('params = ', params);
     return api.get(`/movies/?${params}`);
   },
 

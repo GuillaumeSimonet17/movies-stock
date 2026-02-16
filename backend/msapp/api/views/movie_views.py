@@ -6,14 +6,10 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from django.db.models import Q
 from msapp.models import Movie, MoviesList, FilePath
-from msapp.movies_list_views import URL_TMDB, API_KEY_DEEPL
+from msapp.utils import URL_TMDB, API_KEY_DEEPL
 from msapp.serializers import MovieSerializer
 from msapp.utils import search_detailed_movies, get_dominant_color, API_KEY_TMDB
 import random
-import os
-from django.utils import timezone
-from django.shortcuts import redirect, render, reverse
-from django.contrib.auth.decorators import login_required
 import colorsys
 import string
 
@@ -38,7 +34,6 @@ def get_movies(request):
         base_queryset = base_queryset.filter(
             Q(title__icontains=search_query)
         )
-    print('search_query', search_query)
 
     genre_selected = request.GET.get('genre', 'All')
     order_selected = request.GET.get('order_by', 'Date added')
@@ -212,8 +207,6 @@ def add_movie(request):
                 print(f"Error getting dominant color: {e}")
                 dominant_color = '#1a1a1a'
 
-        print('data = ', movie_data)
-        print('data ovrevie = ', movie_data.get('overview'))
         # Create movie
         movie = Movie.objects.create(
             movie_id=movie_id,
@@ -231,9 +224,7 @@ def add_movie(request):
             origin_country=movie_data.get('origin_country', []),
             status=movie_data.get('status', '')
         )
-        print('GET IN')
         get_images_and_links(movie)
-        print('GET OUT')
 
     # Add movie to user's list
     movies_list.movies.add(movie)
@@ -434,7 +425,6 @@ def get_images_and_links(movie):
         "Authorization": "Bearer " + API_KEY_TMDB,
     }
     try:
-        print('url == ', url)
         response = requests.get(url, headers=headers)
         response.raise_for_status()
         data = response.json()
@@ -447,21 +437,16 @@ def get_images_and_links(movie):
         for file_path in all_file_paths:
             FilePath.objects.create(movie=movie, file_path=file_path)
 
-        print
         synopsis_translate = None
-        print('movie.overview == ', movie.overview)
+
         if movie.overview:
             translator = deepl.Translator(API_KEY_DEEPL)
-            print('translator == ', translator)
             synopsis_translate = translator.translate_text(movie.overview, target_lang="FR")
-            print("synopsis_translate == ", synopsis_translate)
 
         if movie.budget and int(movie.budget) > 0:
             budget = int(movie.budget) // 1_000_000
             budget_parsed = str(budget) + 'M'
             movie.budget = budget_parsed
-
-        print("movie.budget == ", movie.budget)
 
         movie.overview = synopsis_translate if synopsis_translate else movie.overview
         movie.save()

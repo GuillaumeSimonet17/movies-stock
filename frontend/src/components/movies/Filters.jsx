@@ -48,7 +48,7 @@ function Filters({onFilterChange, availableGenres, currentFilters}) {
 
   const getDisplayLabel = (filterType) => {
     if (filterType === 'genre') {
-      if (!currentFilters.genre || currentFilters.genre === 'All') return 'All Genres';
+      if (!currentFilters.genre || currentFilters.genre === 'all') return 'All Genres';
       return currentFilters.genre;
     }
 
@@ -59,7 +59,7 @@ function Filters({onFilterChange, availableGenres, currentFilters}) {
 
     if (filterType === 'is_tv') {
       const type = TYPE_OPTIONS.find(t => t.value === currentFilters.is_tv);
-      return type ? type.label : 'All';
+      return type ? type.label : 'Movies and Series';
     }
   };
 

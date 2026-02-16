@@ -10,5 +10,4 @@ urlpatterns = [
     # Legacy template views (keep during migration)
     path("accounts/", include("django.contrib.auth.urls")),
     path("accounts/", include("accounts.urls")),
-    path('', include('msapp.urls')),
 ]

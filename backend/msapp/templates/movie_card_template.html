@@ -1,7 +1,0 @@
-<a href="{% url 'movie_page' %}?query={{ movie.id }}&ord={{ ordered_selected_value|default:"Date added" }}&gnr={{ genre_selected|default:"All" }}"
-   class="p-0 border-0 col-5 col-lg-1 movie_card d-flex justify-content-center position-relative"
->
-    <img class="img-fluid w-100 shadow"
-         src="https://image.tmdb.org/t/p/w500{{ movie.poster_path }}"
-         alt="{{ movie.title }} poster">
-</a>

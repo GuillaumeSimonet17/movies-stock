@@ -10,7 +10,8 @@ from dotenv import load_dotenv
 load_dotenv()
 
 API_KEY_TMDB = os.getenv('API_KEY_TMDB')
-
+API_KEY_DEEPL = os.getenv('API_KEY_DEEPL')
+URL_TMDB = 'https://api.themoviedb.org/3/'
 
 def get_dominant_color(image_path, k=4):
     response = requests.get(image_path)

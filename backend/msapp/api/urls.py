@@ -18,7 +18,6 @@ urlpatterns = [
     path('movies/random/', movie_views.random_movie, name='movies-random'),
     path('movies/<int:movie_id>/', movie_views.get_movie_detail, name='movie-detail'),
     path('movies/<int:movie_id>/delete/', movie_views.delete_movie, name='movie-delete'),
-    # path('movies/<int:movie_id>/media/', movie_views.get_movie_media, name='movie-media'),
 
     # Watched endpoints
     path('watched/', watched_views.get_watched_movies, name='watched-list'),
