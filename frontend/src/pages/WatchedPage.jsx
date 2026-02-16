@@ -1,7 +1,7 @@
-import { useState, useEffect } from 'react';
+import {useState, useEffect} from 'react';
 import TopBar from '../components/common/TopBar';
 import MovieCard from '../components/common/MovieCard';
-import { watchedService } from '../services/watchedService';
+import {watchedService} from '../services/watchedService';
 import './WatchedPage.css';
 
 function WatchedPage() {
@@ -32,7 +32,7 @@ function WatchedPage() {
   if (loading) {
     return (
       <div className="watched-page">
-        <TopBar />
+        <TopBar/>
         <div className="loading-container">Loading watched movies...</div>
       </div>
     );
@@ -40,7 +40,7 @@ function WatchedPage() {
 
   return (
     <div className="watched-page">
-      <TopBar />
+      <TopBar/>
 
       <div className="content">
         <div className="watched-header">
@@ -86,7 +86,7 @@ function WatchedPage() {
           <div className="movies-grid">
             {watchedMovies.map((watched) => (
               <div key={watched.id} className="watched-movie-item">
-                <MovieCard movie={watched.movie} clickable={false} />
+                <MovieCard movie={watched.movie} clickable={false}/>
                 <p className="watched-date">
                   Watched: {new Date(watched.watched_at).toLocaleDateString()}
                 </p>
@@ -94,19 +94,37 @@ function WatchedPage() {
             ))}
           </div>
         ) : (
-          <div className="grouped-container">
-            {Object.entries(groupedWatched).map(([period, group]) => (
-              <div key={period} className="group-section">
-                <h2 className="group-title">{group.label}</h2>
-                <div className="movies-grid">
-                  {group.movies.map((watched) => (
-                    <div key={watched.id} className="watched-movie-item">
-                      <MovieCard movie={watched.movie} clickable={false}/>
-                      <p className="watched-date">
-                        {new Date(watched.watched_at).toLocaleDateString()}
-                      </p>
+          <div className="accordion grouped-container" id="watchedAccordion">
+            {Object.entries(groupedWatched).map(([period, group], index) => (
+              <div className="accordion-item" key={period}>
+                <h2 className="accordion-header" id={`heading-${index}`}>
+                  <button
+                    className={`accordion-button ${index !== 0 ? 'collapsed' : ''}`}
+                    type="button"
+                    data-bs-toggle="collapse"
+                    data-bs-target={`#collapse-${index}`}
+                  >
+                    {group.label} ({group.count})
+                  </button>
+                </h2>
+
+                <div
+                  id={`collapse-${index}`}
+                  className={`accordion-collapse collapse ${index === 0 ? 'show' : ''}`}
+                  data-bs-parent="#watchedAccordion"
+                >
+                  <div className="accordion-body p-0 px-1 py-3">
+                    <div className="movies-row-scroll">
+                      {group.movies.map((watched) => (
+                        <div key={watched.id} className="watched-movie-item me-2">
+                          <MovieCard movie={watched.movie} clickable={false}/>
+                          <p className="watched-date">
+                            {new Date(watched.watched_at).toLocaleDateString()}
+                          </p>
+                        </div>
+                      ))}
                     </div>
-                  ))}
+                  </div>
                 </div>
               </div>
             ))}

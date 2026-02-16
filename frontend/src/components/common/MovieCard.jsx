@@ -1,7 +1,9 @@
-import {Link} from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import './MovieCard.css';
 
-function MovieCard({movie, clickable = true}) {
+function MovieCard({ movie, movieList = [], clickable = true }) {
+  const navigate = useNavigate();
+
   const posterUrl = movie.poster_path
     ? `https://image.tmdb.org/t/p/w500${movie.poster_path}`
     : '/placeholder-poster.png';
@@ -18,6 +20,16 @@ function MovieCard({movie, clickable = true}) {
     if (longestWord.length > 15) return 'x-small';
     if (longestWord.length > 8 || title.length > 30) return 'medium';
     return '';
+  };
+
+  const openMovie = () => {
+    if (!clickable) return;
+
+    navigate(`/movie/${movie.id}`, {
+      state: {
+        movieList
+      }
+    });
   };
 
   const content = (
@@ -37,12 +49,12 @@ function MovieCard({movie, clickable = true}) {
     </div>
   );
 
-  return clickable ? (
-    <Link to={`/movie/${movie.id}`} className="movie-card">
-      {content}
-    </Link>
-  ) : (
-    <div className="movie-card not-clickable">
+  return (
+    <div
+      className={`movie-card ${!clickable ? 'not-clickable' : ''}`}
+      onClick={openMovie}
+      style={{ cursor: clickable ? 'pointer' : 'default' }}
+    >
       {content}
     </div>
   );

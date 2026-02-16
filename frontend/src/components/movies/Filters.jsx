@@ -1,27 +1,32 @@
-import { useState, useRef, useEffect } from 'react';
+import {useState, useRef, useEffect} from 'react';
 import './Filters.css';
 
-function Filters({ onFilterChange, availableGenres, currentFilters }) {
+function Filters({onFilterChange, availableGenres, currentFilters}) {
   const [showGenres, setShowGenres] = useState(false);
   const [showOrder, setShowOrder] = useState(false);
   const [showType, setShowType] = useState(false);
   const [mobileAccordionOpen, setMobileAccordionOpen] = useState(false);
+  const [searchText, setSearchText] = useState(currentFilters.search || '');
 
   const genresRef = useRef(null);
   const orderRef = useRef(null);
   const typeRef = useRef(null);
 
   const ORDER_OPTIONS = [
-    { value: 'Date added', label: 'Date added' },
-    { value: 'Year Asc', label: 'Year Asc' },
-    { value: 'Year Dsc', label: 'Year Dsc' },
+    {value: 'Date added', label: 'Date added'},
+    {value: 'Year Asc', label: 'Year Asc'},
+    {value: 'Year Dsc', label: 'Year Dsc'},
   ];
 
   const TYPE_OPTIONS = [
-    { value: 'All', label: 'All' },
-    { value: 'Movies', label: 'Movies' },
-    { value: 'Series', label: 'Series' },
+    {value: 'All', label: 'All'},
+    {value: 'Movies', label: 'Movies'},
+    {value: 'Series', label: 'Series'},
   ];
+
+  useEffect(() => {
+    setSearchText(currentFilters.search || '');
+  }, [currentFilters.search]);
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -58,8 +63,39 @@ function Filters({ onFilterChange, availableGenres, currentFilters }) {
     }
   };
 
+  const handleResetFilters = () => {
+    setSearchText('');
+
+    onFilterChange({
+      genre: 'All',
+      order_by: 'Date added',
+      is_tv: 'All',
+      search: ''
+    });
+
+    setShowGenres(false);
+    setShowOrder(false);
+    setShowType(false);
+  };
+
   const renderFilters = () => (
     <>
+      <div className="filters-search">
+        <input
+          type="text"
+          placeholder="Search..."
+          value={searchText}
+          onChange={(e) => setSearchText(e.target.value)}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter') {
+              e.preventDefault();
+
+              handleFilterChange('search', searchText);
+            }
+          }}
+        />
+      </div>
+
       {/* TYPE */}
       <div className="filter-section" ref={typeRef}>
         <div
@@ -153,6 +189,10 @@ function Filters({ onFilterChange, availableGenres, currentFilters }) {
           </ul>
         )}
       </div>
+
+      <button className="reset-btn" onClick={handleResetFilters}>
+        Reset
+      </button>
     </>
   );
 

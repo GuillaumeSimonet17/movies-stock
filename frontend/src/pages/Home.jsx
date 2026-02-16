@@ -16,7 +16,8 @@ function Home() {
   const [filters, setFilters] = useState({
     genre: 'all',
     is_tv: 'all',
-    order_by: '-release_date'
+    order_by: '-release_date',
+    search: ''
   });
   const navigate = useNavigate();
 
@@ -37,7 +38,9 @@ function Home() {
       if (filters.order_by) {
         params.order_by = filters.order_by;
       }
-
+      if (filters.search && filters.search.trim() !== '') {
+        params.search = filters.search;
+      }
       const data = await movieService.getMovies(params);
 
       // Safety checks for API response
@@ -141,9 +144,9 @@ function Home() {
                   </h3>
 
                   <div className="slider-wrapper">
-                    <div className="genre-slider" >
+                    <div className="genre-slider">
                       {genreMovies.map(movie => (
-                        <MovieCard key={movie?.id || Math.random()} movie={movie}/>
+                        <MovieCard key={movie?.id || Math.random()} movie={movie} movieList={genreMovies}/>
                       ))}
                     </div>
 

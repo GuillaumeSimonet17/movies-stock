@@ -92,7 +92,7 @@ def home(request):
     latest_ids = list(
         base_queryset
         .order_by('-id')
-        .values_list('id', flat=True)[:10]
+        .values_list('id', flat=True)[:15]
     )
 
     latest_movies = (

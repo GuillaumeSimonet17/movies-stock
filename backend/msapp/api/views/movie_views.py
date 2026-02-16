@@ -32,6 +32,14 @@ def get_movies(request):
 
     base_queryset = movies_list.movies.all()
 
+
+    search_query = request.GET.get('search', '')
+    if search_query:
+        base_queryset = base_queryset.filter(
+            Q(title__icontains=search_query)
+        )
+    print('search_query', search_query)
+
     genre_selected = request.GET.get('genre', 'All')
     order_selected = request.GET.get('order_by', 'Date added')
     tv_selected = request.GET.get('is_tv', 'All')
@@ -61,7 +69,7 @@ def get_movies(request):
     # ===== LATEST =====
     latest_ids = list(
         base_queryset.order_by('-id')
-        .values_list('id', flat=True)[:10]
+        .values_list('id', flat=True)[:15]
     )
 
     latest_movies = (

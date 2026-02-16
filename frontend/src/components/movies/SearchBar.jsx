@@ -89,7 +89,7 @@ function SearchBar({onMovieAdded}) {
       {results.length > 0 && (
         <div className="search-results">
           {results.map((movie) => (
-            <div key={movie.id} className="search-result-item col-1" onClick={() => handleAddMovie(movie)}>
+            <div key={movie.id} className="search-result-item col-6 col-md-1 d-flex flex-column" onClick={() => handleAddMovie(movie)}>
               {movie.poster_path && (
                 <img
                   src={`https://image.tmdb.org/t/p/w500${movie.poster_path}`}

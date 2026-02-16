@@ -142,7 +142,7 @@
 }
 
 .movie-card {
-    min-width: 160px;
+    min-width: 180px;
     flex-shrink: 0;
 }
 

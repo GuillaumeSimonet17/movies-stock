@@ -55,12 +55,15 @@ def get_watched_movies(request):
         if period_key not in groups_dict:
             groups_dict[period_key] = {
                 'label': period_label,
-                'movies': []
+                'movies': [],
+                'count': 0
             }
 
         groups_dict[period_key]['movies'].append(
             WatchedMovieSerializer(wm).data
         )
+
+        groups_dict[period_key]['count'] += 1
 
     return Response({
         'watched_movies': [],  # Empty when grouped

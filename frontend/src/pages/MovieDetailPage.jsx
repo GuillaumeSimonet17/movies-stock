@@ -7,9 +7,13 @@ import {getGenreName} from '../utils/genreMapping';
 import './MovieDetailPage.css';
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome'
 import {faYoutube, faGoogle} from '@fortawesome/free-brands-svg-icons'
+import {useLocation} from 'react-router-dom';
 
 
 function MovieDetailPage() {
+  const location = useLocation();
+  const movieList = location.state?.movieList || [];
+
   const {id} = useParams();
   const navigate = useNavigate();
   const [movie, setMovie] = useState(null);
@@ -18,6 +22,14 @@ function MovieDetailPage() {
   const [backgroundColor, setBackgroundColor] = useState(true);
   const [yts1, setYts1] = useState(true);
   const [yts2, setYts2] = useState(true);
+
+  const currentIndex = movieList.findIndex(m => m.id === Number(id));
+
+  const prevMovie =
+    currentIndex > 0 ? movieList[currentIndex - 1] : null;
+
+  const nextMovie =
+    currentIndex < movieList.length - 1 ? movieList[currentIndex + 1] : null;
 
   useEffect(() => {
     loadMovie();
@@ -54,6 +66,12 @@ function MovieDetailPage() {
     }
   };
 
+  const goToMovie = (movieId) => {
+    navigate(`/movie/${movieId}`, {
+      state: {movieList}
+    });
+  };
+
   const handleMarkWatched = async () => {
     try {
       await watchedService.addToWatched(id);
@@ -72,10 +90,10 @@ function MovieDetailPage() {
     }
   };
 
-  if (loading) {
+  if (loading || !movie) {
     return (
       <div className="movie-detail-page">
-        <TopBar bgColor={backgroundColor} textColor={textColor} />
+        <TopBar bgColor={backgroundColor} textColor={textColor}/>
         <div className="loading-container">Loading...</div>
       </div>
     );
@@ -84,7 +102,7 @@ function MovieDetailPage() {
   if (!movie) {
     return (
       <div className="movie-detail-page">
-        <TopBar bgColor={backgroundColor} textColor={textColor} />
+        <TopBar bgColor={backgroundColor} textColor={textColor}/>
         <div className="error">Movie not found</div>
       </div>
     );
@@ -114,7 +132,7 @@ function MovieDetailPage() {
       className="movie-page"
       style={{background: movie.dominant_color || '#000'}}
     >
-      <TopBar bgColor={movie.dominant_color} textColor={textColor} />
+      <TopBar bgColor={movie.dominant_color} textColor={textColor}/>
 
       <main className="container movie_page_container p-5 mt-5"
             style={{
@@ -131,13 +149,27 @@ function MovieDetailPage() {
           </div>
 
           <div className="col-md-6 d-flex justify-content-end gap-3 btn_pass">
-            <span className={"btn-movie-page me-3"} onClick={handleMarkWatched}>saw it</span>
-            <span className={"btn-movie-page"} onClick={handleDelete}>Nope</span>
+            <div className="movie-nav">
+              {prevMovie && (
+                <span onClick={() => goToMovie(prevMovie.id)}>
+                  &lt;
+                </span>
+              )}
+            </div>
+            <span className={"btn-movie-page mt-2"} onClick={handleMarkWatched}>saw it</span>
+            <div className="movie-nav">
+              {nextMovie && (
+                <span onClick={() => goToMovie(nextMovie.id)}>
+                  &gt;
+                </span>
+              )}
+            </div>
+            <span className={"btn-movie-page mt-2"} onClick={handleDelete}>Nope</span>
           </div>
         </div>
 
         {/* MAIN */}
-        <div className="row main_container mt-3">
+        <div className="row main_container mt-1">
 
           {/* POSTER */}
           <div className="col-12 col-md-4 left text-start">
@@ -187,7 +219,7 @@ function MovieDetailPage() {
                 )}
                 {/* BUDGET */}
                 {movie.budget && (
-                  <p>Budget : {movie.budget} $</p>
+                  <p><strong>Budget</strong> : {movie.budget} $</p>
                 )}
 
                 <p>
@@ -215,8 +247,8 @@ function MovieDetailPage() {
               </div>
 
               {/* LINKS */}
-              <div className="col-lg-6 links_container mt-4 mt-lg-0">
-                <div className="d-flex justify-content-center align-items-center mb-3">
+              <div className="col-lg-6 links_container mt-lg-0">
+                <div className="d-flex justify-content-center align-items-center mt-5 mb-3">
                   <a
                     href={`https://www.youtube.com/results?search_query=${movie.title}bande annonce`}
                     target="_blank"
@@ -282,7 +314,12 @@ function MovieDetailPage() {
                         href={`https://fr.my-subs.net/search.php?key=${movie.title}`}
                         target="_blank"
                         rel="noreferrer"
-                        style={{minWidth: 130, background: backgroundColor, color: textColor, border: `1px solid ${textColor}`}}
+                        style={{
+                          minWidth: 130,
+                          background: backgroundColor,
+                          color: textColor,
+                          border: `1px solid ${textColor}`
+                        }}
                       >
                         Sous-titres
                       </a>
@@ -291,7 +328,12 @@ function MovieDetailPage() {
                         href={`https://yts-subs.com/search/${movie.title}`}
                         target="_blank"
                         rel="noreferrer"
-                        style={{minWidth: 130, background: backgroundColor, color: textColor, border: `1px solid ${textColor}`}}
+                        style={{
+                          minWidth: 130,
+                          background: backgroundColor,
+                          color: textColor,
+                          border: `1px solid ${textColor}`
+                        }}
                       >
                         Sous-titres 2
                       </a>

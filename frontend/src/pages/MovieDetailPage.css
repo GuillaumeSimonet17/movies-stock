@@ -142,6 +142,24 @@
     gap: 10px;
 }
 
+.movie-nav {
+    display: flex;
+}
+
+.movie-nav span {
+    border-radius: 10px;
+    cursor: pointer;
+    width: 100px;
+    height: 40px;
+    font-size: 30px;
+    font-weight: bold;
+}
+
+.movie-nav button:hover {
+    background: currentColor;
+    color: black;
+}
+
 /* boutons */
 .btn-movie-page {
     background: none;
@@ -149,6 +167,7 @@
     font-size: 1.4rem;
     transition: 0.1s ease-in-out;
     cursor: pointer;
+    text-align: center;
 }
 
 .btn-movie-page:hover {
