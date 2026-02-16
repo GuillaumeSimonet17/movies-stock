@@ -31,13 +31,6 @@ function Drawer({ isOpen, onClose }) {
         </div>
 
         <div className="drawer-content">
-          {user && (
-            <div className="user-info">
-              <p className="username">{user.username}</p>
-              {user.email && <p className="email">{user.email}</p>}
-            </div>
-          )}
-
           <nav className="drawer-nav">
             <Link to="/" onClick={onClose}>
               <span className="icon">🏠</span>
