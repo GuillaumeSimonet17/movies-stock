@@ -90,6 +90,15 @@ function MovieDetailPage() {
     }
   };
 
+  const handleRandomMovie = async () => {
+    try {
+      const movie = await movieService.getRandomMovie();
+      navigate(`/movie/${movie.id}`);
+    } catch (error) {
+      console.error('Error getting random movie:', error);
+    }
+  };
+
   if (loading || !movie) {
     return (
       <div className="movie-detail-page">
@@ -149,6 +158,11 @@ function MovieDetailPage() {
           </div>
 
           <div className="col-md-6 d-flex justify-content-end gap-3 btn_pass">
+            {!prevMovie && !nextMovie && (
+            <button className="random-btn" onClick={handleRandomMovie}>
+              🎲
+            </button>
+            )}
             <div className="movie-nav">
               {prevMovie && (
                 <span onClick={() => goToMovie(prevMovie.id)}>

@@ -144,12 +144,13 @@
 
 .movie-nav {
     display: flex;
+    margin-bottom: 10px;
 }
 
 .movie-nav span {
     border-radius: 10px;
     cursor: pointer;
-    width: 100px;
+    width: 70px;
     height: 40px;
     font-size: 30px;
     font-weight: bold;
