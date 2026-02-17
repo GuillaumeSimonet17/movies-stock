@@ -26,7 +26,4 @@ export const movieService = {
     return api.get('/movies/random/');
   },
 
-  // fetchMedia: (id) => {
-  //   return api.post(`/movies/${id}/media/`, {});
-  // },
 };

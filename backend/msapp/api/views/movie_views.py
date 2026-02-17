@@ -7,7 +7,7 @@ from rest_framework.response import Response
 from django.db.models import Q
 from msapp.models import Movie, MoviesList, FilePath
 from msapp.utils import URL_TMDB, API_KEY_DEEPL
-from msapp.serializers import MovieSerializer
+from msapp.serializers import MovieSerializer, MovieListSerializer
 from msapp.utils import search_detailed_movies, get_dominant_color, API_KEY_TMDB
 import random
 import colorsys
@@ -20,103 +20,61 @@ URL_YTS_2 = 'https://yts.rs/movie/'
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
 def get_movies(request):
-
     movies_list, _ = MoviesList.objects.get_or_create(
         user=request.user,
         defaults={'name': f"{request.user.username}'s list"}
     )
 
-    base_queryset = movies_list.movies.all()
-
-
     search_query = request.GET.get('search', '')
-    if search_query:
-        base_queryset = base_queryset.filter(
-            Q(title__icontains=search_query)
-        )
-
     genre_selected = request.GET.get('genre', 'All')
     order_selected = request.GET.get('order_by', 'Date added')
     tv_selected = request.GET.get('is_tv', 'All')
 
-    # ===== GENRE FILTER =====
+    base_queryset = movies_list.movies.prefetch_related('file_paths').all()
+
+    if search_query:
+        base_queryset = base_queryset.filter(Q(title__icontains=search_query))
+
     if genre_selected != 'All' and genre_selected != 'No genre':
-        base_queryset = base_queryset.filter(
-            genre_ids__contains=[{'name': genre_selected}]
-        )
+        base_queryset = base_queryset.filter(genre_ids__contains=[{'name': genre_selected}])
     elif genre_selected == 'No genre':
         base_queryset = base_queryset.filter(genre_ids=[])
 
-    # ===== TV / MOVIE FILTER =====
     if tv_selected != 'All':
-        base_queryset = base_queryset.filter(
-            is_tv=(tv_selected == 'Series')
-        )
+        base_queryset = base_queryset.filter(is_tv=(tv_selected == 'Series'))
 
-    # ===== ORDER =====
-    order = '-id'  # Date added
-
+    order = '-id'
     if order_selected == 'Year Asc':
         order = 'release_date'
     elif order_selected == 'Year Dsc':
         order = '-release_date'
 
-    # ===== LATEST =====
-    latest_ids = list(
-        base_queryset.order_by('-id')
-        .values_list('id', flat=True)[:15]
-    )
+    all_movies = list(base_queryset.order_by(order))
 
-    latest_movies = (
-        base_queryset
-        .filter(id__in=latest_ids)
-        .order_by(order)
-    )
+    latest_movies = sorted(all_movies, key=lambda m: m.id, reverse=True)[:15]
 
-    # ===== MAIN LIST =====
-    movies = base_queryset.order_by(order)
+    serialized_movies = MovieListSerializer(all_movies, many=True).data
 
-    # ===== GROUP BY GENRE (exact same logic) =====
     movies_by_genre = {}
+    latest_ids = {m.id for m in latest_movies}
 
-    if latest_movies:
-        movies_by_genre['Latest'] = latest_movies
-
-    for movie in movies:
-
-        if not movie.genre_ids:
-            movies_by_genre.setdefault('No genre', []).append(movie)
-            continue
-
-        for genre in movie.genre_ids:
-
-            if isinstance(genre, dict):
-                name = genre.get('name')
-
-            else:
-                continue
-
-            if name:
-                movies_by_genre.setdefault(name, []).append(movie)
+    movies_by_genre['Latest'] = [m for m in serialized_movies if m['id'] in latest_ids]
 
     genre_set = set()
-
-    for movie in movies_list.movies.all():
-        if movie.genre_ids:
-            for g in movie.genre_ids:
-                if isinstance(g, dict) and g.get("name"):
-                    genre_set.add(g["name"])
-
-    available_genres = sorted(list(genre_set))
+    for movie_data, movie_obj in zip(serialized_movies, all_movies):
+        if not movie_obj.genre_ids:
+            movies_by_genre.setdefault('No genre', []).append(movie_data)
+            continue
+        for genre in movie_obj.genre_ids:
+            if isinstance(genre, dict) and (name := genre.get('name')):
+                genre_set.add(name)
+                movies_by_genre.setdefault(name, []).append(movie_data)
 
     return Response({
-        "movies": MovieSerializer(movies, many=True).data,
-        "grouped_by_genre": {
-            k: MovieSerializer(v, many=True).data
-            for k, v in movies_by_genre.items()
-        },
-        "available_genres": available_genres,
-        "total_count": movies.count(),
+        "movies": serialized_movies,
+        "grouped_by_genre": movies_by_genre,
+        "available_genres": sorted(list(genre_set)),
+        "total_count": len(all_movies),  # ✅ plus de requête SQL
     })
 
 

@@ -1,15 +1,15 @@
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'https://hollylist.guillaume-simonet.com/api';
+const API_BASE_URL = import.meta.env.VITE_API_URL;
+
+function getCSRFToken() {
+  return document.cookie
+    .split("; ")
+    .find(row => row.startsWith("csrftoken="))
+    ?.split("=")[1];
+}
 
 class ApiService {
   async request(endpoint, options = {}) {
     const url = `${API_BASE_URL}${endpoint}`;
-
-    function getCSRFToken() {
-      return document.cookie
-        .split("; ")
-        .find(row => row.startsWith("csrftoken="))
-        ?.split("=")[1];
-    }
 
     const config = {
       ...options,

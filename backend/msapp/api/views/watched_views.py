@@ -11,46 +11,50 @@ from msapp.serializers import WatchedMovieSerializer
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
 def get_watched_movies(request):
-    """Get user's watched movies with optional grouping"""
     group_by = request.GET.get('group_by', 'all')
 
-    watched_movies = WatchedMovie.objects.filter(user=request.user).select_related('movie')
+    watched_movies = (
+        WatchedMovie.objects
+        .filter(user=request.user)
+        .select_related('movie')
+        .prefetch_related('movie__file_paths')
+        .order_by('-watched_at')
+    )
+
+    # ✅ On évalue la queryset UNE seule fois
+    watched_list = list(watched_movies)
+    total = len(watched_list)
 
     if not group_by or group_by == 'all':
-        # Return ungrouped
         return Response({
-            'watched_movies': WatchedMovieSerializer(
-                watched_movies.order_by('-watched_at'),
-                many=True
-            ).data,
+            'watched_movies': WatchedMovieSerializer(watched_list, many=True).data,
             'grouped_watched': {},
-            'total_count': watched_movies.count()
+            'total_count': total
         })
 
-    # Group by time period
-    if group_by == 'year':
-        annotated = watched_movies.annotate(period=TruncYear('watched_at'))
-    elif group_by == 'month':
-        annotated = watched_movies.annotate(period=TruncMonth('watched_at'))
-    elif group_by == 'week':
-        annotated = watched_movies.annotate(period=TruncWeek('watched_at'))
-    else:
-        annotated = watched_movies
+    FORMAT_MAP = {
+        'year': lambda p: (p.strftime('%Y-%m-%d'), p.strftime('%Y')),
+        'month': lambda p: (p.strftime('%Y-%m-%d'), p.strftime('%B %Y')),
+        'week': lambda p: (p.strftime('%Y-%m-%d'), f"Week of {p.strftime('%Y-%m-%d')}"),
+    }
 
-    # Organize into groups
+    TRUNC_MAP = {'year': TruncYear, 'month': TruncMonth, 'week': TruncWeek}
+
+    if group_by in TRUNC_MAP:
+        watched_list = list(
+            watched_movies.annotate(period=TRUNC_MAP[group_by]('watched_at'))
+        )
+
+    serialized = WatchedMovieSerializer(watched_list, many=True).data
+
     groups_dict = {}
-    for wm in annotated.order_by('-watched_at'):
-        period_key = wm.period.strftime('%Y-%m-%d') if hasattr(wm, 'period') else 'All'
+    formatter = FORMAT_MAP.get(group_by)
 
-        # Format period label
-        if group_by == 'year':
-            period_label = wm.period.strftime('%Y')
-        elif group_by == 'month':
-            period_label = wm.period.strftime('%B %Y')
-        elif group_by == 'week':
-            period_label = f"Week of {wm.period.strftime('%Y-%m-%d')}"
+    for wm, wm_data in zip(watched_list, serialized):
+        if formatter and hasattr(wm, 'period'):
+            period_key, period_label = formatter(wm.period)
         else:
-            period_label = 'All'
+            period_key, period_label = 'All', 'All'
 
         if period_key not in groups_dict:
             groups_dict[period_key] = {
@@ -59,19 +63,15 @@ def get_watched_movies(request):
                 'count': 0
             }
 
-        groups_dict[period_key]['movies'].append(
-            WatchedMovieSerializer(wm).data
-        )
-
+        groups_dict[period_key]['movies'].append(wm_data)
         groups_dict[period_key]['count'] += 1
 
     return Response({
-        'watched_movies': [],  # Empty when grouped
+        'watched_movies': [],
         'grouped_watched': groups_dict,
-        'total_count': watched_movies.count(),
+        'total_count': total,
         'group_by': group_by
     })
-
 
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])

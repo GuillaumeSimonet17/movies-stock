@@ -1,4 +1,4 @@
-import {useState, useEffect} from 'react';
+import {useState, useEffect, useRef} from 'react';
 import {useNavigate} from 'react-router-dom';
 import TopBar from '../components/common/TopBar';
 import SearchBar from '../components/movies/SearchBar';
@@ -20,10 +20,18 @@ function Home() {
     search: ''
   });
   const navigate = useNavigate();
+  const debounceRef = useRef(null);
 
   useEffect(() => {
-    loadMovies();
+    if (debounceRef.current) clearTimeout(debounceRef.current);
+
+    debounceRef.current = setTimeout(() => {
+      loadMovies();
+    }, filters.search ? 400 : 0);
+
+    return () => clearTimeout(debounceRef.current);
   }, [filters]);
+
 
   const loadMovies = async () => {
     setLoading(true);

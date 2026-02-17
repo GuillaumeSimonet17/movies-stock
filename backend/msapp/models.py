@@ -4,9 +4,9 @@ from django.contrib.auth.models import User
 
 class Movie(models.Model):
     movie_id = models.IntegerField(null=True, unique=True)
-    title = models.CharField(max_length=255)
+    title = models.CharField(max_length=255, db_index=True)
     poster_path = models.CharField(max_length=255)
-    release_date = models.DateField(blank=True, null=True)
+    release_date = models.DateField(blank=True, null=True, db_index=True)
     genre_ids = models.JSONField(null=True)
     overview = models.TextField(null=True)
     actors = models.CharField(null=True)
@@ -16,7 +16,7 @@ class Movie(models.Model):
     production_companies = models.JSONField(null=True)
     status = models.CharField()
     dominant_color = models.CharField(max_length=7, null=True, blank=True)
-    is_tv = models.BooleanField(default=False)
+    is_tv = models.BooleanField(default=False, db_index=True)
 
 class FilePath(models.Model):
     movie = models.ForeignKey(Movie, related_name='file_paths', on_delete=models.CASCADE)

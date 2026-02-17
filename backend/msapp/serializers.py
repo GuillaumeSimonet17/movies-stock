@@ -20,6 +20,12 @@ class MovieSerializer(serializers.ModelSerializer):
         model = Movie
         fields = "__all__"
 
+class MovieListSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Movie
+        fields = ["id", "movie_id", "title", "poster_path", "release_date",
+                  "genre_ids", "dominant_color", "is_tv", "actors", "directors"]
+
 class FilePathCreateSerializer(serializers.ModelSerializer):
     class Meta:
         model = FilePath
