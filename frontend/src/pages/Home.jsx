@@ -1,4 +1,4 @@
-import {useState, useEffect, useRef} from 'react';
+import {useState, useEffect, useRef, useCallback} from 'react';
 import {useNavigate} from 'react-router-dom';
 import TopBar from '../components/common/TopBar';
 import SearchBar from '../components/movies/SearchBar';
@@ -22,6 +22,34 @@ function Home() {
   const navigate = useNavigate();
   const debounceRef = useRef(null);
 
+  const loadMovies = useCallback(async () => {
+    setLoading(true);
+    try {
+      const params = {};
+      if (filters.genre && filters.genre !== 'all') params.genre = filters.genre;
+      if (filters.is_tv && filters.is_tv !== 'all') params.is_tv = filters.is_tv;
+      if (filters.order_by) params.order_by = filters.order_by;
+      if (filters.search && filters.search.trim() !== '') params.search = filters.search;
+
+      const data = await movieService.getMovies(params);
+
+      setMovies(Array.isArray(data?.movies) ? data.movies : []);
+      setGroupedMovies(data?.grouped_by_genre ?? {});
+      setAvailableGenres(
+        Array.isArray(data?.available_genres)
+          ? data.available_genres.map(name => ({id: name, name}))
+          : []
+      );
+    } catch (error) {
+      console.error('Error loading movies:', error);
+      setMovies([]);
+      setGroupedMovies({});
+      setAvailableGenres([]);
+    } finally {
+      setLoading(false);
+    }
+  }, [filters]); // ✅ loadMovies ne recrée que si filters change
+
   useEffect(() => {
     if (debounceRef.current) clearTimeout(debounceRef.current);
 
@@ -30,51 +58,7 @@ function Home() {
     }, filters.search ? 400 : 0);
 
     return () => clearTimeout(debounceRef.current);
-  }, [filters]);
-
-
-  const loadMovies = async () => {
-    setLoading(true);
-    try {
-      const params = {};
-      if (filters.genre && filters.genre !== 'all') {
-        params.genre = filters.genre;
-      }
-      if (filters.is_tv && filters.is_tv !== 'all') {
-        params.is_tv = filters.is_tv;
-      }
-      if (filters.order_by) {
-        params.order_by = filters.order_by;
-      }
-      if (filters.search && filters.search.trim() !== '') {
-        params.search = filters.search;
-      }
-      const data = await movieService.getMovies(params);
-
-      // Safety checks for API response
-      const moviesData = Array.isArray(data?.movies) ? data.movies : [];
-      const groupedData = data?.grouped_by_genre && typeof data.grouped_by_genre === 'object'
-        ? data.grouped_by_genre
-        : {};
-
-      setMovies(moviesData);
-      setGroupedMovies(groupedData);
-      const genres = Array.isArray(data?.available_genres)
-        ? data.available_genres.map(name => ({id: name, name}))
-        : [];
-
-      setAvailableGenres(genres);
-
-    } catch (error) {
-      console.error('Error loading movies:', error);
-      // Set empty states on error
-      setMovies([]);
-      setGroupedMovies({});
-      setAvailableGenres([]);
-    } finally {
-      setLoading(false);
-    }
-  };
+  }, [loadMovies]);
 
   const handleFilterChange = (newFilters) => {
     setFilters(newFilters);
