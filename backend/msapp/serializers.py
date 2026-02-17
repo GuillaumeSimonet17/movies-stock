@@ -4,6 +4,7 @@ from .models import (
     Movie,
     FilePath,
     MoviesList,
+    MovieListItem,
     UserProfile,
     WatchedMovie
 )
@@ -21,9 +22,11 @@ class MovieSerializer(serializers.ModelSerializer):
         fields = "__all__"
 
 class MovieListSerializer(serializers.ModelSerializer):
+    added_at = serializers.DateTimeField(read_only=True)
+
     class Meta:
         model = Movie
-        fields = ["id", "movie_id", "title", "poster_path", "release_date", "genre_ids", "is_tv"]
+        fields = ["id", "movie_id", "title", "poster_path", "release_date", "genre_ids", "is_tv", "added_at"]
 
 class FilePathCreateSerializer(serializers.ModelSerializer):
     class Meta:
@@ -34,6 +37,13 @@ class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = ["id", "username", "email"]
+
+class MovieListItemSerializer(serializers.ModelSerializer):
+    movie = MovieListSerializer(read_only=True)
+
+    class Meta:
+        model = MovieListItem
+        fields = ["id", "movie", "added_at"]
 
 class MoviesListSerializer(serializers.ModelSerializer):
     movies = MovieSerializer(many=True, read_only=True)

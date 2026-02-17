@@ -4,7 +4,7 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from django.db.models import Count
 from django.db.models.functions import TruncYear, TruncMonth, TruncWeek
-from msapp.models import WatchedMovie, Movie, MoviesList
+from msapp.models import WatchedMovie, Movie, MoviesList, MovieListItem
 from msapp.serializers import WatchedMovieSerializer
 
 
@@ -100,10 +100,13 @@ def add_to_watched(request):
                 status=status.HTTP_409_CONFLICT
             )
 
-        # Remove from collection
+        # Remove from collection via MovieListItem
         try:
             movies_list = MoviesList.objects.get(user=request.user)
-            movies_list.movies.remove(movie)
+            MovieListItem.objects.filter(
+                movies_list=movies_list,
+                movie=movie
+            ).delete()
         except MoviesList.DoesNotExist:
             pass  # User might not have a movies list yet
 

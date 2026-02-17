@@ -5,7 +5,7 @@ from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from django.db.models import Q
-from msapp.models import Movie, MoviesList, FilePath
+from msapp.models import Movie, MoviesList, MovieListItem, FilePath
 from msapp.utils import URL_TMDB, API_KEY_DEEPL
 from msapp.serializers import MovieSerializer, MovieListSerializer
 from msapp.utils import search_detailed_movies, get_dominant_color, API_KEY_TMDB
@@ -30,34 +30,47 @@ def get_movies(request):
     order_selected = request.GET.get('order_by', 'Date added')
     tv_selected = request.GET.get('is_tv', 'All')
 
-    base_queryset = movies_list.movies.prefetch_related('file_paths').all()
+    # Query through MovieListItem with optimized joins
+    base_queryset = MovieListItem.objects.filter(
+        movies_list=movies_list
+    ).select_related('movie').prefetch_related('movie__file_paths')
 
+    # Apply filters on the movie relationship
     if search_query:
-        base_queryset = base_queryset.filter(Q(title__icontains=search_query))
+        base_queryset = base_queryset.filter(Q(movie__title__icontains=search_query))
 
     if genre_selected != 'All' and genre_selected != 'No genre':
-        base_queryset = base_queryset.filter(genre_ids__contains=[{'name': genre_selected}])
+        base_queryset = base_queryset.filter(movie__genre_ids__contains=[{'name': genre_selected}])
     elif genre_selected == 'No genre':
-        base_queryset = base_queryset.filter(genre_ids=[])
+        base_queryset = base_queryset.filter(movie__genre_ids=[])
 
     if tv_selected != 'All':
-        base_queryset = base_queryset.filter(is_tv=(tv_selected == 'Series'))
+        base_queryset = base_queryset.filter(movie__is_tv=(tv_selected == 'Series'))
 
-    order = '-id'
+    # Ordering - default is by added_at (most recent first)
+    order = '-added_at'
     if order_selected == 'Year Asc':
-        order = 'release_date'
+        order = 'movie__release_date'
     elif order_selected == 'Year Dsc':
-        order = '-release_date'
+        order = '-movie__release_date'
 
-    all_movies = list(base_queryset.order_by(order))
+    # Get list items ordered
+    list_items = list(base_queryset.order_by(order))
 
-    latest_movies = sorted(all_movies, key=lambda m: m.id, reverse=True)[:15]
+    # Extract movies with added_at metadata
+    all_movies = []
+    for item in list_items:
+        movie = item.movie
+        movie.added_at = item.added_at  # Attach added_at for serialization
+        all_movies.append(movie)
+
+    # Get latest movies by added_at
+    latest_movies = list_items[:15]
+    latest_ids = {item.movie.id for item in latest_movies}
 
     serialized_movies = MovieListSerializer(all_movies, many=True).data
 
     movies_by_genre = {}
-    latest_ids = {m.id for m in latest_movies}
-
     movies_by_genre['Latest'] = [m for m in serialized_movies if m['id'] in latest_ids]
 
     genre_set = set()
@@ -74,7 +87,7 @@ def get_movies(request):
         "movies": serialized_movies,
         "grouped_by_genre": movies_by_genre,
         "available_genres": sorted(list(genre_set)),
-        "total_count": len(all_movies),  # ✅ plus de requête SQL
+        "total_count": len(all_movies),
     })
 
 
@@ -116,11 +129,13 @@ def add_movie(request):
     # Check if movie already exists in database
     movie = Movie.objects.filter(movie_id=movie_id).first()
 
-    if movie and movie in movies_list.movies.all():
-        return Response(
-            {'error': 'Movie already in your list'},
-            status=status.HTTP_409_CONFLICT
-        )
+    # Check if MovieListItem already exists
+    if movie:
+        if MovieListItem.objects.filter(movies_list=movies_list, movie=movie).exists():
+            return Response(
+                {'error': 'Movie already in your list'},
+                status=status.HTTP_409_CONFLICT
+            )
 
     # Fetch full details from TMDb
     endpoint = 'tv' if is_tv else 'movie'
@@ -134,7 +149,7 @@ def add_movie(request):
             status=status.HTTP_404_NOT_FOUND
         )
 
-    # Create or update movie
+    # Get or create movie
     if not movie:
         # Extract actors and directors
         credits = search_detailed_movies(
@@ -184,8 +199,11 @@ def add_movie(request):
         )
         get_images_and_links(movie)
 
-    # Add movie to user's list
-    movies_list.movies.add(movie)
+    # Create MovieListItem (no duplicates due to unique_together)
+    MovieListItem.objects.create(
+        movies_list=movies_list,
+        movie=movie
+    )
 
     return Response(
         MovieSerializer(movie).data,
@@ -198,9 +216,9 @@ def get_movie_detail(request, movie_id):
     try:
         movie = Movie.objects.get(pk=movie_id)
 
-        # ✅ Vérifie accès utilisateur
+        # ✅ Vérifie accès utilisateur via MovieListItem
         movies_list = MoviesList.objects.get(user=request.user)
-        if movie not in movies_list.movies.all():
+        if not MovieListItem.objects.filter(movies_list=movies_list, movie=movie).exists():
             return Response(
                 {'error': 'Movie not in your list'},
                 status=status.HTTP_403_FORBIDDEN
@@ -229,24 +247,26 @@ def get_movie_detail(request, movie_id):
         darkness = color_darkness(movie.dominant_color)
         text_color, background = get_text_background_colors(darkness, movie.dominant_color)
 
-        # 🎬 Liste utilisateur filtrée
-        movies = movies_list.movies.all()
+        # 🎬 Liste utilisateur filtrée via MovieListItem
+        list_items = MovieListItem.objects.filter(
+            movies_list=movies_list
+        ).select_related('movie')
 
         genre = request.GET.get('gnr')
         ordered_by = request.GET.get('ord')
-        order = '-id'
+        order = '-added_at'
 
         if genre and genre != 'All':
-            movies = movies.filter(genre_ids__contains=[{'name': genre}])
+            list_items = list_items.filter(movie__genre_ids__contains=[{'name': genre}])
 
         if ordered_by and ordered_by != 'Date added':
             if ordered_by == 'Year Asc':
-                order = '-release_date'
+                order = '-movie__release_date'
             elif ordered_by == 'Year Dsc':
-                order = 'release_date'
+                order = 'movie__release_date'
 
-        movies = movies.order_by(order)
-        movies_ids = list(movies.values_list('id', flat=True))
+        list_items = list_items.order_by(order)
+        movies_ids = list(list_items.values_list('movie__id', flat=True))
 
         return Response({
             'movie': movie_data,
@@ -333,7 +353,19 @@ def delete_movie(request, movie_id):
         movie = Movie.objects.get(id=movie_id)
         movies_list = MoviesList.objects.get(user=request.user)
 
-        movies_list.movies.remove(movie)
+        # Delete MovieListItem
+        list_item = MovieListItem.objects.filter(
+            movies_list=movies_list,
+            movie=movie
+        ).first()
+
+        if not list_item:
+            return Response(
+                {'error': 'Movie not in your list'},
+                status=status.HTTP_404_NOT_FOUND
+            )
+
+        list_item.delete()
 
         # Delete movie if orphaned (not in any list and not watched)
         if not movie.movies_lists.exists() and not movie.watched_by.exists():
@@ -357,16 +389,18 @@ def random_movie(request):
     """Get random movie from collection"""
     try:
         movies_list = MoviesList.objects.get(user=request.user)
-        movies = list(movies_list.movies.all())
+        list_items = list(MovieListItem.objects.filter(
+            movies_list=movies_list
+        ).select_related('movie'))
 
-        if not movies:
+        if not list_items:
             return Response(
                 {'error': 'No movies in collection'},
                 status=status.HTTP_404_NOT_FOUND
             )
 
-        random_movie = random.choice(movies)
-        return Response(MovieSerializer(random_movie).data)
+        random_item = random.choice(list_items)
+        return Response(MovieSerializer(random_item.movie).data)
     except MoviesList.DoesNotExist:
         return Response(
             {'error': 'Movies list not found'},
