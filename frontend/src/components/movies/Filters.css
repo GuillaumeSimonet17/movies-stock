@@ -73,8 +73,12 @@
 
 /* Dropdown Items */
 .filter-dropdown li {
+  display: flex;
+  justify-content: center;
+  align-items: center;
   font-weight: bold;
   cursor: pointer;
+  height: 40px;
   color: var(--text-primary);
   transition: background 0.2s ease;
 }
@@ -141,7 +145,7 @@
 }
 
 /* Mobile Responsive */
-@media (max-width: 768px) {
+@media (max-width: 1024px) {
   .desktop-filters {
     display: none;
   }

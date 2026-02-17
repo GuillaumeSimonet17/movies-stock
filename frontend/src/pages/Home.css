@@ -97,7 +97,6 @@
 
 /* SLIDER */
 .genre-slider {
-    height: 300px;
     display: flex;
     flex-wrap: nowrap;
     overflow-x: auto;
@@ -145,26 +144,4 @@
 .movie-card {
     min-width: 180px;
     flex-shrink: 0;
-}
-
-.movies-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-    gap: 20px;
-
-}
-
-@media (max-width: 768px) {
-    .slider-btn {
-        display: none;
-    }
-
-    .genre-title {
-        font-size: 20px;
-    }
-
-    .movies-grid {
-        grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-        gap: 15px;
-    }
 }

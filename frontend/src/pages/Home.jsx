@@ -138,7 +138,7 @@ function Home() {
                   <div className="slider-wrapper">
                     <div className="genre-slider">
                       {genreMovies.map(movie => (
-                        <MovieCard key={movie?.id || Math.random()} movie={movie} movieList={genreMovies}/>
+                        <MovieCard key={movie?.id || Math.random()} movie={movie} movieList={genreMovies} from="home"/>
                       ))}
                     </div>
 

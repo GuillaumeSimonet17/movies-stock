@@ -118,7 +118,7 @@ function Filters({onFilterChange, availableGenres, currentFilters}) {
                 onClick={() => handleFilterChange('is_tv', option.value)}
                 className={currentFilters.is_tv === option.value ? 'active' : ''}
               >
-                {option.label}
+                <span>{option.label}</span>
               </li>
             ))}
           </ul>

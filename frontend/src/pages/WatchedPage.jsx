@@ -83,10 +83,10 @@ function WatchedPage() {
             <p>Movies you mark as watched will appear here.</p>
           </div>
         ) : groupBy === 'all' ? (
-          <div className="movies-grid">
+          <div className="movies-wrap">
             {watchedMovies.map((watched) => (
               <div key={watched.id} className="watched-movie-item">
-                <MovieCard movie={watched.movie} clickable={false}/>
+                <MovieCard movie={watched.movie} clickable={false} from="watched"/>
                 <p className="watched-date">
                   Watched: {new Date(watched.watched_at).toLocaleDateString()}
                 </p>
@@ -116,8 +116,8 @@ function WatchedPage() {
                   <div className="accordion-body p-0 px-1 py-3">
                     <div className="movies-row-scroll">
                       {group.movies.map((watched) => (
-                        <div key={watched.id} className="watched-movie-item me-2">
-                          <MovieCard movie={watched.movie} clickable={false}/>
+                        <div key={watched.id} className="watched-movie-item">
+                          <MovieCard movie={watched.movie} clickable={false} from="watched"/>
                           <p className="watched-date">
                             {new Date(watched.watched_at).toLocaleDateString()}
                           </p>

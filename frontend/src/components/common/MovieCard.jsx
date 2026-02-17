@@ -1,7 +1,7 @@
-import { useNavigate } from 'react-router-dom';
+import {useNavigate} from 'react-router-dom';
 import './MovieCard.css';
 
-function MovieCard({ movie, movieList = [], clickable = true }) {
+function MovieCard({movie, movieList = [], clickable = true, from}) {
   const navigate = useNavigate();
 
   const posterUrl = movie.poster_path
@@ -32,9 +32,12 @@ function MovieCard({ movie, movieList = [], clickable = true }) {
     });
   };
 
+  const cardClass =
+    from === 'watched' ? 'watched-card' : 'movie-card';
+
   const content = (
     <div
-      className="movie-poster"
+      className={from === "home" ? "movie-poster" : "watched-poster"}
       style={{
         backgroundImage: `url(${posterUrl})`,
         borderColor: movie.dominant_color || '#333',
@@ -51,9 +54,9 @@ function MovieCard({ movie, movieList = [], clickable = true }) {
 
   return (
     <div
-      className={`movie-card ${!clickable ? 'not-clickable' : ''}`}
+      className={`${cardClass} ${!clickable ? 'not-clickable' : ''}`}
       onClick={openMovie}
-      style={{ cursor: clickable ? 'pointer' : 'default' }}
+      style={{cursor: clickable ? 'pointer' : 'default'}}
     >
       {content}
     </div>
