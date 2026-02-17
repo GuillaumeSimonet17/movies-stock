@@ -22,10 +22,22 @@ class FilePath(models.Model):
     movie = models.ForeignKey(Movie, related_name='file_paths', on_delete=models.CASCADE)
     file_path = models.CharField(max_length=255)
 
+class MovieListItem(models.Model):
+    movies_list = models.ForeignKey('MoviesList', on_delete=models.CASCADE)
+    movie = models.ForeignKey('Movie', on_delete=models.CASCADE)
+    added_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        unique_together = ('movies_list', 'movie')
+
 class MoviesList(models.Model):
     name = models.CharField(max_length=100)
     user = models.OneToOneField(User, on_delete=models.CASCADE, null=True)
-    movies = models.ManyToManyField(Movie, related_name='movies_lists')
+    movies = models.ManyToManyField(
+        Movie,
+        through='MovieListItem',
+        related_name='movies_lists'
+    )
 
 class UserProfile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, null=True)
