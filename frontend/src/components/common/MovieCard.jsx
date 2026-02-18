@@ -1,4 +1,5 @@
-import {useNavigate} from 'react-router-dom';
+import {useNavigate, Link} from 'react-router-dom';
+
 import './MovieCard.css';
 
 function MovieCard({movie, movieList = [], clickable = true, from}) {
@@ -52,12 +53,16 @@ function MovieCard({movie, movieList = [], clickable = true, from}) {
     </div>
   );
 
-  return (
-    <div
+  return clickable ? (
+    <Link
+      to={`/movie/${movie.id}`}
+      state={{movieList}}
       className={`${cardClass} ${!clickable ? 'not-clickable' : ''}`}
-      onClick={openMovie}
-      style={{cursor: clickable ? 'pointer' : 'default'}}
     >
+      {content}
+    </Link>
+  ) : (
+    <div className={`${cardClass} not-clickable`}>
       {content}
     </div>
   );

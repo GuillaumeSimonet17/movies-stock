@@ -48,7 +48,7 @@ function Home() {
     } finally {
       setLoading(false);
     }
-  }, [filters]); // ✅ loadMovies ne recrée que si filters change
+  }, [filters]);
 
   useEffect(() => {
     if (debounceRef.current) clearTimeout(debounceRef.current);
@@ -58,7 +58,7 @@ function Home() {
     }, filters.search ? 400 : 0);
 
     return () => clearTimeout(debounceRef.current);
-  }, [loadMovies]);
+  }, [loadMovies, filters.search]);
 
   const handleFilterChange = (newFilters) => {
     setFilters(newFilters);

@@ -1,4 +1,4 @@
-import {useState, useEffect} from 'react';
+import {useState, useEffect, useCallback} from 'react';
 import {useParams, useNavigate} from 'react-router-dom';
 import TopBar from '../components/common/TopBar';
 import {movieService} from '../services/movieService';
@@ -31,11 +31,7 @@ function MovieDetailPage() {
   const nextMovie =
     currentIndex < movieList.length - 1 ? movieList[currentIndex + 1] : null;
 
-  useEffect(() => {
-    loadMovie();
-  }, [id]);
-
-  const loadMovie = async () => {
+  const loadMovie = useCallback(async () => {
     setLoading(true);
     try {
       const data = await movieService.getMovieDetail(id);
@@ -64,7 +60,12 @@ function MovieDetailPage() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [id, navigate]);
+
+  useEffect(() => {
+    window.scrollTo(0, 0);
+    loadMovie();
+  }, [loadMovie]);
 
   const goToMovie = (movieId) => {
     navigate(`/movie/${movieId}`, {
@@ -158,11 +159,6 @@ function MovieDetailPage() {
           </div>
 
           <div className="col-md-6 d-flex justify-content-end gap-3 btn_pass">
-            {!prevMovie && !nextMovie && (
-            <button className="random-btn" onClick={handleRandomMovie}>
-              🎲
-            </button>
-            )}
             <div className="movie-nav">
               {prevMovie && (
                 <span onClick={() => goToMovie(prevMovie.id)}>
@@ -170,7 +166,8 @@ function MovieDetailPage() {
                 </span>
               )}
             </div>
-            <span className={"btn-movie-page mt-2"} onClick={handleMarkWatched}>saw it</span>
+            <span className={"btn-movie-page mt-2"} onClick={handleMarkWatched}>saw</span>
+            <span className={"btn-movie-page mt-2"} onClick={handleDelete}>Nope</span>
             <div className="movie-nav">
               {nextMovie && (
                 <span onClick={() => goToMovie(nextMovie.id)}>
@@ -178,7 +175,9 @@ function MovieDetailPage() {
                 </span>
               )}
             </div>
-            <span className={"btn-movie-page mt-2"} onClick={handleDelete}>Nope</span>
+            <button className="random-btn ms-2" onClick={handleRandomMovie}>
+              🎲
+            </button>
           </div>
         </div>
 

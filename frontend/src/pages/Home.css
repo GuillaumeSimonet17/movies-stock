@@ -145,3 +145,9 @@
     min-width: 180px;
     flex-shrink: 0;
 }
+
+@media (hover: none) and (pointer: coarse) {
+  .slider-btn {
+    display: none;
+  }
+}

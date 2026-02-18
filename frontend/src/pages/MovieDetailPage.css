@@ -150,15 +150,10 @@
 .movie-nav span {
     border-radius: 10px;
     cursor: pointer;
-    width: 70px;
+    width: 40px;
     height: 40px;
     font-size: 30px;
     font-weight: bold;
-}
-
-.movie-nav button:hover {
-    background: currentColor;
-    color: black;
 }
 
 /* boutons */
@@ -174,6 +169,11 @@
 .btn-movie-page:hover {
     transform: scale(1.03);
 }
+
+.movie-nav:hover {
+    transform: scale(1.03);
+}
+
 
 .links_container a {
     padding: 8px 20px;
