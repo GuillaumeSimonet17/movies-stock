@@ -63,7 +63,7 @@
     display: flex;
     flex-wrap: wrap;
     gap: 16px;
-    justify-content: flex-start;
+    justify-content: center;
     margin: 0 auto;
 
 }
@@ -165,7 +165,6 @@
     .movies-wrap {
         display: flex;
         flex-wrap: wrap;
-        gap: 5px;
         max-height: 290px;
     }
 
