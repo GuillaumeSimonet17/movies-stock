@@ -11,7 +11,7 @@ DEBUG = False
 
 ALLOWED_HOSTS = [
     "hollylist.guillaume-simonet.com",
-    "localhost",
+    "141.94.206.46",
     "127.0.0.1",
 ]
 
