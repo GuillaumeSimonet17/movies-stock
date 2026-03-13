@@ -63,9 +63,9 @@ WSGI_APPLICATION = 'moviesstock.wsgi.application'
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.postgresql",
-        "NAME": "moviesstock",
-        "USER": "guillaume",
-        "PASSWORD": "admin",
+        "NAME": os.environ.get("POSTGRES_DB", "moviesstock"),
+        "USER": os.environ.get("POSTGRES_USER", "guillaume"),
+        "PASSWORD": os.environ.get("POSTGRES_PASSWORD"),
         "HOST": "db",
         "PORT": "5432",
     }
