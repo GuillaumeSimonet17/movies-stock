@@ -292,6 +292,16 @@ function MovieDetailPage() {
                     Chercher sur Avobiv
                   </a>
                 )}
+                {(
+                  <a
+                    href="https://papadustream.credit/"
+                    target="_blank"
+                    rel="noreferrer"
+                    style={{background: backgroundColor, color: textColor, border: `1px solid ${textColor}`}}
+                  >
+                    Chercher sur papadustream
+                  </a>
+                )}
 
                 <a
                   href="https://movielair.cc/"
