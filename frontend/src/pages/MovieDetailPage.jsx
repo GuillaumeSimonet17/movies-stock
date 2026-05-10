@@ -87,7 +87,7 @@ function MovieDetailPage() {
       await movieService.deleteMovie(id);
       navigate('/');
     } catch {
-      alert('Failed to delete movie');
+      print('Failed to delete movie');
     }
   };
 
