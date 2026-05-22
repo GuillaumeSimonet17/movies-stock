@@ -167,7 +167,7 @@ function MovieDetailPage() {
                 </span>
               )}
             </div>
-            <span className={"btn-movie-page"} onClick={handleMarkWatched}>saw</span>
+            <span className={"btn-movie-page"} onClick={handleMarkWatched}>Seen</span>
             <span className={"btn-movie-page"} onClick={handleDelete}>Nope</span>
             <div className="movie-nav">
               {nextMovie && (

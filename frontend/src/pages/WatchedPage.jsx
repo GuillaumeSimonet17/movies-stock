@@ -10,6 +10,10 @@ function WatchedPage() {
   const [totalCount, setTotalCount] = useState(0);
   const [groupBy, setGroupBy] = useState('all');
   const [loading, setLoading] = useState(true);
+  const [removingIds, setRemovingIds] = useState(new Set());
+  const [showConfirmDialog, setShowConfirmDialog] = useState(false);
+  const [movieToRemove, setMovieToRemove] = useState(null);
+  const [toast, setToast] = useState({ show: false, message: '', type: '' });
 
   useEffect(() => {
     loadWatchedMovies();
@@ -27,6 +31,82 @@ function WatchedPage() {
     } finally {
       setLoading(false);
     }
+  };
+
+  const showToast = (message, type = 'success') => {
+    setToast({ show: true, message, type });
+    setTimeout(() => {
+      setToast({ show: false, message: '', type: '' });
+    }, 3000);
+  };
+
+  const handleRemoveClick = (watchedMovie) => {
+    setMovieToRemove(watchedMovie);
+    setShowConfirmDialog(true);
+  };
+
+  const handleConfirmRemove = async () => {
+    if (!movieToRemove) return;
+
+    const movieId = movieToRemove.movie.id;
+    const watchedId = movieToRemove.id;
+
+    // Close dialog
+    setShowConfirmDialog(false);
+
+    // Mark as removing for visual feedback
+    setRemovingIds(prev => new Set(prev).add(watchedId));
+
+    // Optimistic UI update
+    const previousWatchedMovies = [...watchedMovies];
+    const previousGroupedWatched = {...groupedWatched};
+    const previousCount = totalCount;
+
+    // Remove from state immediately
+    setWatchedMovies(prev => prev.filter(w => w.id !== watchedId));
+    setTotalCount(prev => prev - 1);
+
+    // Update grouped data
+    if (groupBy !== 'all') {
+      const updatedGrouped = {...groupedWatched};
+      for (const [period, group] of Object.entries(updatedGrouped)) {
+        updatedGrouped[period] = {
+          ...group,
+          movies: group.movies.filter(w => w.id !== watchedId),
+          count: group.movies.filter(w => w.id !== watchedId).length
+        };
+        // Remove empty groups
+        if (updatedGrouped[period].count === 0) {
+          delete updatedGrouped[period];
+        }
+      }
+      setGroupedWatched(updatedGrouped);
+    }
+
+    try {
+      // Call API to remove from backend
+      await watchedService.removeFromWatched(movieId);
+      showToast('Movie removed from watched list', 'success');
+    } catch (error) {
+      console.error('Error removing movie:', error);
+      // Rollback on error
+      setWatchedMovies(previousWatchedMovies);
+      setGroupedWatched(previousGroupedWatched);
+      setTotalCount(previousCount);
+      showToast('Failed to remove movie. Please try again.', 'error');
+    } finally {
+      setRemovingIds(prev => {
+        const newSet = new Set(prev);
+        newSet.delete(watchedId);
+        return newSet;
+      });
+      setMovieToRemove(null);
+    }
+  };
+
+  const handleCancelRemove = () => {
+    setShowConfirmDialog(false);
+    setMovieToRemove(null);
   };
 
   if (loading) {
@@ -85,8 +165,21 @@ function WatchedPage() {
         ) : groupBy === 'all' ? (
           <div className="movies-wrap">
             {watchedMovies.map((watched) => (
-              <div key={watched.id} className="watched-movie-item">
-                <MovieCard movie={watched.movie} clickable={false} from="watched"/>
+              <div
+                key={watched.id}
+                className={`watched-movie-item ${removingIds.has(watched.id) ? 'removing' : ''}`}
+              >
+                <div className="movie-card-wrapper">
+                  <MovieCard movie={watched.movie} clickable={false} from="watched"/>
+                  <button
+                    className="remove-button"
+                    onClick={() => handleRemoveClick(watched)}
+                    title="Remove from watched list"
+                    disabled={removingIds.has(watched.id)}
+                  >
+                    ✕
+                  </button>
+                </div>
                 <p className="watched-date">
                   Watched: {new Date(watched.watched_at).toLocaleDateString()}
                 </p>
@@ -116,8 +209,21 @@ function WatchedPage() {
                   <div className="accordion-body p-0 px-1 py-3">
                     <div className="movies-row-scroll">
                       {group.movies.map((watched) => (
-                        <div key={watched.id} className="watched-movie-item">
-                          <MovieCard movie={watched.movie} clickable={false} from="watched"/>
+                        <div
+                          key={watched.id}
+                          className={`watched-movie-item ${removingIds.has(watched.id) ? 'removing' : ''}`}
+                        >
+                          <div className="movie-card-wrapper">
+                            <MovieCard movie={watched.movie} clickable={false} from="watched"/>
+                            <button
+                              className="remove-button"
+                              onClick={() => handleRemoveClick(watched)}
+                              title="Remove from watched list"
+                              disabled={removingIds.has(watched.id)}
+                            >
+                              ✕
+                            </button>
+                          </div>
                           <p className="watched-date">
                             {new Date(watched.watched_at).toLocaleDateString()}
                           </p>
@@ -131,6 +237,34 @@ function WatchedPage() {
           </div>
         )}
       </div>
+
+      {/* Confirmation Dialog */}
+      {showConfirmDialog && (
+        <div className="confirm-dialog-overlay" onClick={handleCancelRemove}>
+          <div className="confirm-dialog" onClick={(e) => e.stopPropagation()}>
+            <h3>Remove from Watched List?</h3>
+            <p>
+              Are you sure you want to remove <strong>{movieToRemove?.movie?.title}</strong> from
+              your watched list?
+            </p>
+            <div className="dialog-actions">
+              <button className="btn-cancel" onClick={handleCancelRemove}>
+                Cancel
+              </button>
+              <button className="btn-confirm" onClick={handleConfirmRemove}>
+                Remove
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Toast Notification */}
+      {toast.show && (
+        <div className={`toast toast-${toast.type}`}>
+          {toast.message}
+        </div>
+      )}
     </div>
   );
 }
