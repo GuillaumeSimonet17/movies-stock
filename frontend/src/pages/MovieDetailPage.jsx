@@ -264,7 +264,7 @@ function MovieDetailPage() {
               <div className="col-lg-6 links_container mt-lg-0">
                 <div className="d-flex justify-content-center align-items-center mt-5 mb-3">
                   <a
-                    href={`https://www.youtube.com/results?search_query=${movie.title}bande annonce`}
+                    href={`https://www.youtube.com/results?search_query=${movie.title} bande annonce vf`}
                     target="_blank"
                     title="Bande-annonce"
                     rel="noreferrer"
@@ -295,7 +295,7 @@ function MovieDetailPage() {
                 )}
                 {(
                   <a
-                    href="https://papadustream.credit/"
+                    href="https://papadustream.pink/"
                     target="_blank"
                     rel="noreferrer"
                     style={{background: backgroundColor, color: textColor, border: `1px solid ${textColor}`}}
