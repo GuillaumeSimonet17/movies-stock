@@ -414,6 +414,16 @@ function MovieDetailPage() {
 
           {activeTab === 'similar' && (
             <div className="similar-movies-section p-4" style={{color: textColor}}>
+              {similarByKeyword.length > 0 && (
+                <div className="similar-group mb-4">
+                  <h5 className="similar-title">Thèmes similaires</h5>
+                  <div className="similar-cards-row">
+                    {similarByKeyword.map(m => (
+                      <MovieCard key={m.id} movie={m} from="similar" movieList={similarByKeyword}/>
+                    ))}
+                  </div>
+                </div>
+              )}
               {similarByDirector.length > 0 && (
                 <div className="similar-group mb-4">
                   <h5 className="similar-title">Du même réalisateur</h5>
@@ -425,21 +435,11 @@ function MovieDetailPage() {
                 </div>
               )}
               {similarByActor.length > 0 && (
-                <div className="similar-group mb-4">
+                <div className="similar-group">
                   <h5 className="similar-title">Avec les mêmes acteurs</h5>
                   <div className="similar-cards-row">
                     {similarByActor.map(m => (
                       <MovieCard key={m.id} movie={m} from="similar" movieList={similarByActor}/>
-                    ))}
-                  </div>
-                </div>
-              )}
-              {similarByKeyword.length > 0 && (
-                <div className="similar-group">
-                  <h5 className="similar-title">Thèmes similaires</h5>
-                  <div className="similar-cards-row">
-                    {similarByKeyword.map(m => (
-                      <MovieCard key={m.id} movie={m} from="similar" movieList={similarByKeyword}/>
                     ))}
                   </div>
                 </div>
