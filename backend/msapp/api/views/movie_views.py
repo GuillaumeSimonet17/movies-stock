@@ -269,7 +269,15 @@ def get_movie_detail(request, movie_id):
         list_items = list_items.order_by(order)
         movies_ids = list(list_items.values_list('movie__id', flat=True))
 
-        # 🎬 Films similaires dans la liste (même réalisateur / mêmes acteurs)
+        # 🎬 Films similaires dans la liste (même réalisateur / mêmes acteurs / mêmes thèmes)
+        movie_genre_names = {g['name'] for g in (movie.genre_ids or []) if isinstance(g, dict) and g.get('name')}
+
+        def shares_genre(other_movie):
+            if not movie_genre_names or not other_movie.genre_ids:
+                return False
+            other_genres = {g['name'] for g in other_movie.genre_ids if isinstance(g, dict) and g.get('name')}
+            return bool(movie_genre_names & other_genres)
+
         similar_by_director = []
         similar_by_actor = []
 
@@ -279,7 +287,7 @@ def get_movie_detail(request, movie_id):
                 movies_list=movies_list
             ).select_related('movie').exclude(movie=movie)
             for item in director_qs:
-                if item.movie.directors:
+                if item.movie.directors and shares_genre(item.movie):
                     other_directors = [d.strip() for d in item.movie.directors.split(',')]
                     if any(d in other_directors for d in directors):
                         similar_by_director.append(MovieListSerializer(item.movie).data)
@@ -290,7 +298,7 @@ def get_movie_detail(request, movie_id):
                 movies_list=movies_list
             ).select_related('movie').exclude(movie=movie)
             for item in actor_qs:
-                if item.movie.actors:
+                if item.movie.actors and shares_genre(item.movie):
                     other_actors = [a.strip() for a in item.movie.actors.split(',')]
                     if any(a in other_actors for a in actors):
                         similar_by_actor.append(MovieListSerializer(item.movie).data)
@@ -305,7 +313,7 @@ def get_movie_detail(request, movie_id):
             for item in keyword_qs:
                 if item.movie.id in already_similar:
                     continue
-                if item.movie.keywords:
+                if item.movie.keywords and shares_genre(item.movie):
                     if keyword_set & set(item.movie.keywords):
                         similar_by_keyword.append(MovieListSerializer(item.movie).data)
 
