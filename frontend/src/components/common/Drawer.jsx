@@ -1,10 +1,19 @@
+import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../hooks/useAuth';
+import { movieService } from '../../services/movieService';
 import './Drawer.css';
 
 function Drawer({ isOpen, onClose }) {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
+  const [totalCount, setTotalCount] = useState(null);
+
+  useEffect(() => {
+    if (isOpen && totalCount === null) {
+      movieService.getMovies().then(data => setTotalCount(data?.total_count ?? 0)).catch(() => {});
+    }
+  }, [isOpen]);
 
   const handleLogout = async () => {
     try {
@@ -35,6 +44,7 @@ function Drawer({ isOpen, onClose }) {
             <Link to="/" onClick={onClose}>
               <span className="icon">🏠</span>
               My Collection
+              {totalCount !== null && <span className="drawer-count">{totalCount}</span>}
             </Link>
             <Link to="/watched" onClick={onClose}>
               <span className="icon">✓</span>

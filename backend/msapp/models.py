@@ -17,6 +17,7 @@ class Movie(models.Model):
     status = models.CharField()
     dominant_color = models.CharField(max_length=7, null=True, blank=True)
     is_tv = models.BooleanField(default=False, db_index=True)
+    keywords = models.JSONField(null=True, blank=True)
 
 class FilePath(models.Model):
     movie = models.ForeignKey(Movie, related_name='file_paths', on_delete=models.CASCADE)

@@ -198,6 +198,7 @@ def add_movie(request):
             status=movie_data.get('status', '')
         )
         get_images_and_links(movie)
+        get_keywords(movie, endpoint, movie_id)
 
     # Create MovieListItem (no duplicates due to unique_together)
     MovieListItem.objects.create(
@@ -294,6 +295,20 @@ def get_movie_detail(request, movie_id):
                     if any(a in other_actors for a in actors):
                         similar_by_actor.append(MovieListSerializer(item.movie).data)
 
+        similar_by_keyword = []
+        if movie.keywords:
+            keyword_set = set(movie.keywords)
+            already_similar = {m['id'] for m in similar_by_director + similar_by_actor}
+            keyword_qs = MovieListItem.objects.filter(
+                movies_list=movies_list
+            ).select_related('movie').exclude(movie=movie)
+            for item in keyword_qs:
+                if item.movie.id in already_similar:
+                    continue
+                if item.movie.keywords:
+                    if keyword_set & set(item.movie.keywords):
+                        similar_by_keyword.append(MovieListSerializer(item.movie).data)
+
         return Response({
             'movie': movie_data,
             'movies_list': movies_ids,
@@ -313,6 +328,7 @@ def get_movie_detail(request, movie_id):
             # films similaires
             'similar_by_director': similar_by_director,
             'similar_by_actor': similar_by_actor,
+            'similar_by_keyword': similar_by_keyword,
         })
 
     except Movie.DoesNotExist:
@@ -436,6 +452,23 @@ def random_movie(request):
             {'error': 'Movies list not found'},
             status=status.HTTP_404_NOT_FOUND
         )
+
+def get_keywords(movie, endpoint, movie_id):
+    url = f'{URL_TMDB}{endpoint}/{movie_id}/keywords'
+    headers = {
+        'accept': 'application/json',
+        'Authorization': 'Bearer ' + API_KEY_TMDB,
+    }
+    try:
+        response = requests.get(url, headers=headers)
+        response.raise_for_status()
+        data = response.json()
+        keywords = data.get('keywords') or data.get('results') or []
+        movie.keywords = [kw['name'] for kw in keywords]
+        movie.save(update_fields=['keywords'])
+    except requests.exceptions.RequestException as e:
+        print(f"Error fetching keywords: {e}")
+
 
 def get_images_and_links(movie):
     if movie.is_tv:

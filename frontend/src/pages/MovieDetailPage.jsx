@@ -25,6 +25,7 @@ function MovieDetailPage() {
   const [yts2, setYts2] = useState(true);
   const [similarByDirector, setSimilarByDirector] = useState([]);
   const [similarByActor, setSimilarByActor] = useState([]);
+  const [similarByKeyword, setSimilarByKeyword] = useState([]);
   const [activeTab, setActiveTab] = useState('images');
 
   const currentIndex = movieList.findIndex(m => m.id === Number(id));
@@ -48,6 +49,7 @@ function MovieDetailPage() {
       setYts2(data.yts2)
       setSimilarByDirector(data.similar_by_director || [])
       setSimilarByActor(data.similar_by_actor || [])
+      setSimilarByKeyword(data.similar_by_keyword || [])
       const hasImages = data.movie.filepath_set?.length > 0 || false;
       setActiveTab(hasImages ? 'images' : 'similar')
 
@@ -379,7 +381,7 @@ function MovieDetailPage() {
       </main>
 
       {/* TABS */}
-      {(movie.filepath_set?.length > 0 || similarByDirector.length > 0 || similarByActor.length > 0) && (
+      {(movie.filepath_set?.length > 0 || similarByDirector.length > 0 || similarByActor.length > 0 || similarByKeyword.length > 0) && (
         <div className="tabs-section container mt-3">
           <div className="tabs-header" style={{borderBottom: `1px solid ${textColor}30`}}>
             {movie.filepath_set?.length > 0 && (
@@ -391,7 +393,7 @@ function MovieDetailPage() {
                 Images
               </button>
             )}
-            {(similarByDirector.length > 0 || similarByActor.length > 0) && (
+            {(similarByDirector.length > 0 || similarByActor.length > 0 || similarByKeyword.length > 0) && (
               <button
                 className={`tab-btn ${activeTab === 'similar' ? 'active' : ''}`}
                 style={{color: textColor, borderBottomColor: activeTab === 'similar' ? textColor : 'transparent'}}
@@ -423,11 +425,21 @@ function MovieDetailPage() {
                 </div>
               )}
               {similarByActor.length > 0 && (
-                <div className="similar-group">
+                <div className="similar-group mb-4">
                   <h5 className="similar-title">Avec les mêmes acteurs</h5>
                   <div className="similar-cards-row">
                     {similarByActor.map(m => (
                       <MovieCard key={m.id} movie={m} from="similar" movieList={similarByActor}/>
+                    ))}
+                  </div>
+                </div>
+              )}
+              {similarByKeyword.length > 0 && (
+                <div className="similar-group">
+                  <h5 className="similar-title">Thèmes similaires</h5>
+                  <div className="similar-cards-row">
+                    {similarByKeyword.map(m => (
+                      <MovieCard key={m.id} movie={m} from="similar" movieList={similarByKeyword}/>
                     ))}
                   </div>
                 </div>

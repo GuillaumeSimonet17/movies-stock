@@ -109,6 +109,13 @@
   transition: background 0.2s ease;
 }
 
+.drawer-count {
+  margin-left: auto;
+  font-size: 1rem;
+  opacity: 0.5;
+  font-family: "HollywoodHills", sans-serif;
+}
+
 .drawer-nav a:hover {
   background: var(--bg-tertiary, #f5f5f5);
 }
