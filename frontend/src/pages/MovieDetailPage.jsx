@@ -303,7 +303,7 @@ function MovieDetailPage() {
                 )}
                 {(
                   <a
-                    href="https://papadustream.pink/"
+                    href="https://papadustream.garden/"
                     target="_blank"
                     rel="noreferrer"
                     style={{background: backgroundColor, color: textColor, border: `1px solid ${textColor}`}}
