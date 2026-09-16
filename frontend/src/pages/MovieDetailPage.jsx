@@ -171,7 +171,7 @@ function MovieDetailPage() {
             <div className="movie-nav">
               {prevMovie && (
                 <span onClick={() => goToMovie(prevMovie.id)}>
-                  &lt;
+                  ◂
                 </span>
               )}
             </div>
@@ -180,7 +180,7 @@ function MovieDetailPage() {
             <div className="movie-nav">
               {nextMovie && (
                 <span onClick={() => goToMovie(nextMovie.id)}>
-                  &gt;
+                  ▸
                 </span>
               )}
             </div>
@@ -417,7 +417,7 @@ function MovieDetailPage() {
                   <h5 className="similar-title">Du même réalisateur</h5>
                   <div className="similar-cards-row">
                     {similarByDirector.map(m => (
-                      <MovieCard key={m.id} movie={m} from="similar"/>
+                      <MovieCard key={m.id} movie={m} from="similar" movieList={similarByDirector}/>
                     ))}
                   </div>
                 </div>
@@ -427,7 +427,7 @@ function MovieDetailPage() {
                   <h5 className="similar-title">Avec les mêmes acteurs</h5>
                   <div className="similar-cards-row">
                     {similarByActor.map(m => (
-                      <MovieCard key={m.id} movie={m} from="similar"/>
+                      <MovieCard key={m.id} movie={m} from="similar" movieList={similarByActor}/>
                     ))}
                   </div>
                 </div>
