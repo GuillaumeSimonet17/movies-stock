@@ -16,19 +16,18 @@ function Home() {
   const [filters, setFilters] = useState({
     genre: 'all',
     is_tv: 'all',
-    order_by: '-release_date',
     search: ''
   });
+  const isFirstLoad = useRef(true);
   const navigate = useNavigate();
   const debounceRef = useRef(null);
 
   const loadMovies = useCallback(async () => {
-    setLoading(true);
+    if (isFirstLoad.current) setLoading(true);
     try {
       const params = {};
       if (filters.genre && filters.genre !== 'all') params.genre = filters.genre;
       if (filters.is_tv && filters.is_tv !== 'all') params.is_tv = filters.is_tv;
-      if (filters.order_by) params.order_by = filters.order_by;
       if (filters.search && filters.search.trim() !== '') params.search = filters.search;
 
       const data = await movieService.getMovies(params);
@@ -46,7 +45,10 @@ function Home() {
       setGroupedMovies({});
       setAvailableGenres([]);
     } finally {
-      setLoading(false);
+      if (isFirstLoad.current) {
+        setLoading(false);
+        isFirstLoad.current = false;
+      }
     }
   }, [filters]);
 
@@ -60,9 +62,9 @@ function Home() {
     return () => clearTimeout(debounceRef.current);
   }, [loadMovies, filters.search]);
 
-  const handleFilterChange = (newFilters) => {
+  const handleFilterChange = useCallback((newFilters) => {
     setFilters(newFilters);
-  };
+  }, []);
 
   const handleRandomMovie = async () => {
     try {

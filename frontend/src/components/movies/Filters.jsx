@@ -1,28 +1,17 @@
 import {useState, useRef, useEffect} from 'react';
 import './Filters.css';
 
+const TYPE_OPTIONS = [
+  {value: 'Movies', label: 'Movies'},
+  {value: 'Series', label: 'Series'},
+];
+
 function Filters({onFilterChange, availableGenres, currentFilters}) {
   const [showGenres, setShowGenres] = useState(false);
-  const [showOrder, setShowOrder] = useState(false);
-  const [showType, setShowType] = useState(false);
   const [mobileAccordionOpen, setMobileAccordionOpen] = useState(false);
   const [searchText, setSearchText] = useState(currentFilters.search || '');
 
   const genresRef = useRef(null);
-  const orderRef = useRef(null);
-  const typeRef = useRef(null);
-
-  const ORDER_OPTIONS = [
-    {value: 'Date added', label: 'Date added'},
-    {value: 'Year Asc', label: 'Year Asc'},
-    {value: 'Year Dsc', label: 'Year Dsc'},
-  ];
-
-  const TYPE_OPTIONS = [
-    {value: 'All', label: 'All'},
-    {value: 'Movies', label: 'Movies'},
-    {value: 'Series', label: 'Series'},
-  ];
 
   useEffect(() => {
     setSearchText(currentFilters.search || '');
@@ -31,8 +20,6 @@ function Filters({onFilterChange, availableGenres, currentFilters}) {
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (genresRef.current && !genresRef.current.contains(event.target)) setShowGenres(false);
-      if (orderRef.current && !orderRef.current.contains(event.target)) setShowOrder(false);
-      if (typeRef.current && !typeRef.current.contains(event.target)) setShowType(false);
     };
 
     document.addEventListener('mousedown', handleClickOutside);
@@ -46,21 +33,9 @@ function Filters({onFilterChange, availableGenres, currentFilters}) {
     });
   };
 
-  const getDisplayLabel = (filterType) => {
-    if (filterType === 'genre') {
-      if (!currentFilters.genre || currentFilters.genre === 'all') return 'All Genres';
-      return currentFilters.genre;
-    }
-
-    if (filterType === 'order_by') {
-      const order = ORDER_OPTIONS.find(o => o.value === currentFilters.order_by);
-      return order ? order.label : 'Date added';
-    }
-
-    if (filterType === 'is_tv') {
-      const type = TYPE_OPTIONS.find(t => t.value === currentFilters.is_tv);
-      return type ? type.label : 'Movies and Series';
-    }
+  const getGenreLabel = () => {
+    if (!currentFilters.genre || currentFilters.genre === 'all') return 'All Genres';
+    return currentFilters.genre;
   };
 
   const handleResetFilters = () => {
@@ -68,74 +43,35 @@ function Filters({onFilterChange, availableGenres, currentFilters}) {
 
     onFilterChange({
       genre: 'All',
-      order_by: 'Date added',
       is_tv: 'All',
       search: ''
     });
 
     setShowGenres(false);
-    setShowOrder(false);
-    setShowType(false);
   };
 
   const renderFilters = () => (
     <>
-      <div className="filters-search">
-        <input
-          type="text"
-          placeholder="Search..."
-          value={searchText}
-          onChange={(e) => setSearchText(e.target.value)}
-          onKeyDown={(e) => {
-            if (e.key === 'Enter') {
-              e.preventDefault();
-
-              handleFilterChange('search', searchText);
-            }
-          }}
-        />
-      </div>
-
-      {/* TYPE */}
-      <div className="filter-section" ref={typeRef}>
-        <div
-          className="filter-toggle"
-          onClick={() => {
-            setShowType(!showType);
-            setShowGenres(false);
-            setShowOrder(false);
-          }}
-        >
-          <span>{getDisplayLabel('is_tv')}</span>
-          <span className={`chevron ${showType ? 'rotated' : ''}`}>▼</span>
-        </div>
-
-        {showType && (
-          <ul className="filter-dropdown">
-            {TYPE_OPTIONS.map(option => (
-              <li
-                key={option.value}
-                onClick={() => handleFilterChange('is_tv', option.value)}
-                className={currentFilters.is_tv === option.value ? 'active' : ''}
-              >
-                <span>{option.label}</span>
-              </li>
-            ))}
-          </ul>
-        )}
+      {/* TYPE TABS */}
+      <div className="filter-type-tabs">
+        {TYPE_OPTIONS.map(option => (
+          <button
+            key={option.value}
+            className={`filter-type-tab ${(currentFilters.is_tv || 'All') === option.value ? 'active' : ''}`}
+            onClick={() => handleFilterChange('is_tv', option.value)}
+          >
+            {option.label}
+          </button>
+        ))}
       </div>
 
       {/* GENRES */}
       <div className="filter-section" ref={genresRef}>
         <div
           className="filter-toggle"
-          onClick={() => {
-            setShowGenres(!showGenres);
-            setShowOrder(false);
-            setShowType(false);
-          }}
+          onClick={() => setShowGenres(!showGenres)}
         >
-          <span>{getDisplayLabel('genre')}</span>
+          <span>{getGenreLabel()}</span>
           <span className={`chevron ${showGenres ? 'rotated' : ''}`}>▼</span>
         </div>
 
@@ -161,33 +97,20 @@ function Filters({onFilterChange, availableGenres, currentFilters}) {
         )}
       </div>
 
-      {/* ORDER */}
-      <div className="filter-section" ref={orderRef}>
-        <div
-          className="filter-toggle"
-          onClick={() => {
-            setShowOrder(!showOrder);
-            setShowGenres(false);
-            setShowType(false);
-          }}
-        >
-          <span>{getDisplayLabel('order_by')}</span>
-          <span className={`chevron ${showOrder ? 'rotated' : ''}`}>▼</span>
-        </div>
+      <div className="filters-search">
+        <input
+          type="text"
+          placeholder="Search..."
+          value={searchText}
+          onChange={(e) => setSearchText(e.target.value)}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter') {
+              e.preventDefault();
 
-        {showOrder && (
-          <ul className="filter-dropdown">
-            {ORDER_OPTIONS.map(option => (
-              <li
-                key={option.value}
-                onClick={() => handleFilterChange('order_by', option.value)}
-                className={currentFilters.order_by === option.value ? 'active' : ''}
-              >
-                {option.label}
-              </li>
-            ))}
-          </ul>
-        )}
+              handleFilterChange('search', searchText);
+            }
+          }}
+        />
       </div>
 
       <button className="reset-btn" onClick={handleResetFilters}>
