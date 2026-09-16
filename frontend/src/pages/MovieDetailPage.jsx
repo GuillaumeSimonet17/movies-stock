@@ -8,6 +8,7 @@ import './MovieDetailPage.css';
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome'
 import {faYoutube, faGoogle} from '@fortawesome/free-brands-svg-icons'
 import {useLocation} from 'react-router-dom';
+import MovieCard from '../components/common/MovieCard';
 
 
 function MovieDetailPage() {
@@ -22,6 +23,9 @@ function MovieDetailPage() {
   const [backgroundColor, setBackgroundColor] = useState(true);
   const [yts1, setYts1] = useState(true);
   const [yts2, setYts2] = useState(true);
+  const [similarByDirector, setSimilarByDirector] = useState([]);
+  const [similarByActor, setSimilarByActor] = useState([]);
+  const [activeTab, setActiveTab] = useState('images');
 
   const currentIndex = movieList.findIndex(m => m.id === Number(id));
 
@@ -42,6 +46,10 @@ function MovieDetailPage() {
       setTextColor(data.text_color);
       setYts1(data.yts1)
       setYts2(data.yts2)
+      setSimilarByDirector(data.similar_by_director || [])
+      setSimilarByActor(data.similar_by_actor || [])
+      const hasImages = data.movie.filepath_set?.length > 0 || false;
+      setActiveTab(hasImages ? 'images' : 'similar')
 
       if (!data.movie.filepath_set || data.movie.filepath_set.length === 0) {
         try {
@@ -245,7 +253,7 @@ function MovieDetailPage() {
                 </p>
 
                 {/* PRODUCTION LOGOS */}
-                <div class="row prods align-items-center justify-content-center p-2 mt-1">
+                <div className="row prods align-items-center justify-content-center p-2 mt-1">
                   {movie.production_companies?.map((p, i) =>
                     p.logo_path ? (
                       <img
@@ -370,16 +378,62 @@ function MovieDetailPage() {
         </div>
       </main>
 
-      {/* BACKDROPS */}
-      {movie.filepath_set?.length > 0 && (
-        <div className="backdrops">
-          {movie.filepath_set.map((fp, i) => (
-            <img
-              key={i}
-              src={buildImageUrl(fp.file_path)}
-              alt="backdrop"
-            />
-          ))}
+      {/* TABS */}
+      {(movie.filepath_set?.length > 0 || similarByDirector.length > 0 || similarByActor.length > 0) && (
+        <div className="tabs-section container mt-3">
+          <div className="tabs-header" style={{borderBottom: `1px solid ${textColor}30`}}>
+            {movie.filepath_set?.length > 0 && (
+              <button
+                className={`tab-btn ${activeTab === 'images' ? 'active' : ''}`}
+                style={{color: textColor, borderBottomColor: activeTab === 'images' ? textColor : 'transparent'}}
+                onClick={() => setActiveTab('images')}
+              >
+                Images
+              </button>
+            )}
+            {(similarByDirector.length > 0 || similarByActor.length > 0) && (
+              <button
+                className={`tab-btn ${activeTab === 'similar' ? 'active' : ''}`}
+                style={{color: textColor, borderBottomColor: activeTab === 'similar' ? textColor : 'transparent'}}
+                onClick={() => setActiveTab('similar')}
+              >
+                Films similaires
+              </button>
+            )}
+          </div>
+
+          {activeTab === 'images' && movie.filepath_set?.length > 0 && (
+            <div className="backdrops">
+              {movie.filepath_set.map((fp, i) => (
+                <img key={i} src={buildImageUrl(fp.file_path)} alt="backdrop"/>
+              ))}
+            </div>
+          )}
+
+          {activeTab === 'similar' && (
+            <div className="similar-movies-section p-4" style={{color: textColor}}>
+              {similarByDirector.length > 0 && (
+                <div className="similar-group mb-4">
+                  <h5 className="similar-title">Du même réalisateur</h5>
+                  <div className="similar-cards-row">
+                    {similarByDirector.map(m => (
+                      <MovieCard key={m.id} movie={m} from="similar"/>
+                    ))}
+                  </div>
+                </div>
+              )}
+              {similarByActor.length > 0 && (
+                <div className="similar-group">
+                  <h5 className="similar-title">Avec les mêmes acteurs</h5>
+                  <div className="similar-cards-row">
+                    {similarByActor.map(m => (
+                      <MovieCard key={m.id} movie={m} from="similar"/>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
         </div>
       )}
     </div>

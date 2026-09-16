@@ -36,9 +36,14 @@ function MovieCard({movie, movieList = [], clickable = true, from}) {
   const cardClass =
     from === 'watched' ? 'watched-card' : 'movie-card';
 
+  const posterClass =
+    from === 'home' ? 'movie-poster'
+    : from === 'similar' ? 'similar-poster'
+    : 'watched-poster';
+
   const content = (
     <div
-      className={from === "home" ? "movie-poster" : "watched-poster"}
+      className={posterClass}
       style={{
         backgroundImage: `url(${posterUrl})`,
         borderColor: movie.dominant_color || '#333',

@@ -245,6 +245,79 @@
     color: var(--text-secondary);
 }
 
+.tabs-section {
+}
+
+.tabs-header {
+    display: flex;
+    gap: 4px;
+    margin-bottom: 16px;
+}
+
+.tab-btn {
+    background: none;
+    border: none;
+    border-bottom: 3px solid transparent;
+    border-radius: 0 !important;
+    padding: 10px 20px;
+    font-size: 1.1rem;
+    font-family: "HollywoodHills", sans-serif;
+    cursor: pointer;
+    opacity: 0.4;
+    letter-spacing: 0.03em;
+    transition: opacity 0.2s, border-color 0.2s;
+}
+
+.tab-btn.active {
+    opacity: 1;
+    border-bottom-width: 3px;
+}
+
+.similar-movies-section {
+}
+
+.similar-group {
+    width: 100%;
+}
+
+.similar-title {
+    font-weight: 600;
+    margin-bottom: 12px;
+    opacity: 0.85;
+    font-size: 1rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    text-align: left;
+}
+
+.similar-cards-row {
+    display: flex;
+    flex-wrap: nowrap;
+    gap: 10px;
+    overflow-x: auto;
+    padding-bottom: 8px;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(255,255,255,0.3) transparent;
+}
+
+.similar-cards-row::-webkit-scrollbar {
+    height: 4px;
+}
+
+.similar-cards-row::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.similar-cards-row::-webkit-scrollbar-thumb {
+    background: rgba(255,255,255,0.3);
+    border-radius: 2px;
+}
+
+.similar-cards-row .movie-card {
+    flex-shrink: 0;
+    width: 160px;
+}
+
 @media (max-width: 968px) {
     .movie-content {
         grid-template-columns: 1fr;

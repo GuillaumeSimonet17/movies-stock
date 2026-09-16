@@ -268,6 +268,32 @@ def get_movie_detail(request, movie_id):
         list_items = list_items.order_by(order)
         movies_ids = list(list_items.values_list('movie__id', flat=True))
 
+        # 🎬 Films similaires dans la liste (même réalisateur / mêmes acteurs)
+        similar_by_director = []
+        similar_by_actor = []
+
+        if movie.directors:
+            directors = [d.strip() for d in movie.directors.split(',') if d.strip()]
+            director_qs = MovieListItem.objects.filter(
+                movies_list=movies_list
+            ).select_related('movie').exclude(movie=movie)
+            for item in director_qs:
+                if item.movie.directors:
+                    other_directors = [d.strip() for d in item.movie.directors.split(',')]
+                    if any(d in other_directors for d in directors):
+                        similar_by_director.append(MovieListSerializer(item.movie).data)
+
+        if movie.actors:
+            actors = [a.strip() for a in movie.actors.split(',') if a.strip()]
+            actor_qs = MovieListItem.objects.filter(
+                movies_list=movies_list
+            ).select_related('movie').exclude(movie=movie)
+            for item in actor_qs:
+                if item.movie.actors:
+                    other_actors = [a.strip() for a in item.movie.actors.split(',')]
+                    if any(a in other_actors for a in actors):
+                        similar_by_actor.append(MovieListSerializer(item.movie).data)
+
         return Response({
             'movie': movie_data,
             'movies_list': movies_ids,
@@ -283,6 +309,10 @@ def get_movie_detail(request, movie_id):
             # filtres actifs
             'genre_selected': genre,
             'ordered_selected': ordered_by,
+
+            # films similaires
+            'similar_by_director': similar_by_director,
+            'similar_by_actor': similar_by_actor,
         })
 
     except Movie.DoesNotExist:
