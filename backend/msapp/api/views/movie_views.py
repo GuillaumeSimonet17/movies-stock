@@ -314,8 +314,11 @@ def get_movie_detail(request, movie_id):
                 if item.movie.id in already_similar:
                     continue
                 if item.movie.keywords and shares_genre(item.movie):
-                    if keyword_set & set(item.movie.keywords):
-                        similar_by_keyword.append(MovieListSerializer(item.movie).data)
+                    shared = keyword_set & set(item.movie.keywords)
+                    if shared:
+                        data = MovieListSerializer(item.movie).data
+                        data['shared_keywords'] = list(shared)
+                        similar_by_keyword.append(data)
 
         return Response({
             'movie': movie_data,
