@@ -5,8 +5,10 @@ export const watchedService = {
     return api.get(`/watched/?group_by=${groupBy}`);
   },
 
-  addToWatched: (movieId) => {
-    return api.post('/watched/add/', { movie_id: movieId });
+  addToWatched: (movieId, listId = null) => {
+    const body = { movie_id: movieId };
+    if (listId) body.list_id = listId;
+    return api.post('/watched/add/', body);
   },
 
   removeFromWatched: (movieId) => {

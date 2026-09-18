@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import auth_views, movie_views, watched_views
+from .views import auth_views, movie_views, watched_views, list_views
 
 app_name = 'api'
 
@@ -23,5 +23,14 @@ urlpatterns = [
     path('watched/', watched_views.get_watched_movies, name='watched-list'),
     path('watched/add/', watched_views.add_to_watched, name='watched-add'),
     path('watched/stats/', watched_views.get_watched_stats, name='watched-stats'),
+    path('watched/count/', list_views.get_watched_count, name='watched-count'),
     path('watched/<int:movie_id>/delete/', watched_views.remove_from_watched, name='watched-delete'),
+
+    # User lists endpoints
+    path('lists/', list_views.get_user_lists, name='lists-list'),
+    path('lists/create/', list_views.create_user_list, name='lists-create'),
+    path('lists/<int:list_id>/', list_views.user_list_detail, name='list-detail'),
+    path('lists/<int:list_id>/add/', list_views.add_movie_to_list, name='list-add-movie'),
+    path('lists/<int:list_id>/search-add/', list_views.search_add_to_list, name='list-search-add'),
+    path('lists/<int:list_id>/movies/<int:movie_id>/delete/', list_views.remove_movie_from_list, name='list-remove-movie'),
 ]

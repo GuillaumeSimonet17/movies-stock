@@ -22,6 +22,7 @@ URL_YTS_2 = 'https://yts.rs/movie/'
 def get_movies(request):
     movies_list, _ = MoviesList.objects.get_or_create(
         user=request.user,
+        is_collection=True,
         defaults={'name': f"{request.user.username}'s list"}
     )
 
@@ -88,6 +89,7 @@ def get_movies(request):
         "grouped_by_genre": movies_by_genre,
         "available_genres": sorted(list(genre_set)),
         "total_count": len(all_movies),
+        "list_id": movies_list.id,
     })
 
 
@@ -123,6 +125,7 @@ def add_movie(request):
     # Get or create user's movies list
     movies_list, _ = MoviesList.objects.get_or_create(
         user=request.user,
+        is_collection=True,
         defaults={'name': f"{request.user.username}'s list"}
     )
 
@@ -217,12 +220,28 @@ def get_movie_detail(request, movie_id):
     try:
         movie = Movie.objects.get(pk=movie_id)
 
-        # ✅ Vérifie accès utilisateur via MovieListItem
-        movies_list = MoviesList.objects.get(user=request.user)
-        if not MovieListItem.objects.filter(movies_list=movies_list, movie=movie).exists():
+        # Vérifie que le film appartient à au moins une liste de l'user
+        user_lists = MoviesList.objects.filter(user=request.user)
+        if not MovieListItem.objects.filter(movies_list__in=user_lists, movie=movie).exists():
             return Response(
                 {'error': 'Movie not in your list'},
                 status=status.HTTP_403_FORBIDDEN
+            )
+
+        # Utilise la liste source si fournie, sinon la collection
+        source_list_id = request.GET.get('list_id')
+        if source_list_id:
+            try:
+                movies_list = MoviesList.objects.get(id=source_list_id, user=request.user)
+            except MoviesList.DoesNotExist:
+                movies_list, _ = MoviesList.objects.get_or_create(
+                    user=request.user, is_collection=True,
+                    defaults={'name': f"{request.user.username}'s list"}
+                )
+        else:
+            movies_list, _ = MoviesList.objects.get_or_create(
+                user=request.user, is_collection=True,
+                defaults={'name': f"{request.user.username}'s list"}
             )
 
         # 🎬 Génération liens YTS
@@ -408,7 +427,7 @@ def delete_movie(request, movie_id):
     """Remove movie from user's collection"""
     try:
         movie = Movie.objects.get(id=movie_id)
-        movies_list = MoviesList.objects.get(user=request.user)
+        movies_list = MoviesList.objects.get(user=request.user, is_collection=True)
 
         # Delete MovieListItem
         list_item = MovieListItem.objects.filter(
@@ -445,7 +464,7 @@ def delete_movie(request, movie_id):
 def random_movie(request):
     """Get random movie from collection"""
     try:
-        movies_list = MoviesList.objects.get(user=request.user)
+        movies_list = MoviesList.objects.get(user=request.user, is_collection=True)
         list_items = list(MovieListItem.objects.filter(
             movies_list=movies_list
         ).select_related('movie'))

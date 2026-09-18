@@ -13,6 +13,7 @@ function Home() {
   const [groupedMovies, setGroupedMovies] = useState({});
   const [loading, setLoading] = useState(true);
   const [availableGenres, setAvailableGenres] = useState([]);
+  const [collectionListId, setCollectionListId] = useState(null);
   const [filters, setFilters] = useState({
     genre: 'all',
     is_tv: 'all',
@@ -34,6 +35,7 @@ function Home() {
 
       setMovies(Array.isArray(data?.movies) ? data.movies : []);
       setGroupedMovies(data?.grouped_by_genre ?? {});
+      if (data?.list_id) setCollectionListId(data.list_id);
       setAvailableGenres(
         Array.isArray(data?.available_genres)
           ? data.available_genres.map(name => ({id: name, name}))
@@ -140,7 +142,7 @@ function Home() {
                   <div className="slider-wrapper">
                     <div className="genre-slider">
                       {genreMovies.map(movie => (
-                        <MovieCard key={movie?.id || Math.random()} movie={movie} movieList={genreMovies} from="home"/>
+                        <MovieCard key={movie?.id || Math.random()} movie={movie} movieList={genreMovies} from="home" extraState={{ sourceListId: collectionListId }} />
                       ))}
                     </div>
 

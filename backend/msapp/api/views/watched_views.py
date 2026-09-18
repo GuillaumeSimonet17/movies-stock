@@ -100,15 +100,16 @@ def add_to_watched(request):
                 status=status.HTTP_409_CONFLICT
             )
 
-        # Remove from collection via MovieListItem
+        # Remove from the source list (custom or collection)
+        list_id = request.data.get('list_id')
         try:
-            movies_list = MoviesList.objects.get(user=request.user)
-            MovieListItem.objects.filter(
-                movies_list=movies_list,
-                movie=movie
-            ).delete()
+            if list_id:
+                movies_list = MoviesList.objects.get(id=list_id, user=request.user)
+            else:
+                movies_list = MoviesList.objects.get(user=request.user, is_collection=True)
+            MovieListItem.objects.filter(movies_list=movies_list, movie=movie).delete()
         except MoviesList.DoesNotExist:
-            pass  # User might not have a movies list yet
+            pass
 
         return Response(
             WatchedMovieSerializer(watched).data,

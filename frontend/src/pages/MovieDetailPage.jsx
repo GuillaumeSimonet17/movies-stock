@@ -1,8 +1,9 @@
-import {useState, useEffect, useCallback} from 'react';
+import {useState, useEffect, useCallback, useRef} from 'react';
 import {useParams, useNavigate} from 'react-router-dom';
 import TopBar from '../components/common/TopBar';
 import {movieService} from '../services/movieService';
 import {watchedService} from '../services/watchedService';
+import {listService} from '../services/listService';
 import {getGenreName} from '../utils/genreMapping';
 import './MovieDetailPage.css';
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome'
@@ -14,6 +15,7 @@ import MovieCard from '../components/common/MovieCard';
 function MovieDetailPage() {
   const location = useLocation();
   const movieList = location.state?.movieList || [];
+  const sourceListId = location.state?.sourceListId || null;
 
   const {id} = useParams();
   const navigate = useNavigate();
@@ -27,6 +29,10 @@ function MovieDetailPage() {
   const [similarByActor, setSimilarByActor] = useState([]);
   const [similarByKeyword, setSimilarByKeyword] = useState([]);
   const [activeTab, setActiveTab] = useState('images');
+  const [userLists, setUserLists] = useState([]);
+  const [showListMenu, setShowListMenu] = useState(false);
+  const [listToast, setListToast] = useState({ show: false, message: '', type: '' });
+  const listMenuRef = useRef(null);
 
   const currentIndex = movieList.findIndex(m => m.id === Number(id));
 
@@ -39,7 +45,7 @@ function MovieDetailPage() {
   const loadMovie = useCallback(async () => {
     setLoading(true);
     try {
-      const data = await movieService.getMovieDetail(id);
+      const data = await movieService.getMovieDetail(id, sourceListId);
 
       setMovie(data.movie);
 
@@ -70,23 +76,48 @@ function MovieDetailPage() {
     } finally {
       setLoading(false);
     }
-  }, [id, navigate]);
+  }, [id, navigate, sourceListId]);
 
   useEffect(() => {
     window.scrollTo(0, 0);
     loadMovie();
+    listService.getLists().then(setUserLists).catch(() => {});
   }, [loadMovie]);
+
+  useEffect(() => {
+    if (!showListMenu) return;
+    const handleClick = (e) => {
+      if (listMenuRef.current && !listMenuRef.current.contains(e.target)) {
+        setShowListMenu(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClick);
+    return () => document.removeEventListener('mousedown', handleClick);
+  }, [showListMenu]);
+
+  const handleAddToList = async (listId) => {
+    setShowListMenu(false);
+    try {
+      await listService.addMovie(listId, id);
+      const listName = userLists.find(l => l.id === listId)?.name || 'list';
+      setListToast({ show: true, message: `Added to "${listName}"`, type: 'success' });
+    } catch (err) {
+      const msg = err?.response?.status === 409 ? 'Already in this list' : 'Failed to add to list';
+      setListToast({ show: true, message: msg, type: 'error' });
+    }
+    setTimeout(() => setListToast({ show: false, message: '', type: '' }), 3000);
+  };
 
   const goToMovie = (movieId) => {
     navigate(`/movie/${movieId}`, {
-      state: {movieList}
+      state: {movieList, sourceListId}
     });
   };
 
   const handleMarkWatched = async () => {
     try {
-      await watchedService.addToWatched(id);
-      navigate('/');
+      await watchedService.addToWatched(id, sourceListId);
+      navigate(sourceListId ? `/lists/${sourceListId}` : '/');
     } catch (error) {
       alert(error.message || 'Failed to mark as watched');
     }
@@ -94,11 +125,14 @@ function MovieDetailPage() {
 
   const handleDelete = async () => {
     try {
-      await movieService.deleteMovie(id);
-      navigate('/');
+      if (sourceListId) {
+        await listService.removeMovie(sourceListId, id);
+      } else {
+        await movieService.deleteMovie(id);
+      }
+      navigate(sourceListId ? `/lists/${sourceListId}` : '/');
     } catch {
-      navigate('/');
-      console.log('Failed to delete movie');
+      navigate(sourceListId ? `/lists/${sourceListId}` : '/');
     }
   };
 
@@ -179,6 +213,20 @@ function MovieDetailPage() {
             </div>
             <span className={"btn-movie-page"} onClick={handleMarkWatched}>Seen</span>
             <span className={"btn-movie-page"} onClick={handleDelete}>Nope</span>
+            {userLists.length > 0 && (
+              <div className="list-menu-wrapper" ref={listMenuRef}>
+                <span className={"btn-movie-page"} onClick={() => setShowListMenu(v => !v)}>+ List</span>
+                {showListMenu && (
+                  <div className="list-dropdown">
+                    {userLists.map(lst => (
+                      <button key={lst.id} className="list-dropdown-item" onClick={() => handleAddToList(lst.id)}>
+                        {lst.name}
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
+            )}
             <div className="movie-nav">
               {nextMovie && (
                 <span onClick={() => goToMovie(nextMovie.id)}>
@@ -449,6 +497,12 @@ function MovieDetailPage() {
               )}
             </div>
           )}
+        </div>
+      )}
+
+      {listToast.show && (
+        <div className={`toast toast-${listToast.type}`} style={{position:'fixed',bottom:30,right:30,zIndex:1001,padding:'14px 22px',borderRadius:8,fontWeight:500,background: listToast.type === 'success' ? '#10b981' : '#dc2626',color:'white'}}>
+          {listToast.message}
         </div>
       )}
     </div>

@@ -2,7 +2,7 @@ import {useNavigate, Link} from 'react-router-dom';
 
 import './MovieCard.css';
 
-function MovieCard({movie, movieList = [], clickable = true, from}) {
+function MovieCard({movie, movieList = [], clickable = true, from, extraState = {}}) {
   const navigate = useNavigate();
 
   const posterUrl = movie.poster_path
@@ -61,7 +61,7 @@ function MovieCard({movie, movieList = [], clickable = true, from}) {
   return clickable ? (
     <Link
       to={`/movie/${movie.id}`}
-      state={{movieList}}
+      state={{movieList, ...extraState}}
       className={`${cardClass} ${!clickable ? 'not-clickable' : ''}`}
     >
       {content}

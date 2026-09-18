@@ -152,3 +152,106 @@
 .logout-btn .icon {
   margin-right: 8px;
 }
+
+.drawer-lists-section {
+  margin-top: 20px;
+  border-top: 1px solid var(--border-color, #e0e0e0);
+  padding-top: 16px;
+}
+
+.drawer-lists-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 15px 8px;
+}
+
+.drawer-lists-title {
+  font-size: 13px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--text-secondary, #888);
+}
+
+.drawer-lists-add-btn {
+  background: none;
+  border: 1px solid var(--border-color, #e0e0e0);
+  border-radius: 50%;
+  width: 24px;
+  height: 24px;
+  font-size: 18px;
+  line-height: 1;
+  cursor: pointer;
+  color: var(--text-secondary, #888);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: color 0.2s, border-color 0.2s;
+}
+
+.drawer-lists-add-btn:hover {
+  color: var(--text-primary, #333);
+  border-color: var(--text-primary, #333);
+}
+
+.drawer-create-list-form {
+  padding: 4px 15px 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.drawer-list-input {
+  width: 100%;
+  padding: 7px 10px;
+  border: 1px solid var(--border-color, #e0e0e0);
+  border-radius: 6px;
+  background: var(--bg-primary, #fff);
+  color: var(--text-primary, #333);
+  font-size: 14px;
+  outline: none;
+  box-sizing: border-box;
+}
+
+.drawer-list-input:focus {
+  border-color: var(--accent-color, #666);
+}
+
+.drawer-create-list-actions {
+  display: flex;
+  gap: 6px;
+}
+
+.drawer-list-btn-confirm {
+  flex: 1;
+  padding: 5px;
+  border: none;
+  border-radius: 6px;
+  background: var(--text-primary, #333);
+  color: var(--bg-primary, #fff);
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.drawer-list-btn-cancel {
+  flex: 1;
+  padding: 5px;
+  border: 1px solid var(--border-color, #e0e0e0);
+  border-radius: 6px;
+  background: none;
+  color: var(--text-secondary, #888);
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.drawer-lists-nav {
+  margin-top: 0 !important;
+}
+
+.drawer-lists-empty {
+  font-size: 13px;
+  color: var(--text-secondary, #888);
+  padding: 6px 15px;
+  margin: 0;
+}

@@ -14,8 +14,9 @@ export const movieService = {
     return api.post('/movies/add/', { movie_id: movieId, is_tv: isTv });
   },
 
-  getMovieDetail: (id) => {
-    return api.get(`/movies/${id}/`);
+  getMovieDetail: (id, listId = null) => {
+    const qs = listId ? `?list_id=${listId}` : '';
+    return api.get(`/movies/${id}/${qs}`);
   },
 
   deleteMovie: (id) => {

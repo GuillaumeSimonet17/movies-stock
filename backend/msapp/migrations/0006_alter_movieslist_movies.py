@@ -10,9 +10,14 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-        migrations.AlterField(
-            model_name='movieslist',
-            name='movies',
-            field=models.ManyToManyField(related_name='movies_lists', through='msapp.MovieListItem', to='msapp.movie'),
+        migrations.SeparateDatabaseAndState(
+            state_operations=[
+                migrations.AlterField(
+                    model_name='movieslist',
+                    name='movies',
+                    field=models.ManyToManyField(related_name='movies_lists', through='msapp.MovieListItem', to='msapp.movie'),
+                ),
+            ],
+            database_operations=[],
         ),
     ]

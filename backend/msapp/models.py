@@ -34,7 +34,8 @@ class MovieListItem(models.Model):
 
 class MoviesList(models.Model):
     name = models.CharField(max_length=100)
-    user = models.OneToOneField(User, on_delete=models.CASCADE, null=True)
+    user = models.ForeignKey(User, on_delete=models.CASCADE, null=True, related_name='movies_lists')
+    is_collection = models.BooleanField(default=False)
     movies = models.ManyToManyField(
         Movie,
         through='MovieListItem',
