@@ -371,7 +371,7 @@
   top: calc(100% + 6px);
   left: 50%;
   transform: translateX(-50%);
-  background: var(--bg-secondary, #fff);
+  background: var(--bg-primary);
   border: 1px solid var(--border-color, #e0e0e0);
   border-radius: 8px;
   box-shadow: 0 4px 16px rgba(0,0,0,0.18);
@@ -394,5 +394,5 @@
 }
 
 .list-dropdown-item:hover {
-  background: var(--bg-tertiary, #f5f5f5);
+  background: color-mix(in srgb, var(--dropdown-bg, var(--bg-tertiary)) 80%, var(--dropdown-text, currentColor) 20%);
 }

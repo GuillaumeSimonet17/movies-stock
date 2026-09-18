@@ -217,9 +217,9 @@ function MovieDetailPage() {
               <div className="list-menu-wrapper" ref={listMenuRef}>
                 <span className={"btn-movie-page"} onClick={() => setShowListMenu(v => !v)}>+</span>
                 {showListMenu && (
-                  <div className="list-dropdown">
+                  <div className="list-dropdown" style={{'--dropdown-bg': backgroundColor, '--dropdown-text': textColor, background: backgroundColor, color: textColor, border: `1px solid ${textColor}40`}}>
                     {userLists.map(lst => (
-                      <button key={lst.id} className="list-dropdown-item" onClick={() => handleAddToList(lst.id)}>
+                      <button key={lst.id} className="list-dropdown-item" style={{color: textColor}} onClick={() => handleAddToList(lst.id)}>
                         {lst.name}
                       </button>
                     ))}
