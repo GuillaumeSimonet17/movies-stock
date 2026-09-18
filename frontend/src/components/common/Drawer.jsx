@@ -68,7 +68,7 @@ function Drawer({ isOpen, onClose }) {
           <nav className="drawer-nav">
             <Link to="/" onClick={onClose}>
               <span className="icon">🏠</span>
-              My Collection
+              My Wish List
               {totalCount !== null && <span className="drawer-count">{totalCount}</span>}
             </Link>
             <Link to="/watched" onClick={onClose}>
@@ -119,7 +119,7 @@ function Drawer({ isOpen, onClose }) {
               )}
               {lists.map(lst => (
                 <Link key={lst.id} to={`/lists/${lst.id}`} onClick={onClose}>
-                  <span className="icon">📋</span>
+                  <span className="icon">{lst.icon || '🎬'}</span>
                   {lst.name}
                   <span className="drawer-count">{lst.count}</span>
                 </Link>

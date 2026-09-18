@@ -3,6 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import TopBar from '../components/common/TopBar';
 import MovieCard from '../components/common/MovieCard';
 import ListSearchBar from '../components/movies/ListSearchBar';
+import EmojiPicker from '../components/common/EmojiPicker';
 import { listService } from '../services/listService';
 import './WatchedPage.css';
 import './ListPage.css';
@@ -15,8 +16,10 @@ function ListPage() {
   const [editingName, setEditingName] = useState(false);
   const [nameInput, setNameInput] = useState('');
   const [showDeleteListDialog, setShowDeleteListDialog] = useState(false);
+  const [showEmojiPicker, setShowEmojiPicker] = useState(false);
   const [toast, setToast] = useState({ show: false, message: '', type: '' });
   const nameInputRef = useRef(null);
+  const emojiPickerRef = useRef(null);
 
   useEffect(() => {
     loadList();
@@ -45,6 +48,17 @@ function ListPage() {
   const showToast = (message, type = 'success') => {
     setToast({ show: true, message, type });
     setTimeout(() => setToast({ show: false, message: '', type: '' }), 3000);
+  };
+
+  const handleIconSelect = async (emoji) => {
+    const prev = listData.icon;
+    setListData(d => ({ ...d, icon: emoji }));
+    try {
+      await listService.updateList(id, { name: listData.name, icon: emoji });
+    } catch {
+      setListData(d => ({ ...d, icon: prev }));
+      showToast('Failed to update icon', 'error');
+    }
   };
 
   const handleRenameSave = async () => {
@@ -120,6 +134,17 @@ function ListPage() {
             </div>
           ) : (
             <div className="list-title-row">
+              <div className="list-icon-wrapper" ref={emojiPickerRef}>
+                <button className="list-emoji-btn" onClick={() => setShowEmojiPicker(v => !v)} title="Change icon">
+                  {listData.icon || '🎬'}
+                </button>
+                {showEmojiPicker && (
+                  <EmojiPicker
+                    onSelect={handleIconSelect}
+                    onClose={() => setShowEmojiPicker(false)}
+                  />
+                )}
+              </div>
               <h1>{listData.name}</h1>
               <button className="list-icon-btn" onClick={() => setEditingName(true)} title="Rename list">✎</button>
               <button className="list-icon-btn list-icon-btn--danger" onClick={() => setShowDeleteListDialog(true)} title="Delete list">🗑</button>

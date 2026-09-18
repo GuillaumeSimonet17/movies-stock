@@ -35,6 +35,31 @@
   background: rgba(220, 38, 38, 0.08);
 }
 
+.list-icon-wrapper {
+  position: relative;
+}
+
+.list-emoji-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 2rem;
+  padding: 2px 4px;
+  border-radius: 8px;
+  line-height: 1;
+  transition: background 0.15s, transform 0.15s;
+}
+
+.list-emoji-btn:hover {
+  background: var(--bg-tertiary);
+  transform: scale(1.15);
+}
+
+.list-icon-wrapper .emoji-picker {
+  top: calc(100% + 6px);
+  left: 0;
+}
+
 .list-rename-row {
   display: flex;
   justify-content: center;

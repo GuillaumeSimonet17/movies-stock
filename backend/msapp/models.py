@@ -34,6 +34,7 @@ class MovieListItem(models.Model):
 
 class MoviesList(models.Model):
     name = models.CharField(max_length=100)
+    icon = models.CharField(max_length=10, default='🎬')
     user = models.ForeignKey(User, on_delete=models.CASCADE, null=True, related_name='movies_lists')
     is_collection = models.BooleanField(default=False)
     movies = models.ManyToManyField(

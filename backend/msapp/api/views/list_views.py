@@ -21,6 +21,7 @@ def get_user_lists(request):
         {
             'id': lst.id,
             'name': lst.name,
+            'icon': lst.icon,
             'count': lst.list_items.count(),
         }
         for lst in lists
@@ -34,8 +35,9 @@ def create_user_list(request):
     name = request.data.get('name', '').strip()
     if not name:
         return Response({'error': 'name is required'}, status=status.HTTP_400_BAD_REQUEST)
-    lst = MoviesList.objects.create(user=request.user, name=name, is_collection=False)
-    return Response({'id': lst.id, 'name': lst.name, 'count': 0}, status=status.HTTP_201_CREATED)
+    icon = request.data.get('icon', '🎬')
+    lst = MoviesList.objects.create(user=request.user, name=name, icon=icon, is_collection=False)
+    return Response({'id': lst.id, 'name': lst.name, 'icon': lst.icon, 'count': 0}, status=status.HTTP_201_CREATED)
 
 
 @api_view(['GET', 'PUT', 'DELETE'])
@@ -53,15 +55,17 @@ def user_list_detail(request, list_id):
             movie = item.movie
             movie.added_at = item.added_at
             movies.append(MovieListSerializer(movie).data)
-        return Response({'id': lst.id, 'name': lst.name, 'movies': movies})
+        return Response({'id': lst.id, 'name': lst.name, 'icon': lst.icon, 'movies': movies})
 
     if request.method == 'PUT':
         name = request.data.get('name', '').strip()
         if not name:
             return Response({'error': 'name is required'}, status=status.HTTP_400_BAD_REQUEST)
         lst.name = name
+        if 'icon' in request.data:
+            lst.icon = request.data['icon']
         lst.save()
-        return Response({'id': lst.id, 'name': lst.name, 'count': lst.list_items.count()})
+        return Response({'id': lst.id, 'name': lst.name, 'icon': lst.icon, 'count': lst.list_items.count()})
 
     if request.method == 'DELETE':
         lst.delete()

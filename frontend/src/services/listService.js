@@ -9,6 +9,8 @@ export const listService = {
 
   renameList: (id, name) => api.put(`/lists/${id}/`, { name }),
 
+  updateList: (id, data) => api.put(`/lists/${id}/`, data),
+
   deleteList: (id) => api.delete(`/lists/${id}/`),
 
   addMovie: (listId, movieId) => api.post(`/lists/${listId}/add/`, { movie_id: movieId }),
