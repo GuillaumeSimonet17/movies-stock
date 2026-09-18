@@ -20,6 +20,7 @@ __pycache__/
 staticfiles/
 media/
 db.sqlite3
+backend/moviesstock/settings.py
 
 # Virtualenv
 .venv/
