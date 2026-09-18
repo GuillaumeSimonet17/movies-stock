@@ -43,7 +43,7 @@
     border: none;
     cursor: pointer;
     transition: all 0.3s ease;
-    padding: 8px;
+    padding: 8px 0px;
     line-height: 1;
 }
 
