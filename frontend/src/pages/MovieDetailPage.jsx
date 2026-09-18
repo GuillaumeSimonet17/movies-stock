@@ -238,9 +238,7 @@ function MovieDetailPage() {
           <div className="col-md-6 d-flex justify-content-end gap-3 btn_pass">
             <div className="movie-nav">
               {prevMovie && (
-                <span onClick={() => goToMovie(prevMovie.id)}>
-                  ◂
-                </span>
+                <span className="btn-movie-page btn-nav btn-nav-prev" onClick={() => goToMovie(prevMovie.id)}>◂</span>
               )}
             </div>
             <div className="btn-movie-page-wrapper">
@@ -267,9 +265,7 @@ function MovieDetailPage() {
             )}
             <div className="movie-nav">
               {nextMovie && (
-                <span onClick={() => goToMovie(nextMovie.id)}>
-                  ▸
-                </span>
+                <span className="btn-movie-page btn-nav btn-nav-next" onClick={() => goToMovie(nextMovie.id)}>▸</span>
               )}
             </div>
             <button className="random-btn ms-2" onClick={handleRandomMovie}>
@@ -379,87 +375,45 @@ function MovieDetailPage() {
                     <FontAwesomeIcon icon={faGoogle} size="2x"/>
                   </a>
                 </div>
-                {!movie.is_tv && (
-                  <a
-                    href="https://www.avobiv.com"
-                    target="_blank"
-                    rel="noreferrer"
-                    style={{background: backgroundColor, color: textColor, border: `1px solid ${textColor}`}}
-                  >
-                    Chercher sur Avobiv
-                  </a>
-                )}
-                {(
-                  <a
-                    href="https://papadustream.garden/"
-                    target="_blank"
-                    rel="noreferrer"
-                    style={{background: backgroundColor, color: textColor, border: `1px solid ${textColor}`}}
-                  >
+
+                <div className="where-to-watch-desktop">
+                  {!movie.is_tv && (
+                    <a href="https://www.avobiv.com" target="_blank" rel="noreferrer"
+                      style={{background: backgroundColor, color: textColor, border: `1px solid ${textColor}`}}>
+                      Chercher sur Avobiv
+                    </a>
+                  )}
+                  <a href="https://papadustream.garden/" target="_blank" rel="noreferrer"
+                    style={{background: backgroundColor, color: textColor, border: `1px solid ${textColor}`}}>
                     Chercher sur papadustream
                   </a>
-                )}
-
-                <a
-                  href="https://movielair.cc/"
-                  target="_blank"
-                  rel="noreferrer"
-                  style={{background: backgroundColor, color: textColor, border: `1px solid ${textColor}`}}
-                >
-                  Chercher sur Movielair
-                </a>
-
-                {yts1 && !movie.is_tv && (
-                  <>
-                    <a
-                      href={yts1}
-                      target="_blank"
-                      rel="noreferrer"
-                      className="mt-3"
-                      style={{background: backgroundColor, color: textColor, border: `1px solid ${textColor}`}}
-                    >
-                      Voir ou download sur YTS
-                    </a>
-
-                    <a
-                      href={yts2}
-                      target="_blank"
-                      rel="noreferrer"
-                      style={{background: backgroundColor, color: textColor, border: `1px solid ${textColor}`}}
-                    >
-                      Voir ou download sur YTS 2
-                    </a>
-                    <div className="d-flex align-items-center gap-3">
-                      <a
-                        href={`https://fr.my-subs.net/search.php?key=${movie.title}`}
-                        target="_blank"
-                        rel="noreferrer"
-                        style={{
-                          minWidth: 130,
-                          background: backgroundColor,
-                          color: textColor,
-                          border: `1px solid ${textColor}`
-                        }}
-                      >
-                        Sous-titres
+                  <a href="https://movielair.cc/" target="_blank" rel="noreferrer"
+                    style={{background: backgroundColor, color: textColor, border: `1px solid ${textColor}`}}>
+                    Chercher sur Movielair
+                  </a>
+                  {yts1 && !movie.is_tv && (
+                    <>
+                      <a href={yts1} target="_blank" rel="noreferrer" className="mt-3"
+                        style={{background: backgroundColor, color: textColor, border: `1px solid ${textColor}`}}>
+                        Voir ou download sur YTS
                       </a>
-
-                      <a
-                        href={`https://yts-subs.com/search/${movie.title}`}
-                        target="_blank"
-                        rel="noreferrer"
-                        style={{
-                          minWidth: 130,
-                          background: backgroundColor,
-                          color: textColor,
-                          border: `1px solid ${textColor}`
-                        }}
-                      >
-                        Sous-titres 2
+                      <a href={yts2} target="_blank" rel="noreferrer"
+                        style={{background: backgroundColor, color: textColor, border: `1px solid ${textColor}`}}>
+                        Voir ou download sur YTS 2
                       </a>
-                    </div>
-                  </>
-                )}
+                      <div className="d-flex align-items-center gap-3">
+                        <a href={`https://fr.my-subs.net/search.php?key=${movie.title}`} target="_blank" rel="noreferrer"
+                          style={{minWidth: 130, background: backgroundColor, color: textColor, border: `1px solid ${textColor}`}}>
+                          Sous-titres
+                        </a>
+                        <a href={`https://yts-subs.com/search/${movie.title}`} target="_blank" rel="noreferrer"
+                          style={{minWidth: 130, background: backgroundColor, color: textColor, border: `1px solid ${textColor}`}}>
+                          Sous-titres 2
+                        </a>
+                      </div>
+                    </>
+                  )}
+                </div>
               </div>
             </div>
           </div>
@@ -467,7 +421,7 @@ function MovieDetailPage() {
       </main>
 
       {/* TABS */}
-      {(movie.filepath_set?.length > 0 || similarByDirector.length > 0 || similarByActor.length > 0 || similarByKeyword.length > 0) && (
+      {(movie.filepath_set?.length > 0 || similarByDirector.length > 0 || similarByActor.length > 0 || similarByKeyword.length > 0 || true) && (
         <div className="tabs-section container mt-3">
           <div className="tabs-header" style={{borderBottom: `1px solid ${textColor}30`}}>
             {movie.filepath_set?.length > 0 && (
@@ -476,16 +430,23 @@ function MovieDetailPage() {
                 style={{color: textColor, borderBottomColor: activeTab === 'images' ? textColor : 'transparent'}}
                 onClick={() => setActiveTab('images')}
               >
-                Images
+                Gallery
               </button>
             )}
+            <button
+              className={`tab-btn tab-btn-mobile-only ${activeTab === 'where' ? 'active' : ''}`}
+              style={{color: textColor, borderBottomColor: activeTab === 'where' ? textColor : 'transparent'}}
+              onClick={() => setActiveTab('where')}
+            >
+              Watch it
+            </button>
             {(similarByDirector.length > 0 || similarByActor.length > 0 || similarByKeyword.length > 0) && (
               <button
                 className={`tab-btn ${activeTab === 'similar' ? 'active' : ''}`}
                 style={{color: textColor, borderBottomColor: activeTab === 'similar' ? textColor : 'transparent'}}
                 onClick={() => setActiveTab('similar')}
               >
-                Films similaires
+                Similar
               </button>
             )}
           </div>
@@ -495,6 +456,47 @@ function MovieDetailPage() {
               {movie.filepath_set.map((fp, i) => (
                 <img key={i} src={buildImageUrl(fp.file_path)} alt="backdrop"/>
               ))}
+            </div>
+          )}
+
+          {activeTab === 'where' && (
+            <div className="where-to-watch-tab p-4">
+              {!movie.is_tv && (
+                <a href="https://www.avobiv.com" target="_blank" rel="noreferrer"
+                  style={{background: backgroundColor, color: textColor, border: `1px solid ${textColor}`}}>
+                  Chercher sur Avobiv
+                </a>
+              )}
+              <a href="https://papadustream.garden/" target="_blank" rel="noreferrer"
+                style={{background: backgroundColor, color: textColor, border: `1px solid ${textColor}`}}>
+                Chercher sur papadustream
+              </a>
+              <a href="https://movielair.cc/" target="_blank" rel="noreferrer"
+                style={{background: backgroundColor, color: textColor, border: `1px solid ${textColor}`}}>
+                Chercher sur Movielair
+              </a>
+              {yts1 && !movie.is_tv && (
+                <>
+                  <a href={yts1} target="_blank" rel="noreferrer"
+                    style={{background: backgroundColor, color: textColor, border: `1px solid ${textColor}`}}>
+                    Voir ou download sur YTS
+                  </a>
+                  <a href={yts2} target="_blank" rel="noreferrer"
+                    style={{background: backgroundColor, color: textColor, border: `1px solid ${textColor}`}}>
+                    Voir ou download sur YTS 2
+                  </a>
+                  <div className="d-flex align-items-center justify-content-center gap-3">
+                    <a href={`https://fr.my-subs.net/search.php?key=${movie.title}`} target="_blank" rel="noreferrer"
+                      style={{background: backgroundColor, color: textColor, border: `1px solid ${textColor}`}}>
+                      Sous-titres
+                    </a>
+                    <a href={`https://yts-subs.com/search/${movie.title}`} target="_blank" rel="noreferrer"
+                      style={{background: backgroundColor, color: textColor, border: `1px solid ${textColor}`}}>
+                      Sous-titres 2
+                    </a>
+                  </div>
+                </>
+              )}
             </div>
           )}
 
