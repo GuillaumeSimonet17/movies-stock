@@ -24,7 +24,7 @@ import './WatchedPage.css';
 import './ListPage.css';
 
 function SortableMovieItem({ movie, listMovies, listId, onRemoveClick }) {
-  const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id: movie.id });
+  const { attributes, listeners, setNodeRef, setActivatorNodeRef, transform, transition, isDragging } = useSortable({ id: movie.id });
 
   const style = {
     transform: CSS.Transform.toString(transform),
@@ -32,12 +32,20 @@ function SortableMovieItem({ movie, listMovies, listId, onRemoveClick }) {
     opacity: isDragging ? 0.4 : 1,
     position: 'relative',
     zIndex: isDragging ? 10 : 'auto',
-    cursor: isDragging ? 'grabbing' : 'grab',
   };
 
   return (
-    <div ref={setNodeRef} style={style} className="watched-movie-item" {...attributes} {...listeners}>
+    <div ref={setNodeRef} style={style} className="watched-movie-item" {...attributes}>
       <div className="movie-card-wrapper">
+        <button
+          ref={setActivatorNodeRef}
+          className="drag-handle"
+          {...listeners}
+          onClick={(e) => e.preventDefault()}
+          title="Drag to reorder"
+        >
+          ⠿
+        </button>
         <MovieCard movie={movie} movieList={listMovies} from="watched" extraState={{ sourceListId: listId }} />
         <button
           className="remove-button"
