@@ -49,7 +49,7 @@ def user_list_detail(request, list_id):
         return Response({'error': 'List not found'}, status=status.HTTP_404_NOT_FOUND)
 
     if request.method == 'GET':
-        items = lst.list_items.select_related('movie').order_by('-added_at')
+        items = lst.list_items.select_related('movie').order_by('position', '-added_at')
         movies = []
         for item in items:
             movie = item.movie
@@ -132,9 +132,10 @@ def search_add_to_list(request, list_id):
         get_keywords(movie, endpoint, tmdb_id)
 
     # Add to the custom list
-    _, created = MovieListItem.objects.get_or_create(movies_list=lst, movie=movie)
-    if not created:
+    if MovieListItem.objects.filter(movies_list=lst, movie=movie).exists():
         return Response({'error': 'Movie already in list'}, status=status.HTTP_409_CONFLICT)
+    next_position = lst.list_items.count()
+    MovieListItem.objects.create(movies_list=lst, movie=movie, position=next_position)
 
     return Response(MovieSerializer(movie).data, status=status.HTTP_201_CREATED)
 
@@ -156,9 +157,10 @@ def add_movie_to_list(request, list_id):
     except Movie.DoesNotExist:
         return Response({'error': 'Movie not found'}, status=status.HTTP_404_NOT_FOUND)
 
-    _, created = MovieListItem.objects.get_or_create(movies_list=lst, movie=movie)
-    if not created:
+    if MovieListItem.objects.filter(movies_list=lst, movie=movie).exists():
         return Response({'error': 'Movie already in list'}, status=status.HTTP_409_CONFLICT)
+    next_position = lst.list_items.count()
+    MovieListItem.objects.create(movies_list=lst, movie=movie, position=next_position)
 
     return Response({'message': 'Movie added'}, status=status.HTTP_201_CREATED)
 
