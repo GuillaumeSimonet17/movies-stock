@@ -82,7 +82,7 @@ function Home() {
       <div className="home-page">
         <TopBar/>
         <div className="loading-container">
-          <div className="loading">Loading your collection...</div>
+          <div className="loading">Chargement de votre collection...</div>
         </div>
       </div>
     );
@@ -108,9 +108,9 @@ function Home() {
 
         {movies.length === 0 ? (
           <div className="empty-state">
-            <h2>Welcome to Hollylist!</h2>
-            <p>Your movie collection is empty.</p>
-            <p>Search and add some movies above to get started.</p>
+            <h2>Bienvenue sur Hollylist !</h2>
+            <p>Votre collection est vide.</p>
+            <p>Recherchez et ajoutez des films ci-dessus pour commencer.</p>
           </div>
         ) : (
           <div className="movies-container">

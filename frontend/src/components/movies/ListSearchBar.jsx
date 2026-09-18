@@ -41,7 +41,7 @@ function ListSearchBar({ listId, onMovieAdded }) {
       setResults([]);
       if (onMovieAdded) onMovieAdded(added);
     } catch (err) {
-      const msg = err?.response?.status === 409 ? 'Already in this list' : 'Failed to add movie';
+      const msg = err?.message?.toLowerCase().includes('already') ? 'Déjà dans cette liste' : "Impossible d'ajouter le film";
       setErrorMsg(msg);
     } finally {
       setAdding(null);
@@ -54,22 +54,22 @@ function ListSearchBar({ listId, onMovieAdded }) {
       <div className="search-controls col-12 col-md-6">
         <input
           type="text"
-          placeholder="Search and add a movie..."
+          placeholder={searchType === 'tv' ? 'Rechercher et ajouter une série...' : 'Rechercher et ajouter un film...'}
           value={query}
           onChange={e => setQuery(e.target.value)}
           className="search-input"
         />
         <div className="search-type-toggle">
           <button className={searchType === 'movie' ? 'active' : ''} onClick={() => setSearchType('movie')}>
-            Movies
+            Films
           </button>
           <button className={searchType === 'tv' ? 'active' : ''} onClick={() => setSearchType('tv')}>
-            Series
+            Séries
           </button>
         </div>
       </div>
 
-      {loading && <div className="search-loading">Searching...</div>}
+      {loading && <div className="search-loading">Recherche...</div>}
 
       {results.length > 0 && (
         <div className="search-results">

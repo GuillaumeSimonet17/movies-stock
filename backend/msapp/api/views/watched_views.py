@@ -32,10 +32,12 @@ def get_watched_movies(request):
             'total_count': total
         })
 
+    MOIS_FR = ['janvier','février','mars','avril','mai','juin','juillet','août','septembre','octobre','novembre','décembre']
+
     FORMAT_MAP = {
         'year': lambda p: (p.strftime('%Y-%m-%d'), p.strftime('%Y')),
-        'month': lambda p: (p.strftime('%Y-%m-%d'), p.strftime('%B %Y')),
-        'week': lambda p: (p.strftime('%Y-%m-%d'), f"Week of {p.strftime('%Y-%m-%d')}"),
+        'month': lambda p: (p.strftime('%Y-%m-%d'), f"{MOIS_FR[p.month - 1]} {p.year}"),
+        'week': lambda p: (p.strftime('%Y-%m-%d'), f"Semaine du {p.strftime('%d/%m/%Y')}"),
     }
 
     TRUNC_MAP = {'year': TruncYear, 'month': TruncMonth, 'week': TruncWeek}

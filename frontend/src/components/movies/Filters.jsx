@@ -2,8 +2,8 @@ import {useState, useRef, useEffect} from 'react';
 import './Filters.css';
 
 const TYPE_OPTIONS = [
-  {value: 'Movies', label: 'Movies'},
-  {value: 'Series', label: 'Series'},
+  {value: 'Movies', label: 'Films'},
+  {value: 'Series', label: 'Séries'},
 ];
 
 function Filters({onFilterChange, availableGenres, currentFilters}) {
@@ -34,7 +34,7 @@ function Filters({onFilterChange, availableGenres, currentFilters}) {
   };
 
   const getGenreLabel = () => {
-    if (!currentFilters.genre || currentFilters.genre === 'all') return 'All Genres';
+    if (!currentFilters.genre || currentFilters.genre === 'all' || currentFilters.genre === 'All') return 'Tous les genres';
     return currentFilters.genre;
   };
 
@@ -81,7 +81,7 @@ function Filters({onFilterChange, availableGenres, currentFilters}) {
               onClick={() => handleFilterChange('genre', 'All')}
               className={!currentFilters.genre || currentFilters.genre === 'All' ? 'active' : ''}
             >
-              All Genres
+              Tous les genres
             </li>
 
             {availableGenres.map(genre => (
@@ -100,7 +100,7 @@ function Filters({onFilterChange, availableGenres, currentFilters}) {
       <div className="filters-search">
         <input
           type="text"
-          placeholder="Search..."
+          placeholder="Rechercher..."
           value={searchText}
           onChange={(e) => setSearchText(e.target.value)}
           onKeyDown={(e) => {
@@ -114,7 +114,7 @@ function Filters({onFilterChange, availableGenres, currentFilters}) {
       </div>
 
       <button className="reset-btn" onClick={handleResetFilters}>
-        Reset
+        Réinitialiser
       </button>
     </>
   );
@@ -132,7 +132,7 @@ function Filters({onFilterChange, availableGenres, currentFilters}) {
           className="accordion-header"
           onClick={() => setMobileAccordionOpen(!mobileAccordionOpen)}
         >
-          <span className="accordion-title">Filters</span>
+          <span className="accordion-title">Filtres</span>
           <span className={`accordion-chevron ${mobileAccordionOpen ? 'rotated' : ''}`}>▼</span>
         </div>
 

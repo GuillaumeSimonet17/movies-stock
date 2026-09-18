@@ -19,12 +19,12 @@ function SignupPage() {
 
     // Validation
     if (password !== confirmPassword) {
-      setError('Passwords do not match');
+      setError('Les mots de passe ne correspondent pas');
       return;
     }
 
     if (password.length < 6) {
-      setError('Password must be at least 6 characters');
+      setError('Le mot de passe doit contenir au moins 6 caractères');
       return;
     }
 
@@ -44,13 +44,13 @@ function SignupPage() {
     <div className="auth-page">
       <div className="auth-container">
         <h1 className="auth-title">Hollylist</h1>
-        <h2 className="auth-subtitle">Sign Up</h2>
+        <h2 className="auth-subtitle">Inscription</h2>
 
         {error && <div className="error-message">{error}</div>}
 
         <form onSubmit={handleSubmit} className="auth-form">
           <div className="form-group">
-            <label htmlFor="username">Username</label>
+            <label htmlFor="username">Nom d'utilisateur</label>
             <input
               type="text"
               id="username"
@@ -62,7 +62,7 @@ function SignupPage() {
           </div>
 
           <div className="form-group">
-            <label htmlFor="email">Email (optional)</label>
+            <label htmlFor="email">Email (optionnel)</label>
             <input
               type="email"
               id="email"
@@ -73,7 +73,7 @@ function SignupPage() {
           </div>
 
           <div className="form-group">
-            <label htmlFor="password">Password</label>
+            <label htmlFor="password">Mot de passe</label>
             <input
               type="password"
               id="password"
@@ -85,7 +85,7 @@ function SignupPage() {
           </div>
 
           <div className="form-group">
-            <label htmlFor="confirmPassword">Confirm Password</label>
+            <label htmlFor="confirmPassword">Confirmer le mot de passe</label>
             <input
               type="password"
               id="confirmPassword"
@@ -97,12 +97,12 @@ function SignupPage() {
           </div>
 
           <button type="submit" className="auth-button" disabled={loading}>
-            {loading ? 'Signing up...' : 'Sign Up'}
+            {loading ? 'Inscription...' : "S'inscrire"}
           </button>
         </form>
 
         <p className="auth-switch">
-          Already have an account? <Link to="/login">Login</Link>
+          Déjà un compte ? <Link to="/login">Se connecter</Link>
         </p>
       </div>
     </div>

@@ -130,11 +130,11 @@ function MovieDetailPage() {
     try {
       await listService.addMovie(listId, id);
       const listName = userLists.find(l => l.id === listId)?.name || 'list';
-      setListToast({ show: true, message: `Added to "${listName}"`, type: 'success' });
+      setListToast({ show: true, message: `Ajouté à "${listName}"`, type: 'success' });
     } catch (err) {
       const listName = userLists.find(l => l.id === listId)?.name || 'list';
       const isAlready = err?.message?.toLowerCase().includes('already');
-      const msg = isAlready ? `Already in "${listName}"` : 'Failed to add to list';
+      const msg = isAlready ? `Déjà dans "${listName}"` : "Impossible d'ajouter à la liste";
       setListToast({ show: true, message: msg, type: 'error' });
     }
     setTimeout(() => setListToast({ show: false, message: '', type: '' }), 3000);
@@ -181,7 +181,7 @@ function MovieDetailPage() {
     return (
       <div className="movie-detail-page">
         <TopBar bgColor={backgroundColor} textColor={textColor}/>
-        <div className="loading-container">Loading...</div>
+        <div className="loading-container">Chargement...</div>
       </div>
     );
   }
@@ -242,12 +242,12 @@ function MovieDetailPage() {
               )}
             </div>
             <div className="btn-movie-page-wrapper">
-              <span className={"btn-movie-page btn-seen"} onClick={handleMarkWatched} title="Just watched it">✓</span>
-              <span className="btn-movie-tooltip">Just watched it</span>
+              <span className={"btn-movie-page btn-seen"} onClick={handleMarkWatched} title="Je viens de le voir">✓</span>
+              <span className="btn-movie-tooltip">Je viens de le voir</span>
             </div>
             <div className="btn-movie-page-wrapper">
-              <span className={"btn-movie-page btn-nope"} onClick={handleDelete} title="Don't want to watch it">✕</span>
-              <span className="btn-movie-tooltip">Don't want to watch it</span>
+              <span className={"btn-movie-page btn-nope"} onClick={handleDelete} title="Pas envie de le voir">✕</span>
+              <span className="btn-movie-tooltip">Pas envie de le voir</span>
             </div>
             {userLists.length > 0 && (
               <div className="list-menu-wrapper" ref={listMenuRef}>
@@ -337,14 +337,14 @@ function MovieDetailPage() {
                 </p>
 
                 {/* PRODUCTION LOGOS */}
-                <div className="row prods align-items-center justify-content-center p-2 mt-1">
+                <div className="row prods align-items-center justify-content-between p-2 mt-1">
                   {movie.production_companies?.map((p, i) =>
                     p.logo_path ? (
                       <img
                         key={i}
                         src={`https://image.tmdb.org/t/p/w500${p.logo_path}`}
                         alt={p.name}
-                        style={{maxWidth: 150}}
+                        style={{maxWidth: 90}}
                         className="img-fluid p-1"
                       />
                     ) : null
@@ -430,7 +430,7 @@ function MovieDetailPage() {
                 style={{color: textColor, borderBottomColor: activeTab === 'images' ? textColor : 'transparent'}}
                 onClick={() => setActiveTab('images')}
               >
-                Gallery
+                Galerie
               </button>
             )}
             <button
@@ -438,7 +438,7 @@ function MovieDetailPage() {
               style={{color: textColor, borderBottomColor: activeTab === 'where' ? textColor : 'transparent'}}
               onClick={() => setActiveTab('where')}
             >
-              Watch it
+              Où regarder
             </button>
             {(similarByDirector.length > 0 || similarByActor.length > 0 || similarByKeyword.length > 0) && (
               <button
@@ -446,7 +446,7 @@ function MovieDetailPage() {
                 style={{color: textColor, borderBottomColor: activeTab === 'similar' ? textColor : 'transparent'}}
                 onClick={() => setActiveTab('similar')}
               >
-                Similar
+                Similaires
               </button>
             )}
           </div>

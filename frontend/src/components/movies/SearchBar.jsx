@@ -40,7 +40,7 @@ function SearchBar({onMovieAdded}) {
       if (onMovieAdded) onMovieAdded();
     } catch (error) {
       console.error('Add movie error:', error);
-      setErrorMsg(error.message || 'Failed to add movie');
+      setErrorMsg(error.message || "Impossible d'ajouter le film");
     } finally {
       setAdding(null);
     }
@@ -62,7 +62,7 @@ function SearchBar({onMovieAdded}) {
       <div className="search-controls col-12 col-md-6">
         <input
           type="text"
-          placeholder="Search for movies or TV shows..."
+          placeholder={searchType === 'tv' ? 'Rechercher et ajouter une série...' : 'Rechercher et ajouter un film...'}
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           className="search-input"
@@ -73,18 +73,18 @@ function SearchBar({onMovieAdded}) {
             className={searchType === 'movie' ? 'active' : ''}
             onClick={() => setSearchType('movie')}
           >
-            Movies
+            Films
           </button>
           <button
             className={searchType === 'tv' ? 'active' : ''}
             onClick={() => setSearchType('tv')}
           >
-            Series
+            Séries
           </button>
         </div>
       </div>
 
-      {loading && <div className="search-loading">Searching...</div>}
+      {loading && <div className="search-loading">Recherche...</div>}
 
       {results.length > 0 && (
         <div className="search-results">

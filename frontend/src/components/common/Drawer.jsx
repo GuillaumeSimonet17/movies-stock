@@ -68,23 +68,23 @@ function Drawer({ isOpen, onClose }) {
           <nav className="drawer-nav">
             <Link to="/" onClick={onClose}>
               <span className="icon">🏠</span>
-              My Wish List
+              Ma Wishlist
               {totalCount !== null && <span className="drawer-count">{totalCount}</span>}
             </Link>
             <Link to="/watched" onClick={onClose}>
               <span className="icon">✓</span>
-              Watched Movies
+              Films vus
               {watchedCount !== null && <span className="drawer-count">{watchedCount}</span>}
             </Link>
           </nav>
 
           <div className="drawer-lists-section">
             <div className="drawer-lists-header">
-              <span className="drawer-lists-title">My Lists</span>
+              <span className="drawer-lists-title">Mes listes</span>
               <button
                 className="drawer-lists-add-btn"
                 onClick={() => setCreatingList(true)}
-                title="Create a new list"
+                title="Créer une nouvelle liste"
               >
                 +
               </button>
@@ -95,19 +95,19 @@ function Drawer({ isOpen, onClose }) {
                 <input
                   autoFocus
                   type="text"
-                  placeholder="List name..."
+                  placeholder="Nom de la liste..."
                   value={newListName}
                   onChange={e => setNewListName(e.target.value)}
                   className="drawer-list-input"
                 />
                 <div className="drawer-create-list-actions">
-                  <button type="submit" className="drawer-list-btn-confirm">Create</button>
+                  <button type="submit" className="drawer-list-btn-confirm">Créer</button>
                   <button
                     type="button"
                     className="drawer-list-btn-cancel"
                     onClick={() => { setCreatingList(false); setNewListName(''); }}
                   >
-                    Cancel
+                    Annuler
                   </button>
                 </div>
               </form>
@@ -115,7 +115,7 @@ function Drawer({ isOpen, onClose }) {
 
             <nav className="drawer-nav drawer-lists-nav">
               {lists.length === 0 && !creatingList && (
-                <p className="drawer-lists-empty">No lists yet</p>
+                <p className="drawer-lists-empty">Aucune liste pour l'instant</p>
               )}
               {lists.map(lst => (
                 <Link key={lst.id} to={`/lists/${lst.id}`} onClick={onClose}>
@@ -130,8 +130,12 @@ function Drawer({ isOpen, onClose }) {
 
         <div className="drawer-footer">
           <button className="logout-btn" onClick={handleLogout}>
-            <span className="icon">🚪</span>
-            Logout
+            <svg className="icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" width="18" height="18">
+              <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
+              <polyline points="16 17 21 12 16 7"/>
+              <line x1="21" y1="12" x2="9" y2="12"/>
+            </svg>
+            Déconnexion
           </button>
         </div>
       </div>

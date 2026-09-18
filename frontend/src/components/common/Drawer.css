@@ -133,9 +133,9 @@
 .logout-btn {
   width: 100%;
   padding: 12px;
-  background: var(--danger-color, #dc3545);
-  color: white;
-  border: none;
+  background: var(--bg-tertiary);
+  color: var(--text-primary);
+  border: 1px solid var(--border-color, #e0e0e0);
   border-radius: 8px;
   cursor: pointer;
   font-size: 16px;
@@ -146,7 +146,7 @@
 }
 
 .logout-btn:hover {
-  background: var(--danger-hover, #c82333);
+  background: var(--bg-secondary);
 }
 
 .logout-btn .icon {

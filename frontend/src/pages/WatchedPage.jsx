@@ -86,14 +86,14 @@ function WatchedPage() {
     try {
       // Call API to remove from backend
       await watchedService.removeFromWatched(movieId);
-      showToast('Movie removed from watched list', 'success');
+      showToast('Film retiré de la liste', 'success');
     } catch (error) {
       console.error('Error removing movie:', error);
       // Rollback on error
       setWatchedMovies(previousWatchedMovies);
       setGroupedWatched(previousGroupedWatched);
       setTotalCount(previousCount);
-      showToast('Failed to remove movie. Please try again.', 'error');
+      showToast('Erreur, veuillez réessayer.', 'error');
     } finally {
       setRemovingIds(prev => {
         const newSet = new Set(prev);
@@ -113,7 +113,7 @@ function WatchedPage() {
     return (
       <div className="watched-page">
         <TopBar/>
-        <div className="loading-container">Loading watched movies...</div>
+        <div className="loading-container">Chargement...</div>
       </div>
     );
   }
@@ -124,10 +124,7 @@ function WatchedPage() {
 
       <div className="content">
         <div className="watched-header">
-          <h1>Watched Movies</h1>
-          <p className="watched-count">
-            Total watched: <strong>{totalCount}</strong>
-          </p>
+          <h1>Films vus</h1>
         </div>
 
         <div className="grouping-controls">
@@ -135,32 +132,32 @@ function WatchedPage() {
             className={groupBy === 'all' ? 'active' : ''}
             onClick={() => setGroupBy('all')}
           >
-            All
+            Tous
           </button>
           <button
             className={groupBy === 'year' ? 'active' : ''}
             onClick={() => setGroupBy('year')}
           >
-            By Year
+            Par année
           </button>
           <button
             className={groupBy === 'month' ? 'active' : ''}
             onClick={() => setGroupBy('month')}
           >
-            By Month
+            Par mois
           </button>
           <button
             className={groupBy === 'week' ? 'active' : ''}
             onClick={() => setGroupBy('week')}
           >
-            By Week
+            Par semaine
           </button>
         </div>
 
         {totalCount === 0 ? (
           <div className="empty-state">
-            <h2>No watched movies yet</h2>
-            <p>Movies you mark as watched will appear here.</p>
+            <h2>Aucun film vu pour l'instant</h2>
+            <p>Les films que vous marquez comme vus apparaîtront ici.</p>
           </div>
         ) : groupBy === 'all' ? (
           <div className="movies-wrap">
@@ -174,14 +171,14 @@ function WatchedPage() {
                   <button
                     className="remove-button"
                     onClick={() => handleRemoveClick(watched)}
-                    title="Remove from watched list"
+                    title="Retirer de la liste"
                     disabled={removingIds.has(watched.id)}
                   >
                     ✕
                   </button>
                 </div>
                 <p className="watched-date">
-                  Watched: {new Date(watched.watched_at).toLocaleDateString()}
+                  Vu le : {new Date(watched.watched_at).toLocaleDateString()}
                 </p>
               </div>
             ))}
@@ -218,14 +215,14 @@ function WatchedPage() {
                             <button
                               className="remove-button"
                               onClick={() => handleRemoveClick(watched)}
-                              title="Remove from watched list"
+                              title="Retirer de la liste"
                               disabled={removingIds.has(watched.id)}
                             >
                               ✕
                             </button>
                           </div>
                           <p className="watched-date">
-                            {new Date(watched.watched_at).toLocaleDateString()}
+                            Vu le : {new Date(watched.watched_at).toLocaleDateString()}
                           </p>
                         </div>
                       ))}
@@ -242,17 +239,16 @@ function WatchedPage() {
       {showConfirmDialog && (
         <div className="confirm-dialog-overlay" onClick={handleCancelRemove}>
           <div className="confirm-dialog" onClick={(e) => e.stopPropagation()}>
-            <h3>Remove from Watched List?</h3>
+            <h3>Retirer de la liste ?</h3>
             <p>
-              Are you sure you want to remove <strong>{movieToRemove?.movie?.title}</strong> from
-              your watched list?
+              Retirer <strong>{movieToRemove?.movie?.title}</strong> de votre liste ?
             </p>
             <div className="dialog-actions">
               <button className="btn-cancel" onClick={handleCancelRemove}>
-                Cancel
+                Annuler
               </button>
               <button className="btn-confirm" onClick={handleConfirmRemove}>
-                Remove
+                Retirer
               </button>
             </div>
           </div>

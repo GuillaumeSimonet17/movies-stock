@@ -50,7 +50,7 @@ function SortableMovieItem({ movie, listMovies, listId, onRemoveClick }) {
         <button
           className="remove-button"
           onClick={(e) => { e.preventDefault(); e.stopPropagation(); onRemoveClick(movie); }}
-          title="Remove from list"
+          title="Retirer de la liste"
         >
           ✕
         </button>
@@ -197,7 +197,7 @@ function ListPage() {
     return (
       <div className="watched-page">
         <TopBar />
-        <div className="loading-container">Loading list...</div>
+        <div className="loading-container">Chargement...</div>
       </div>
     );
   }
@@ -242,8 +242,8 @@ function ListPage() {
 
         {listData.movies.length === 0 ? (
           <div className="empty-state">
-            <h2>Empty list</h2>
-            <p>Search and add movies above.</p>
+            <h2>Liste vide</h2>
+            <p>Recherchez et ajoutez des films ci-dessus.</p>
           </div>
         ) : (
           <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
@@ -267,11 +267,11 @@ function ListPage() {
       {movieToRemove && (
         <div className="confirm-dialog-overlay" onClick={() => setMovieToRemove(null)}>
           <div className="confirm-dialog" onClick={e => e.stopPropagation()}>
-            <h3>Remove from list?</h3>
-            <p>Are you sure you want to remove <strong>{movieToRemove.title || movieToRemove.name}</strong> from this list?</p>
+            <h3>Retirer de la liste ?</h3>
+            <p>Retirer <strong>{movieToRemove.title || movieToRemove.name}</strong> de cette liste ?</p>
             <div className="dialog-actions">
-              <button className="btn-cancel" onClick={() => setMovieToRemove(null)}>Cancel</button>
-              <button className="btn-confirm" onClick={handleConfirmRemove}>Remove</button>
+              <button className="btn-cancel" onClick={() => setMovieToRemove(null)}>Annuler</button>
+              <button className="btn-confirm" onClick={handleConfirmRemove}>Retirer</button>
             </div>
           </div>
         </div>
@@ -280,11 +280,11 @@ function ListPage() {
       {showDeleteListDialog && (
         <div className="confirm-dialog-overlay" onClick={() => setShowDeleteListDialog(false)}>
           <div className="confirm-dialog" onClick={e => e.stopPropagation()}>
-            <h3>Delete list?</h3>
-            <p>Are you sure you want to delete <strong>{listData.name}</strong>? This cannot be undone.</p>
+            <h3>Supprimer la liste ?</h3>
+            <p>Supprimer <strong>{listData.name}</strong> ? Cette action est irréversible.</p>
             <div className="dialog-actions">
-              <button className="btn-cancel" onClick={() => setShowDeleteListDialog(false)}>Cancel</button>
-              <button className="btn-confirm" onClick={handleDeleteList}>Delete</button>
+              <button className="btn-cancel" onClick={() => setShowDeleteListDialog(false)}>Annuler</button>
+              <button className="btn-confirm" onClick={handleDeleteList}>Supprimer</button>
             </div>
           </div>
         </div>

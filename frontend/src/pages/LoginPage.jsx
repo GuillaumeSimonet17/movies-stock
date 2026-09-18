@@ -30,13 +30,13 @@ function LoginPage() {
     <div className="auth-page">
       <div className="auth-container">
         <h1 className="auth-title">Hollylist</h1>
-        <h2 className="auth-subtitle">Login</h2>
+        <h2 className="auth-subtitle">Connexion</h2>
 
         {error && <div className="error-message">{error}</div>}
 
         <form onSubmit={handleSubmit} className="auth-form">
           <div className="form-group">
-            <label htmlFor="username">Username</label>
+            <label htmlFor="username">Nom d'utilisateur</label>
             <input
               type="text"
               id="username"
@@ -48,7 +48,7 @@ function LoginPage() {
           </div>
 
           <div className="form-group">
-            <label htmlFor="password">Password</label>
+            <label htmlFor="password">Mot de passe</label>
             <input
               type="password"
               id="password"
@@ -60,12 +60,12 @@ function LoginPage() {
           </div>
 
           <button type="submit" className="auth-button" disabled={loading}>
-            {loading ? 'Logging in...' : 'Login'}
+            {loading ? 'Connexion...' : 'Se connecter'}
           </button>
         </form>
 
         <p className="auth-switch">
-          Don't have an account? <Link to="/signup">Sign up</Link>
+          Pas encore de compte ? <Link to="/signup">S'inscrire</Link>
         </p>
       </div>
     </div>
