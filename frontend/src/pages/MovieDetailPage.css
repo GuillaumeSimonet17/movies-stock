@@ -175,7 +175,7 @@
 }
 
 .btn-movie-page:hover {
-    transform: scale(1.03);
+    transform: scale(1.3);
 }
 
 .movie-nav:hover {
@@ -357,6 +357,13 @@
 
 .list-menu-wrapper {
   position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.list-menu-wrapper .btn-movie-page {
+  font-size: 1.9rem;
+  line-height: 1;
 }
 
 .list-dropdown {

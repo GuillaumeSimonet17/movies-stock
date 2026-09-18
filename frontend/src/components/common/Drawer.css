@@ -176,12 +176,10 @@
 
 .drawer-lists-add-btn {
   background: none;
-  border: 1px solid var(--border-color, #e0e0e0);
-  border-radius: 50%;
+  border: none;
   width: 24px;
   height: 24px;
   font-size: 18px;
-  line-height: 1;
   cursor: pointer;
   color: var(--text-secondary, #888);
   display: flex;

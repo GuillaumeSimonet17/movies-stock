@@ -50,8 +50,5 @@ class WatchedMovie(models.Model):
     movie = models.ForeignKey(Movie, on_delete=models.CASCADE, related_name="watched_by")
     watched_at = models.DateTimeField(auto_now_add=True)
 
-    class Meta:
-        unique_together = ('user', 'movie')
-
     def __str__(self):
         return f"{self.user.username} watched {self.movie.title}"

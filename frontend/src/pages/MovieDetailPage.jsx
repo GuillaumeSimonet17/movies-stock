@@ -215,7 +215,7 @@ function MovieDetailPage() {
             <span className={"btn-movie-page"} onClick={handleDelete}>Nope</span>
             {userLists.length > 0 && (
               <div className="list-menu-wrapper" ref={listMenuRef}>
-                <span className={"btn-movie-page"} onClick={() => setShowListMenu(v => !v)}>+ List</span>
+                <span className={"btn-movie-page"} onClick={() => setShowListMenu(v => !v)}>+</span>
                 {showListMenu && (
                   <div className="list-dropdown">
                     {userLists.map(lst => (

@@ -88,17 +88,10 @@ def add_to_watched(request):
     try:
         movie = Movie.objects.get(id=movie_id)
 
-        # Create watched entry
-        watched, created = WatchedMovie.objects.get_or_create(
+        watched = WatchedMovie.objects.create(
             user=request.user,
             movie=movie
         )
-
-        if not created:
-            return Response(
-                {'error': 'Movie already in watched list'},
-                status=status.HTTP_409_CONFLICT
-            )
 
         # Remove from the source list (custom or collection)
         list_id = request.data.get('list_id')
