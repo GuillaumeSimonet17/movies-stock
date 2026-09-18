@@ -11,6 +11,36 @@ import {faYoutube, faGoogle} from '@fortawesome/free-brands-svg-icons'
 import {useLocation} from 'react-router-dom';
 import MovieCard from '../components/common/MovieCard';
 
+const toOpaqueColor = (hex) => {
+  if (!hex) return '#ffffff';
+  return hex.slice(0, 7);
+};
+
+const getLuminance = (hex) => {
+  const c = hex.replace('#', '');
+  const r = parseInt(c.slice(0, 2), 16) / 255;
+  const g = parseInt(c.slice(2, 4), 16) / 255;
+  const b = parseInt(c.slice(4, 6), 16) / 255;
+  return 0.2126 * r + 0.7152 * g + 0.0722 * b;
+};
+
+const getDropdownTextColor = (bgHex) => {
+  return getLuminance(toOpaqueColor(bgHex)) > 0.45 ? '#1a1a1a' : '#f0f0f0';
+};
+
+const adjustColor = (hex, amount) => {
+  const c = toOpaqueColor(hex).replace('#', '');
+  const clamp = (v) => Math.min(255, Math.max(0, v));
+  const r = clamp(parseInt(c.slice(0, 2), 16) + amount);
+  const g = clamp(parseInt(c.slice(2, 4), 16) + amount);
+  const b = clamp(parseInt(c.slice(4, 6), 16) + amount);
+  return `#${[r, g, b].map(v => v.toString(16).padStart(2, '0')).join('')}`;
+};
+
+const getAccentColor = (hex) => {
+  const opaque = toOpaqueColor(hex);
+  return getLuminance(opaque) < 0.45 ? adjustColor(opaque, 60) : adjustColor(opaque, -60);
+};
 
 function MovieDetailPage() {
   const location = useLocation();
@@ -102,7 +132,9 @@ function MovieDetailPage() {
       const listName = userLists.find(l => l.id === listId)?.name || 'list';
       setListToast({ show: true, message: `Added to "${listName}"`, type: 'success' });
     } catch (err) {
-      const msg = err?.response?.status === 409 ? 'Already in this list' : 'Failed to add to list';
+      const listName = userLists.find(l => l.id === listId)?.name || 'list';
+      const isAlready = err?.message?.toLowerCase().includes('already');
+      const msg = isAlready ? `Already in "${listName}"` : 'Failed to add to list';
       setListToast({ show: true, message: msg, type: 'error' });
     }
     setTimeout(() => setListToast({ show: false, message: '', type: '' }), 3000);
@@ -223,7 +255,7 @@ function MovieDetailPage() {
               <div className="list-menu-wrapper" ref={listMenuRef}>
                 <span className={"btn-movie-page"} onClick={() => setShowListMenu(v => !v)}>+</span>
                 {showListMenu && (
-                  <div className="list-dropdown" style={{'--dropdown-bg': backgroundColor, '--dropdown-text': textColor, background: backgroundColor, color: textColor, border: `1px solid ${textColor}40`}}>
+                  <div className="list-dropdown" style={{background: backgroundColor, color: textColor, border: `1px solid ${textColor}30`}}>
                     {userLists.map(lst => (
                       <button key={lst.id} className="list-dropdown-item" style={{color: textColor}} onClick={() => handleAddToList(lst.id)}>
                         {lst.name}
@@ -507,8 +539,8 @@ function MovieDetailPage() {
       )}
 
       {listToast.show && (
-        <div className={`toast toast-${listToast.type}`} style={{position:'fixed',bottom:30,right:30,zIndex:1001,padding:'14px 22px',borderRadius:8,fontWeight:500,background: listToast.type === 'success' ? '#10b981' : '#dc2626',color:'white'}}>
-          {listToast.message}
+        <div className="list-toast" style={{background: backgroundColor, color: textColor, border: `1px solid ${textColor}30`}}>
+          {listToast.type === 'success' ? '✓ ' : '✕ '}{listToast.message}
         </div>
       )}
     </div>
