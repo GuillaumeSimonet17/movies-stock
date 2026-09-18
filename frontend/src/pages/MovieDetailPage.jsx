@@ -235,7 +235,7 @@ function MovieDetailPage() {
             </h2>
           </div>
 
-          <div className="col-md-6 d-flex justify-content-end gap-3 btn_pass">
+          <div className="col-md-6 d-flex justify-content-center justify-content-md-end gap-3 btn_pass">
             <div className="movie-nav">
               {prevMovie && (
                 <span className="btn-movie-page btn-nav btn-nav-prev" onClick={() => goToMovie(prevMovie.id)}>◂</span>
@@ -268,7 +268,7 @@ function MovieDetailPage() {
                 <span className="btn-movie-page btn-nav btn-nav-next" onClick={() => goToMovie(nextMovie.id)}>▸</span>
               )}
             </div>
-            <button className="random-btn ms-2" onClick={handleRandomMovie}>
+            <button className="random-btn" onClick={handleRandomMovie}>
               🎲
             </button>
           </div>
