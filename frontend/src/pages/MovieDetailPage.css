@@ -162,20 +162,72 @@
 }
 
 /* boutons */
+.btn_pass {
+    overflow: visible !important;
+}
+
+.btn-movie-page-wrapper {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
 .btn-movie-page {
     background: none;
     font-family: "HollywoodHills", sans-serif;
-    font-size: 1.4rem;
-    transition: 0.1s ease-in-out;
+    font-size: 1.6rem;
+    font-weight: bold;
+    transition: 0.15s ease-in-out;
     cursor: pointer;
     text-align: center;
     display: flex;
     align-items: center;
     justify-content: center;
+    line-height: 1;
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.15);
+    backdrop-filter: blur(4px);
+}
+
+.btn-seen {
+    color: #22c55e;
+    text-shadow: 0 0 8px rgba(34, 197, 94, 0.4);
+}
+
+.btn-nope {
+    color: #ef4444;
+    text-shadow: 0 0 8px rgba(239, 68, 68, 0.4);
+}
+
+.btn-movie-tooltip {
+    position: absolute;
+    top: calc(100% + 6px);
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(0, 0, 0, 0.85);
+    color: #fff;
+    font-size: 0.68rem;
+    font-family: sans-serif;
+    white-space: nowrap;
+    padding: 4px 8px;
+    border-radius: 5px;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.15s ease;
+    z-index: 100;
+}
+
+.btn-movie-page-wrapper:hover .btn-movie-tooltip {
+    opacity: 1;
 }
 
 .btn-movie-page:hover {
-    transform: scale(1.3);
+    transform: scale(1.15);
+    background: rgba(255, 255, 255, 0.28);
 }
 
 .movie-nav:hover {

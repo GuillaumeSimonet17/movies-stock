@@ -211,8 +211,14 @@ function MovieDetailPage() {
                 </span>
               )}
             </div>
-            <span className={"btn-movie-page"} onClick={handleMarkWatched}>Seen</span>
-            <span className={"btn-movie-page"} onClick={handleDelete}>Nope</span>
+            <div className="btn-movie-page-wrapper">
+              <span className={"btn-movie-page btn-seen"} onClick={handleMarkWatched} title="Just watched it">✓</span>
+              <span className="btn-movie-tooltip">Just watched it</span>
+            </div>
+            <div className="btn-movie-page-wrapper">
+              <span className={"btn-movie-page btn-nope"} onClick={handleDelete} title="Don't want to watch it">✕</span>
+              <span className="btn-movie-tooltip">Don't want to watch it</span>
+            </div>
             {userLists.length > 0 && (
               <div className="list-menu-wrapper" ref={listMenuRef}>
                 <span className={"btn-movie-page"} onClick={() => setShowListMenu(v => !v)}>+</span>
