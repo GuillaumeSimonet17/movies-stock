@@ -20,5 +20,7 @@ export const listService = {
   searchAdd: (listId, tmdbId, isTv = false) =>
     api.post(`/lists/${listId}/search-add/`, { tmdb_id: tmdbId, is_tv: isTv }),
 
+  reorderList: (listId, order) => api.post(`/lists/${listId}/reorder/`, { order }),
+
   getWatchedCount: () => api.get('/watched/count/'),
 };

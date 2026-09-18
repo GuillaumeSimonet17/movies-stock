@@ -1,5 +1,19 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
+import {
+  DndContext,
+  closestCenter,
+  PointerSensor,
+  useSensor,
+  useSensors,
+} from '@dnd-kit/core';
+import {
+  SortableContext,
+  useSortable,
+  rectSortingStrategy,
+  arrayMove,
+} from '@dnd-kit/sortable';
+import { CSS } from '@dnd-kit/utilities';
 import TopBar from '../components/common/TopBar';
 import MovieCard from '../components/common/MovieCard';
 import ListSearchBar from '../components/movies/ListSearchBar';
@@ -7,6 +21,34 @@ import EmojiPicker from '../components/common/EmojiPicker';
 import { listService } from '../services/listService';
 import './WatchedPage.css';
 import './ListPage.css';
+
+function SortableMovieItem({ movie, listMovies, listId, onRemove }) {
+  const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id: movie.id });
+
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+    opacity: isDragging ? 0.4 : 1,
+    position: 'relative',
+    zIndex: isDragging ? 10 : 'auto',
+    cursor: isDragging ? 'grabbing' : 'grab',
+  };
+
+  return (
+    <div ref={setNodeRef} style={style} className="watched-movie-item" {...attributes} {...listeners}>
+      <div className="movie-card-wrapper">
+        <MovieCard movie={movie} movieList={listMovies} from="watched" extraState={{ sourceListId: listId }} />
+        <button
+          className="remove-button"
+          onClick={(e) => { e.preventDefault(); e.stopPropagation(); onRemove(movie.id); }}
+          title="Remove from list"
+        >
+          ✕
+        </button>
+      </div>
+    </div>
+  );
+}
 
 function ListPage() {
   const { id } = useParams();
@@ -20,6 +62,11 @@ function ListPage() {
   const [toast, setToast] = useState({ show: false, message: '', type: '' });
   const nameInputRef = useRef(null);
   const emojiPickerRef = useRef(null);
+  const reorderTimeoutRef = useRef(null);
+
+  const sensors = useSensors(
+    useSensor(PointerSensor, { activationConstraint: { distance: 8 } })
+  );
 
   useEffect(() => {
     loadList();
@@ -82,6 +129,7 @@ function ListPage() {
   const handleDeleteList = async () => {
     try {
       await listService.deleteList(id);
+      setShowDeleteListDialog(false);
       navigate('/');
     } catch {
       showToast('Failed to delete list', 'error');
@@ -106,6 +154,22 @@ function ListPage() {
       removingRef.current.delete(movieId);
     }
   }, [id]);
+
+  const handleDragEnd = ({ active, over }) => {
+    if (!over || active.id === over.id) return;
+    setListData(prev => {
+      const oldIndex = prev.movies.findIndex(m => m.id === active.id);
+      const newIndex = prev.movies.findIndex(m => m.id === over.id);
+      const newMovies = arrayMove(prev.movies, oldIndex, newIndex);
+
+      clearTimeout(reorderTimeoutRef.current);
+      reorderTimeoutRef.current = setTimeout(() => {
+        listService.reorderList(id, newMovies.map(m => m.id)).catch(() => {});
+      }, 600);
+
+      return { ...prev, movies: newMovies };
+    });
+  };
 
   if (loading) {
     return (
@@ -163,22 +227,21 @@ function ListPage() {
             <p>Search and add movies above.</p>
           </div>
         ) : (
-          <div className="movies-wrap">
-            {listData.movies.map(movie => (
-              <div key={movie.id} className="watched-movie-item">
-                <div className="movie-card-wrapper">
-                  <MovieCard movie={movie} movieList={listData.movies} from="watched" extraState={{ sourceListId: id }} />
-                  <button
-                    className="remove-button"
-                    onClick={(e) => { e.preventDefault(); e.stopPropagation(); handleRemoveMovie(movie.id); }}
-                    title="Remove from list"
-                  >
-                    ✕
-                  </button>
-                </div>
+          <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
+            <SortableContext items={listData.movies.map(m => m.id)} strategy={rectSortingStrategy}>
+              <div className="movies-wrap">
+                {listData.movies.map(movie => (
+                  <SortableMovieItem
+                    key={movie.id}
+                    movie={movie}
+                    listMovies={listData.movies}
+                    listId={id}
+                    onRemove={handleRemoveMovie}
+                  />
+                ))}
               </div>
-            ))}
-          </div>
+            </SortableContext>
+          </DndContext>
         )}
       </div>
 
@@ -195,7 +258,7 @@ function ListPage() {
         </div>
       )}
 
-{toast.show && (
+      {toast.show && (
         <div className={`toast toast-${toast.type}`}>{toast.message}</div>
       )}
     </div>

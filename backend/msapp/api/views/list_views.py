@@ -163,6 +163,25 @@ def add_movie_to_list(request, list_id):
     return Response({'message': 'Movie added'}, status=status.HTTP_201_CREATED)
 
 
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def reorder_list(request, list_id):
+    try:
+        lst = MoviesList.objects.get(id=list_id, user=request.user, is_collection=False)
+    except MoviesList.DoesNotExist:
+        return Response({'error': 'List not found'}, status=status.HTTP_404_NOT_FOUND)
+
+    ordered_ids = request.data.get('order', [])
+    items = {item.movie_id: item for item in lst.list_items.all()}
+    to_update = []
+    for position, movie_id in enumerate(ordered_ids):
+        if movie_id in items:
+            items[movie_id].position = position
+            to_update.append(items[movie_id])
+    MovieListItem.objects.bulk_update(to_update, ['position'])
+    return Response(status=status.HTTP_204_NO_CONTENT)
+
+
 @api_view(['DELETE'])
 @permission_classes([IsAuthenticated])
 def remove_movie_from_list(request, list_id, movie_id):

@@ -27,10 +27,11 @@ class MovieListItem(models.Model):
     movies_list = models.ForeignKey('MoviesList', on_delete=models.CASCADE, related_name='list_items')
     movie = models.ForeignKey('Movie', on_delete=models.CASCADE)
     added_at = models.DateTimeField(auto_now_add=True, db_index=True)
+    position = models.PositiveIntegerField(default=0)
 
     class Meta:
         unique_together = ('movies_list', 'movie')
-        ordering = ['-added_at']
+        ordering = ['position', '-added_at']
 
 class MoviesList(models.Model):
     name = models.CharField(max_length=100)

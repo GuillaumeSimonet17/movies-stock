@@ -33,4 +33,5 @@ urlpatterns = [
     path('lists/<int:list_id>/add/', list_views.add_movie_to_list, name='list-add-movie'),
     path('lists/<int:list_id>/search-add/', list_views.search_add_to_list, name='list-search-add'),
     path('lists/<int:list_id>/movies/<int:movie_id>/delete/', list_views.remove_movie_from_list, name='list-remove-movie'),
+    path('lists/<int:list_id>/reorder/', list_views.reorder_list, name='list-reorder'),
 ]
