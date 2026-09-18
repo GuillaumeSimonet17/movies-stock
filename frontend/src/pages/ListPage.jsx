@@ -4,6 +4,7 @@ import {
   DndContext,
   closestCenter,
   PointerSensor,
+  TouchSensor,
   useSensor,
   useSensors,
 } from '@dnd-kit/core';
@@ -65,7 +66,8 @@ function ListPage() {
   const reorderTimeoutRef = useRef(null);
 
   const sensors = useSensors(
-    useSensor(PointerSensor, { activationConstraint: { distance: 8 } })
+    useSensor(PointerSensor, { activationConstraint: { distance: 8 } }),
+    useSensor(TouchSensor, { activationConstraint: { delay: 200, tolerance: 8 } })
   );
 
   useEffect(() => {
@@ -214,9 +216,6 @@ function ListPage() {
               <button className="list-icon-btn list-icon-btn--danger" onClick={() => setShowDeleteListDialog(true)} title="Delete list">🗑</button>
             </div>
           )}
-          <p className="watched-count">
-            {listData.movies.length} {listData.movies.length === 1 ? 'movie' : 'movies'}
-          </p>
         </div>
 
         <ListSearchBar listId={id} onMovieAdded={(movie) => setListData(prev => ({ ...prev, movies: [movie, ...prev.movies] }))} />
