@@ -2,6 +2,10 @@
   position: relative;
 }
 
+.movies-wrap {
+  touch-action: none;
+}
+
 .list-title-row {
   display: flex;
   align-items: center;
