@@ -57,7 +57,7 @@
 
 .list-icon-wrapper .emoji-picker {
   top: calc(100% + 6px);
-  left: 0;
+  transform: translateX(-25%);
 }
 
 .list-rename-row {
