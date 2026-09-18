@@ -23,7 +23,7 @@ import { listService } from '../services/listService';
 import './WatchedPage.css';
 import './ListPage.css';
 
-function SortableMovieItem({ movie, listMovies, listId, onRemove }) {
+function SortableMovieItem({ movie, listMovies, listId, onRemoveClick }) {
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id: movie.id });
 
   const style = {
@@ -41,7 +41,7 @@ function SortableMovieItem({ movie, listMovies, listId, onRemove }) {
         <MovieCard movie={movie} movieList={listMovies} from="watched" extraState={{ sourceListId: listId }} />
         <button
           className="remove-button"
-          onClick={(e) => { e.preventDefault(); e.stopPropagation(); onRemove(movie.id); }}
+          onClick={(e) => { e.preventDefault(); e.stopPropagation(); onRemoveClick(movie); }}
           title="Remove from list"
         >
           ✕
@@ -59,6 +59,7 @@ function ListPage() {
   const [editingName, setEditingName] = useState(false);
   const [nameInput, setNameInput] = useState('');
   const [showDeleteListDialog, setShowDeleteListDialog] = useState(false);
+  const [movieToRemove, setMovieToRemove] = useState(null);
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
   const [toast, setToast] = useState({ show: false, message: '', type: '' });
   const nameInputRef = useRef(null);
@@ -139,6 +140,17 @@ function ListPage() {
   };
 
   const removingRef = useRef(new Set());
+
+  const handleRemoveClick = (movie) => {
+    setMovieToRemove(movie);
+  };
+
+  const handleConfirmRemove = async () => {
+    if (!movieToRemove) return;
+    const movie = movieToRemove;
+    setMovieToRemove(null);
+    await handleRemoveMovie(movie.id);
+  };
 
   const handleRemoveMovie = useCallback(async (movieId) => {
     if (removingRef.current.has(movieId)) return;
@@ -235,7 +247,7 @@ function ListPage() {
                     movie={movie}
                     listMovies={listData.movies}
                     listId={id}
-                    onRemove={handleRemoveMovie}
+                    onRemoveClick={handleRemoveClick}
                   />
                 ))}
               </div>
@@ -243,6 +255,19 @@ function ListPage() {
           </DndContext>
         )}
       </div>
+
+      {movieToRemove && (
+        <div className="confirm-dialog-overlay" onClick={() => setMovieToRemove(null)}>
+          <div className="confirm-dialog" onClick={e => e.stopPropagation()}>
+            <h3>Remove from list?</h3>
+            <p>Are you sure you want to remove <strong>{movieToRemove.title || movieToRemove.name}</strong> from this list?</p>
+            <div className="dialog-actions">
+              <button className="btn-cancel" onClick={() => setMovieToRemove(null)}>Cancel</button>
+              <button className="btn-confirm" onClick={handleConfirmRemove}>Remove</button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {showDeleteListDialog && (
         <div className="confirm-dialog-overlay" onClick={() => setShowDeleteListDialog(false)}>
