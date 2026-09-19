@@ -19,6 +19,8 @@ urlpatterns = [
     path('movies/<int:movie_id>/', movie_views.get_movie_detail, name='movie-detail'),
     path('movies/<int:movie_id>/delete/', movie_views.delete_movie, name='movie-delete'),
     path('movies/<int:movie_id>/streaming/', movie_views.get_streaming, name='movie-streaming'),
+    path('movies/<int:movie_id>/suggestions/', movie_views.get_suggestions, name='movie-suggestions'),
+    path('movies/<int:movie_id>/filmography/', movie_views.get_director_filmography, name='movie-filmography'),
 
     # Watched endpoints
     path('watched/', watched_views.get_watched_movies, name='watched-list'),

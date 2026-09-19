@@ -64,6 +64,8 @@ function MovieDetailPage() {
   const [listToast, setListToast] = useState({ show: false, message: '', type: '' });
   const listMenuRef = useRef(null);
   const [streamingOffers, setStreamingOffers] = useState(null);
+  const [suggestions, setSuggestions] = useState([]);
+  const [filmography, setFilmography] = useState({ films: [], director: null });
 
   const currentIndex = movieList.findIndex(m => m.id === Number(id));
 
@@ -118,6 +120,8 @@ function MovieDetailPage() {
   useEffect(() => {
     if (!id) return;
     movieService.getStreaming(id).then(data => setStreamingOffers(data.offers || [])).catch(() => setStreamingOffers([]));
+    movieService.getSuggestions(id).then(data => setSuggestions(data.suggestions || [])).catch(() => setSuggestions([]));
+    movieService.getFilmography(id).then(data => setFilmography({ films: data.films || [], director: data.director })).catch(() => {});
   }, [id]);
 
   useEffect(() => {
@@ -472,7 +476,25 @@ function MovieDetailPage() {
                 style={{color: textColor, borderBottomColor: activeTab === 'similar' ? textColor : 'transparent'}}
                 onClick={() => setActiveTab('similar')}
               >
-                Similaires
+                Dans ma wishlist
+              </button>
+            )}
+            {filmography.films.length > 0 && (
+              <button
+                className={`tab-btn ${activeTab === 'filmography' ? 'active' : ''}`}
+                style={{color: textColor, borderBottomColor: activeTab === 'filmography' ? textColor : 'transparent'}}
+                onClick={() => setActiveTab('filmography')}
+              >
+                {filmography.director}
+              </button>
+            )}
+            {suggestions.length > 0 && (
+              <button
+                className={`tab-btn ${activeTab === 'suggestions' ? 'active' : ''}`}
+                style={{color: textColor, borderBottomColor: activeTab === 'suggestions' ? textColor : 'transparent'}}
+                onClick={() => setActiveTab('suggestions')}
+              >
+                Dans le theme
               </button>
             )}
           </div>
@@ -562,6 +584,75 @@ function MovieDetailPage() {
                   </div>
                 </div>
               )}
+            </div>
+          )}
+          {activeTab === 'filmography' && filmography.films.length > 0 && (
+            <div className="suggestions-section p-4" style={{color: textColor}}>
+              <div className="similar-cards-row">
+                {filmography.films.map((s) => (
+                  <div key={s.movie_id} className="suggestion-card">
+                    {s.poster_path
+                      ? <img src={`https://image.tmdb.org/t/p/w300${s.poster_path}`} alt={s.title} />
+                      : <div className="suggestion-no-poster" />
+                    }
+                    <div className="suggestion-info">
+                      <span className="suggestion-title">{s.title}</span>
+                      <span className="suggestion-meta">
+                        {s.release_date?.slice(0, 4)} · ⭐ {s.vote_average}
+                      </span>
+                      {!s.in_list && (
+                        <button
+                          className="suggestion-add-btn"
+                          style={{background: backgroundColor, color: textColor, border: `1px solid ${textColor}50`}}
+                          onClick={() => movieService.addMovie(s.movie_id, false).then(() => {
+                            setFilmography(prev => ({
+                              ...prev,
+                              films: prev.films.map(f => f.movie_id === s.movie_id ? {...f, in_list: true} : f)
+                            }));
+                          }).catch(() => {})}
+                        >
+                          + Ajouter
+                        </button>
+                      )}
+                      {s.in_list && (
+                        <span className="suggestion-in-list">✓ Dans ma liste</span>
+                      )}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {activeTab === 'suggestions' && suggestions.length > 0 && (
+            <div className="suggestions-section p-4" style={{color: textColor}}>
+              <div className="similar-cards-row">
+                {suggestions.map((s) => (
+                  <div key={s.movie_id} className="suggestion-card">
+                    {s.poster_path
+                      ? <img src={`https://image.tmdb.org/t/p/w300${s.poster_path}`} alt={s.title} />
+                      : <div className="suggestion-no-poster" />
+                    }
+                    <div className="suggestion-info">
+                      <span className="suggestion-title">{s.title}</span>
+                      <span className="suggestion-meta">
+                        {s.release_date?.slice(0, 4)} · ⭐ {s.vote_average}
+                      </span>
+                      <button
+                        className="suggestion-add-btn"
+                        style={{background: backgroundColor, color: textColor, border: `1px solid ${textColor}50`}}
+                        onClick={() => movieService.addMovie(s.movie_id, false).then(() => {
+                          setSuggestions(prev => prev.filter(x => x.movie_id !== s.movie_id));
+                        }).catch(() => {
+                          setSuggestions(prev => prev.filter(x => x.movie_id !== s.movie_id));
+                        })}
+                      >
+                        + Ajouter
+                      </button>
+                    </div>
+                  </div>
+                ))}
+              </div>
             </div>
           )}
         </div>

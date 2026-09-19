@@ -31,4 +31,12 @@ export const movieService = {
     return api.get(`/movies/${id}/streaming/`);
   },
 
+  getSuggestions: (id) => {
+    return api.get(`/movies/${id}/suggestions/`);
+  },
+
+  getFilmography: (id) => {
+    return api.get(`/movies/${id}/filmography/`);
+  },
+
 };

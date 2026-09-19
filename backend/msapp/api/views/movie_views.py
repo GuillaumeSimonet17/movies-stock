@@ -486,6 +486,152 @@ def random_movie(request):
 
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
+def get_director_filmography(request, movie_id):
+    try:
+        movie = Movie.objects.get(pk=movie_id)
+    except Movie.DoesNotExist:
+        return Response({'error': 'Movie not found'}, status=404)
+
+    if not movie.directors:
+        return Response({'films': [], 'director': None})
+
+    director_name = movie.directors.split(',')[0].strip()
+
+    user_movie_ids = set(
+        MovieListItem.objects.filter(
+            movies_list__user=request.user
+        ).values_list('movie__movie_id', flat=True)
+    )
+
+    cache_key = f'filmography_{director_name}'
+    cached = cache.get(cache_key)
+
+    if cached is not None:
+        films = [dict(f, in_list=f['movie_id'] in user_movie_ids) for f in cached['films']]
+        return Response({'films': films, 'director': cached['director']})
+
+    headers = {
+        'accept': 'application/json',
+        'Authorization': 'Bearer ' + API_KEY_TMDB,
+    }
+
+    try:
+        r = requests.get(
+            f'{URL_TMDB}search/person?query={requests.utils.quote(director_name)}&language=fr-FR',
+            headers=headers, timeout=5
+        )
+        r.raise_for_status()
+        results = r.json().get('results', [])
+        if not results:
+            return Response({'films': [], 'director': director_name})
+
+        person_id = results[0]['id']
+
+        r2 = requests.get(
+            f'{URL_TMDB}person/{person_id}/movie_credits?language=fr-FR',
+            headers=headers, timeout=5
+        )
+        r2.raise_for_status()
+        crew = r2.json().get('crew', [])
+
+        directed = [m for m in crew if m.get('job') == 'Director' and m.get('vote_count', 0) >= 50]
+        directed.sort(key=lambda m: m.get('vote_average', 0), reverse=True)
+
+        films_base = []
+        for m in directed:
+            if m['id'] == movie.movie_id:
+                continue
+            films_base.append({
+                'movie_id': m['id'],
+                'title': m.get('title'),
+                'poster_path': m.get('poster_path'),
+                'release_date': m.get('release_date', ''),
+                'vote_average': round(m.get('vote_average', 0), 1),
+            })
+            if len(films_base) >= 10:
+                break
+
+        cache.set(cache_key, {'films': films_base, 'director': director_name}, timeout=3600 * 24)
+        films = [dict(f, in_list=f['movie_id'] in user_movie_ids) for f in films_base]
+        return Response({'films': films, 'director': director_name})
+
+    except Exception as e:
+        return Response({'films': [], 'director': director_name, 'error': str(e)})
+
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def get_suggestions(request, movie_id):
+    try:
+        movie = Movie.objects.get(pk=movie_id)
+    except Movie.DoesNotExist:
+        return Response({'error': 'Movie not found'}, status=404)
+
+    if not movie.movie_id:
+        return Response({'suggestions': []})
+
+    # IDs déjà dans toutes les listes de l'user
+    user_movie_ids = set(
+        MovieListItem.objects.filter(
+            movies_list__user=request.user
+        ).values_list('movie__movie_id', flat=True)
+    )
+
+    headers = {
+        'accept': 'application/json',
+        'Authorization': 'Bearer ' + API_KEY_TMDB,
+    }
+
+    candidates = []
+    for page in [1, 2]:
+        url = f'{URL_TMDB}movie/{movie.movie_id}/recommendations?language=fr-FR&page={page}'
+        try:
+            r = requests.get(url, headers=headers, timeout=5)
+            r.raise_for_status()
+            candidates += r.json().get('results', [])
+        except Exception:
+            break
+
+    # Compléter avec /similar si pas assez
+    if len(candidates) < 20:
+        try:
+            r = requests.get(f'{URL_TMDB}movie/{movie.movie_id}/similar?language=fr-FR&page=1', headers=headers, timeout=5)
+            r.raise_for_status()
+            existing_ids = {m['id'] for m in candidates}
+            candidates += [m for m in r.json().get('results', []) if m['id'] not in existing_ids]
+        except Exception:
+            pass
+
+    suggestions = []
+    for m in candidates:
+        if m['id'] in user_movie_ids:
+            continue
+        if m.get('vote_average', 0) < 6.5:
+            continue
+        if m.get('vote_count', 0) < 200:
+            continue
+        release = m.get('release_date', '')
+        if not release or release < '1980-01-01':
+            continue
+        if m.get('original_language') not in ('en', 'fr'):
+            continue
+        suggestions.append({
+            'movie_id': m['id'],
+            'title': m.get('title'),
+            'poster_path': m.get('poster_path'),
+            'release_date': release,
+            'vote_average': round(m.get('vote_average', 0), 1),
+            'overview': m.get('overview'),
+            'genre_ids': m.get('genre_ids', []),
+        })
+        if len(suggestions) >= 10:
+            break
+
+    return Response({'suggestions': suggestions})
+
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
 def get_streaming(request, movie_id):
     try:
         movie = Movie.objects.get(pk=movie_id)
