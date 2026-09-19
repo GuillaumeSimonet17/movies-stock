@@ -86,7 +86,7 @@
 
 .list-icon-wrapper .emoji-picker {
   top: calc(100% + 6px);
-  transform: translateX(-25%);
+  transform: translateX(-15%);
 }
 
 
