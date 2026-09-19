@@ -45,4 +45,8 @@ urlpatterns = [
     path('friends/notifications/', friend_views.get_notifications, name='friends-notifications'),
     path('friends/<int:friendship_id>/respond/', friend_views.respond_request, name='friends-respond'),
     path('friends/<int:friendship_id>/remove/', friend_views.remove_friend, name='friends-remove'),
+    path('friends/recommend/', friend_views.send_recommendation, name='friends-recommend'),
+    path('friends/recommendations/', friend_views.get_recommendations, name='friends-recommendations'),
+    path('friends/recommendations/sent/', friend_views.get_sent_recommendations, name='friends-recommendations-sent'),
+    path('friends/recommendations/<int:reco_id>/delete/', friend_views.delete_recommendation, name='friends-reco-delete'),
 ]

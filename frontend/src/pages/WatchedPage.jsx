@@ -1,6 +1,7 @@
 import {useState, useEffect} from 'react';
 import TopBar from '../components/common/TopBar';
 import MovieCard from '../components/common/MovieCard';
+import CardMenu from '../components/common/CardMenu';
 import {watchedService} from '../services/watchedService';
 import './WatchedPage.css';
 
@@ -11,8 +12,6 @@ function WatchedPage() {
   const [groupBy, setGroupBy] = useState('all');
   const [loading, setLoading] = useState(true);
   const [removingIds, setRemovingIds] = useState(new Set());
-  const [showConfirmDialog, setShowConfirmDialog] = useState(false);
-  const [movieToRemove, setMovieToRemove] = useState(null);
   const [toast, setToast] = useState({ show: false, message: '', type: '' });
 
   useEffect(() => {
@@ -40,33 +39,19 @@ function WatchedPage() {
     }, 3000);
   };
 
-  const handleRemoveClick = (watchedMovie) => {
-    setMovieToRemove(watchedMovie);
-    setShowConfirmDialog(true);
-  };
+  const handleRemoveClick = async (watchedMovie) => {
+    const movieId = watchedMovie.movie.id;
+    const watchedId = watchedMovie.id;
 
-  const handleConfirmRemove = async () => {
-    if (!movieToRemove) return;
-
-    const movieId = movieToRemove.movie.id;
-    const watchedId = movieToRemove.id;
-
-    // Close dialog
-    setShowConfirmDialog(false);
-
-    // Mark as removing for visual feedback
     setRemovingIds(prev => new Set(prev).add(watchedId));
 
-    // Optimistic UI update
     const previousWatchedMovies = [...watchedMovies];
     const previousGroupedWatched = {...groupedWatched};
     const previousCount = totalCount;
 
-    // Remove from state immediately
     setWatchedMovies(prev => prev.filter(w => w.id !== watchedId));
     setTotalCount(prev => prev - 1);
 
-    // Update grouped data
     if (groupBy !== 'all') {
       const updatedGrouped = {...groupedWatched};
       for (const [period, group] of Object.entries(updatedGrouped)) {
@@ -75,38 +60,22 @@ function WatchedPage() {
           movies: group.movies.filter(w => w.id !== watchedId),
           count: group.movies.filter(w => w.id !== watchedId).length
         };
-        // Remove empty groups
-        if (updatedGrouped[period].count === 0) {
-          delete updatedGrouped[period];
-        }
+        if (updatedGrouped[period].count === 0) delete updatedGrouped[period];
       }
       setGroupedWatched(updatedGrouped);
     }
 
     try {
-      // Call API to remove from backend
       await watchedService.removeFromWatched(movieId);
       showToast('Film retiré de la liste', 'success');
-    } catch (error) {
-      console.error('Error removing movie:', error);
-      // Rollback on error
+    } catch {
       setWatchedMovies(previousWatchedMovies);
       setGroupedWatched(previousGroupedWatched);
       setTotalCount(previousCount);
       showToast('Erreur, veuillez réessayer.', 'error');
     } finally {
-      setRemovingIds(prev => {
-        const newSet = new Set(prev);
-        newSet.delete(watchedId);
-        return newSet;
-      });
-      setMovieToRemove(null);
+      setRemovingIds(prev => { const s = new Set(prev); s.delete(watchedId); return s; });
     }
-  };
-
-  const handleCancelRemove = () => {
-    setShowConfirmDialog(false);
-    setMovieToRemove(null);
   };
 
   if (loading) {
@@ -168,14 +137,7 @@ function WatchedPage() {
               >
                 <div className="movie-card-wrapper">
                   <MovieCard movie={watched.movie} clickable={false} from="watched"/>
-                  <button
-                    className="remove-button"
-                    onClick={() => handleRemoveClick(watched)}
-                    title="Retirer de la liste"
-                    disabled={removingIds.has(watched.id)}
-                  >
-                    ✕
-                  </button>
+                  <CardMenu movie={watched.movie} onRemoveClick={() => handleRemoveClick(watched)} />
                 </div>
                 <p className="watched-date">
                   Vu le : {new Date(watched.watched_at).toLocaleDateString()}
@@ -212,14 +174,7 @@ function WatchedPage() {
                         >
                           <div className="movie-card-wrapper">
                             <MovieCard movie={watched.movie} clickable={false} from="watched"/>
-                            <button
-                              className="remove-button"
-                              onClick={() => handleRemoveClick(watched)}
-                              title="Retirer de la liste"
-                              disabled={removingIds.has(watched.id)}
-                            >
-                              ✕
-                            </button>
+                            <CardMenu movie={watched.movie} onRemoveClick={() => handleRemoveClick(watched)} />
                           </div>
                           <p className="watched-date">
                             Vu le : {new Date(watched.watched_at).toLocaleDateString()}
@@ -234,26 +189,6 @@ function WatchedPage() {
           </div>
         )}
       </div>
-
-      {/* Confirmation Dialog */}
-      {showConfirmDialog && (
-        <div className="confirm-dialog-overlay" onClick={handleCancelRemove}>
-          <div className="confirm-dialog" onClick={(e) => e.stopPropagation()}>
-            <h3>Retirer de la liste ?</h3>
-            <p>
-              Retirer <strong>{movieToRemove?.movie?.title}</strong> de votre liste ?
-            </p>
-            <div className="dialog-actions">
-              <button className="btn-cancel" onClick={handleCancelRemove}>
-                Annuler
-              </button>
-              <button className="btn-confirm" onClick={handleConfirmRemove}>
-                Retirer
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
 
       {/* Toast Notification */}
       {toast.show && (

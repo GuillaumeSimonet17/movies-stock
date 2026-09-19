@@ -17,6 +17,7 @@ import {
 import { CSS } from '@dnd-kit/utilities';
 import TopBar from '../components/common/TopBar';
 import MovieCard from '../components/common/MovieCard';
+import CardMenu from '../components/common/CardMenu';
 import ListSearchBar from '../components/movies/ListSearchBar';
 import EmojiPicker from '../components/common/EmojiPicker';
 import { listService } from '../services/listService';
@@ -47,13 +48,7 @@ function SortableMovieItem({ movie, listMovies, listId, onRemoveClick }) {
           ⠿
         </button>
         <MovieCard movie={movie} movieList={listMovies} from="watched" extraState={{ sourceListId: listId }} />
-        <button
-          className="remove-button"
-          onClick={(e) => { e.preventDefault(); e.stopPropagation(); onRemoveClick(movie); }}
-          title="Retirer de la liste"
-        >
-          ✕
-        </button>
+        <CardMenu movie={movie} onRemoveClick={onRemoveClick} />
       </div>
     </div>
   );
@@ -67,7 +62,6 @@ function ListPage() {
   const [editingName, setEditingName] = useState(false);
   const [nameInput, setNameInput] = useState('');
   const [showDeleteListDialog, setShowDeleteListDialog] = useState(false);
-  const [movieToRemove, setMovieToRemove] = useState(null);
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
   const [toast, setToast] = useState({ show: false, message: '', type: '' });
   const nameInputRef = useRef(null);
@@ -149,14 +143,7 @@ function ListPage() {
 
   const removingRef = useRef(new Set());
 
-  const handleRemoveClick = (movie) => {
-    setMovieToRemove(movie);
-  };
-
-  const handleConfirmRemove = async () => {
-    if (!movieToRemove) return;
-    const movie = movieToRemove;
-    setMovieToRemove(null);
+  const handleRemoveClick = async (movie) => {
     await handleRemoveMovie(movie.id);
   };
 
@@ -263,19 +250,6 @@ function ListPage() {
           </DndContext>
         )}
       </div>
-
-      {movieToRemove && (
-        <div className="confirm-dialog-overlay" onClick={() => setMovieToRemove(null)}>
-          <div className="confirm-dialog" onClick={e => e.stopPropagation()}>
-            <h3>Retirer de la liste ?</h3>
-            <p>Retirer <strong>{movieToRemove.title || movieToRemove.name}</strong> de cette liste ?</p>
-            <div className="dialog-actions">
-              <button className="btn-cancel" onClick={() => setMovieToRemove(null)}>Annuler</button>
-              <button className="btn-confirm" onClick={handleConfirmRemove}>Retirer</button>
-            </div>
-          </div>
-        </div>
-      )}
 
       {showDeleteListDialog && (
         <div className="confirm-dialog-overlay" onClick={() => setShowDeleteListDialog(false)}>

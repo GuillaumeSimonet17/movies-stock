@@ -66,6 +66,21 @@ class Friendship(models.Model):
         return f"{self.from_user.username} -> {self.to_user.username} ({self.status})"
 
 
+class MovieRecommendation(models.Model):
+    from_user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='sent_recommendations')
+    to_user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='received_recommendations')
+    movie_id = models.IntegerField()
+    title = models.CharField(max_length=255)
+    poster_path = models.CharField(max_length=255, null=True, blank=True)
+    release_date = models.CharField(max_length=20, null=True, blank=True)
+    vote_average = models.FloatField(null=True, blank=True)
+    is_read = models.BooleanField(default=False)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.from_user.username} -> {self.to_user.username} : {self.title}"
+
+
 class WatchedMovie(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="watched_movies")
     movie = models.ForeignKey(Movie, on_delete=models.CASCADE, related_name="watched_by")

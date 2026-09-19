@@ -140,8 +140,11 @@ def add_movie(request):
                 {'error': 'Movie already in your list'},
                 status=status.HTTP_409_CONFLICT
             )
+        # Movie exists but not in this list — add directly, no TMDB fetch needed
+        MovieListItem.objects.create(movies_list=movies_list, movie=movie)
+        return Response(MovieSerializer(movie).data, status=status.HTTP_201_CREATED)
 
-    # Fetch full details from TMDb
+    # New movie: fetch full details from TMDb
     endpoint = 'tv' if is_tv else 'movie'
     movie_data = search_detailed_movies(
         f"https://api.themoviedb.org/3/{endpoint}/{movie_id}"
@@ -153,63 +156,61 @@ def add_movie(request):
             status=status.HTTP_404_NOT_FOUND
         )
 
-    # Get or create movie
-    if not movie:
-        # Extract actors and directors
-        credits = search_detailed_movies(
-            f"https://api.themoviedb.org/3/{endpoint}/{movie_id}/credits"
-        )
+    # Extract actors and directors
+    credits = search_detailed_movies(
+        f"https://api.themoviedb.org/3/{endpoint}/{movie_id}/credits"
+    )
 
-        actors = None
-        directors = None
+    actors = None
+    directors = None
 
-        if credits:
-            actors_list = [actor['name'] for actor in credits.get('cast', [])[:5]]
-            actors = ", ".join(actors_list)
+    if credits:
+        actors_list = [actor['name'] for actor in credits.get('cast', [])[:5]]
+        actors = ", ".join(actors_list)
 
-        if is_tv:
-            creators = movie_data.get('created_by', [])
-            directors = ", ".join([c['name'] for c in creators]) if creators else None
-        elif credits:
-            directors_list = [
-                crew['name'] for crew in credits.get('crew', [])
-                if crew.get('job') == 'Director'
-            ]
-            directors = ", ".join(directors_list)
+    if is_tv:
+        creators = movie_data.get('created_by', [])
+        directors = ", ".join([c['name'] for c in creators]) if creators else None
+    elif credits:
+        directors_list = [
+            crew['name'] for crew in credits.get('crew', [])
+            if crew.get('job') == 'Director'
+        ]
+        directors = ", ".join(directors_list)
 
-        # Get dominant color from poster
-        poster_path = movie_data.get('poster_path', '')
-        dominant_color = '#000000'
-        if poster_path:
-            image_url = f"https://image.tmdb.org/t/p/w500{poster_path}"
-            try:
-                dominant_color = get_dominant_color(image_url)
-            except Exception as e:
-                print(f"Error getting dominant color: {e}")
-                dominant_color = '#1a1a1a'
+    # Get dominant color from poster
+    poster_path = movie_data.get('poster_path', '')
+    dominant_color = '#000000'
+    if poster_path:
+        image_url = f"https://image.tmdb.org/t/p/w500{poster_path}"
+        try:
+            dominant_color = get_dominant_color(image_url)
+        except Exception as e:
+            print(f"Error getting dominant color: {e}")
+            dominant_color = '#1a1a1a'
 
-        # Create movie
-        movie = Movie.objects.create(
-            movie_id=movie_id,
-            title=movie_data.get('title') or movie_data.get('name'),
-            poster_path=poster_path,
-            release_date=movie_data.get('release_date') or movie_data.get('first_air_date'),
-            genre_ids=movie_data.get('genres', []),
-            actors=actors,
-            overview=movie_data.get('overview'),
-            directors=directors,
-            budget=movie_data.get('budget', 0),
-            dominant_color=dominant_color,
-            is_tv=is_tv,
-            production_companies=movie_data.get('production_companies') or None,
-            origin_country=movie_data.get('origin_country', []),
-            status=movie_data.get('status', ''),
-            vote_average=movie_data.get('vote_average')
-        )
-        get_images_and_links(movie)
-        get_keywords(movie, endpoint, movie_id)
+    # Create movie
+    movie = Movie.objects.create(
+        movie_id=movie_id,
+        title=movie_data.get('title') or movie_data.get('name'),
+        poster_path=poster_path,
+        release_date=movie_data.get('release_date') or movie_data.get('first_air_date'),
+        genre_ids=movie_data.get('genres', []),
+        actors=actors,
+        overview=movie_data.get('overview'),
+        directors=directors,
+        budget=movie_data.get('budget', 0),
+        dominant_color=dominant_color,
+        is_tv=is_tv,
+        production_companies=movie_data.get('production_companies') or None,
+        origin_country=movie_data.get('origin_country', []),
+        status=movie_data.get('status', ''),
+        vote_average=movie_data.get('vote_average')
+    )
+    get_images_and_links(movie)
+    get_keywords(movie, endpoint, movie_id)
 
-    # Create MovieListItem (no duplicates due to unique_together)
+    # Create MovieListItem
     MovieListItem.objects.create(
         movies_list=movies_list,
         movie=movie

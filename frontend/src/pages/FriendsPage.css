@@ -135,3 +135,156 @@
   font-size: 0.9rem;
   opacity: 0.5;
 }
+
+.friends-tabs {
+  display: flex;
+  gap: 4px;
+  margin-bottom: 28px;
+  border-bottom: 1px solid var(--border-color, #e0e0e0);
+}
+
+.friends-tab-btn {
+  background: none;
+  border: none;
+  border-bottom: 3px solid transparent;
+  border-radius: 0;
+  padding: 10px 16px;
+  font-size: 0.9rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  cursor: pointer;
+  color: var(--text-primary);
+  opacity: 0.4;
+  transition: opacity 0.2s, border-color 0.2s;
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.friends-tab-btn.active {
+  opacity: 1;
+  border-bottom-color: var(--text-primary);
+}
+
+.friends-tab-badge {
+  background: #c83232;
+  color: #fff;
+  font-size: 0.68rem;
+  font-weight: 700;
+  border-radius: 50px;
+  padding: 1px 6px;
+  min-width: 18px;
+  text-align: center;
+}
+
+.recos-subtabs {
+  display: flex;
+  gap: 4px;
+  margin-bottom: 20px;
+  border-bottom: 1px solid var(--border-color, #e0e0e0);
+}
+
+.recos-subtab-btn {
+  background: none;
+  border: none;
+  border-bottom: 3px solid transparent;
+  border-radius: 0;
+  padding: 8px 14px;
+  font-size: 0.82rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  cursor: pointer;
+  color: var(--text-primary);
+  opacity: 0.4;
+  transition: opacity 0.2s, border-color 0.2s;
+  margin-bottom: -1px;
+}
+
+.recos-subtab-btn.active {
+  opacity: 1;
+  border-bottom-color: var(--text-primary);
+}
+
+.reco-add-error {
+  font-size: 0.72rem;
+  margin-top: 2px;
+  display: block;
+}
+
+.recos-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px;
+}
+
+.reco-card {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  width: 140px;
+  background: var(--bg-secondary, #f5f5f5);
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.reco-poster {
+  width: 100%;
+  height: 210px;
+  object-fit: cover;
+}
+
+.reco-no-poster {
+  width: 100%;
+  height: 210px;
+  background: rgba(128,128,128,0.2);
+}
+
+.reco-info {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 8px;
+}
+
+.reco-title {
+  font-weight: 700;
+  font-size: 0.95rem;
+  line-height: 1.3;
+}
+
+.reco-meta {
+  font-size: 0.8rem;
+  opacity: 0.6;
+}
+
+.reco-from {
+  font-size: 0.78rem;
+  opacity: 0.5;
+  font-style: italic;
+}
+
+.reco-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 4px;
+}
+
+.reco-add-btn {
+  padding: 6px 14px;
+  font-size: 0.8rem;
+}
+
+.reco-del-btn {
+  padding: 6px 10px;
+  font-size: 0.8rem;
+}
+
+.reco-in-wishlist {
+  font-size: 0.78rem;
+  opacity: 0.55;
+}

@@ -501,6 +501,15 @@
   -webkit-backdrop-filter: blur(12px);
 }
 
+.list-dropdown-label {
+  padding: 6px 16px 4px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  pointer-events: none;
+}
+
 .list-dropdown-item {
   display: block;
   width: 100%;

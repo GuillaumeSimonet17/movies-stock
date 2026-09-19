@@ -21,6 +21,23 @@
   border-radius: 8px;
   transition: background 0.2s ease;
   color: var(--text-primary);
+  position: relative;
+}
+
+.menu-btn-badge {
+  position: absolute;
+  top: 2px;
+  right: 2px;
+  background: #c83232;
+  color: #fff;
+  font-size: 0.6rem;
+  font-weight: 700;
+  border-radius: 50px;
+  padding: 1px 5px;
+  min-width: 16px;
+  text-align: center;
+  line-height: 1.4;
+  pointer-events: none;
 }
 
 .menu-btn:hover,

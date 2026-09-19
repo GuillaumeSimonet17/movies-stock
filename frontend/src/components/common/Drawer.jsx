@@ -25,7 +25,7 @@ function Drawer({ isOpen, onClose }) {
         listService.getWatchedCount().then(data => setWatchedCount(data?.count ?? 0)).catch(() => {});
       }
       listService.getLists().then(data => setLists(data)).catch(() => {});
-      friendService.getNotifications().then(d => setPendingCount(d.pending_received || 0)).catch(() => {});
+      friendService.getNotifications().then(d => setPendingCount(d.total || 0)).catch(() => {});
     }
   }, [isOpen]);
 
@@ -70,18 +70,18 @@ function Drawer({ isOpen, onClose }) {
         <div className="drawer-content">
           <nav className="drawer-nav">
             <Link to="/" onClick={onClose}>
-              <span className="icon">🏠</span>
+              <span className="icon">🎬</span>
               Ma Wishlist
               {totalCount !== null && <span className="drawer-count">{totalCount}</span>}
             </Link>
             <Link to="/watched" onClick={onClose}>
-              <span className="icon">✓</span>
+              <span className="icon">✅</span>
               Films vus
               {watchedCount !== null && <span className="drawer-count">{watchedCount}</span>}
             </Link>
             <Link to="/friends" onClick={onClose}>
-              <span className="icon">👥</span>
-              Amis
+              <span className="icon">💬</span>
+              Amis & Recos
               {pendingCount > 0 && <span className="drawer-notif-badge">{pendingCount}</span>}
             </Link>
           </nav>

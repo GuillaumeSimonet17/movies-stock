@@ -4,7 +4,7 @@ from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework import status
-from msapp.models import Friendship
+from msapp.models import Friendship, MovieRecommendation, Movie, MoviesList, MovieListItem
 
 
 def friendship_user_data(user):
@@ -26,8 +26,16 @@ def send_request(request):
     except User.DoesNotExist:
         return Response({'error': 'Utilisateur introuvable'}, status=404)
 
-    if Friendship.objects.filter(from_user=request.user, to_user=to_user).exists():
-        return Response({'error': 'Demande déjà envoyée'}, status=409)
+    existing = Friendship.objects.filter(from_user=request.user, to_user=to_user).first()
+    if existing:
+        if existing.status == 'pending':
+            return Response({'error': 'Demande déjà envoyée'}, status=409)
+        elif existing.status == 'accepted':
+            return Response({'error': 'Vous êtes déjà amis'}, status=409)
+        elif existing.status == 'declined':
+            existing.status = 'pending'
+            existing.save()
+            return Response({'message': f'Demande renvoyée à {username}'}, status=200)
 
     if Friendship.objects.filter(from_user=to_user, to_user=request.user).exists():
         return Response({'error': 'Cet utilisateur vous a déjà envoyé une demande'}, status=409)
@@ -85,13 +93,128 @@ def get_pending(request):
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
 def get_notifications(request):
-    received_count = Friendship.objects.filter(to_user=request.user, status='pending').count()
-    # Demandes envoyées qui viennent d'être acceptées (on lit et on marque comme "seen" via un simple count)
-    accepted_count = Friendship.objects.filter(from_user=request.user, status='accepted').count()
+    pending_received = Friendship.objects.filter(to_user=request.user, status='pending').count()
+    unread_recos = MovieRecommendation.objects.filter(to_user=request.user, is_read=False).count()
     return Response({
-        'pending_received': received_count,
-        'total': received_count,
+        'pending_received': pending_received,
+        'unread_recos': unread_recos,
+        'total': pending_received + unread_recos,
     })
+
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def send_recommendation(request):
+    to_user_id = request.data.get('to_user_id')
+    movie_id = request.data.get('movie_id')
+
+    if not to_user_id or not movie_id:
+        return Response({'error': 'to_user_id et movie_id requis'}, status=400)
+
+    # Vérifier que c'est bien un ami
+    is_friend = Friendship.objects.filter(
+        Q(from_user=request.user, to_user_id=to_user_id) |
+        Q(from_user_id=to_user_id, to_user=request.user),
+        status='accepted'
+    ).exists()
+    if not is_friend:
+        return Response({'error': 'Cet utilisateur n\'est pas dans vos amis'}, status=403)
+
+    try:
+        to_user = User.objects.get(id=to_user_id)
+    except User.DoesNotExist:
+        return Response({'error': 'Utilisateur introuvable'}, status=404)
+
+    # Récupérer les infos du film depuis la DB si dispo, sinon depuis les données envoyées
+    movie = Movie.objects.filter(movie_id=movie_id).first()
+    if movie:
+        title = movie.title
+        poster_path = movie.poster_path
+        release_date = str(movie.release_date) if movie.release_date else ''
+        vote_average = movie.vote_average
+    else:
+        title = request.data.get('title', '')
+        poster_path = request.data.get('poster_path', '')
+        release_date = request.data.get('release_date', '')
+        vote_average = request.data.get('vote_average')
+
+    MovieRecommendation.objects.create(
+        from_user=request.user,
+        to_user=to_user,
+        movie_id=movie_id,
+        title=title,
+        poster_path=poster_path,
+        release_date=release_date,
+        vote_average=vote_average,
+    )
+    return Response({'message': f'"{title}" recommandé à {to_user.username}'}, status=201)
+
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def get_recommendations(request):
+    recos = MovieRecommendation.objects.filter(
+        to_user=request.user
+    ).select_related('from_user').order_by('-created_at')
+
+    # Marquer comme lues
+    recos.filter(is_read=False).update(is_read=True)
+
+    # IDs déjà dans la wishlist
+    wishlist_ids = set(
+        MovieListItem.objects.filter(
+            movies_list__user=request.user,
+            movies_list__is_collection=True
+        ).values_list('movie__movie_id', flat=True)
+    )
+
+    return Response({'recommendations': [
+        {
+            'id': r.id,
+            'from': r.from_user.username,
+            'movie_id': r.movie_id,
+            'title': r.title,
+            'poster_path': r.poster_path,
+            'release_date': r.release_date,
+            'vote_average': r.vote_average,
+            'created_at': r.created_at,
+            'in_wishlist': r.movie_id in wishlist_ids,
+        }
+        for r in recos
+    ]})
+
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def get_sent_recommendations(request):
+    recos = MovieRecommendation.objects.filter(
+        from_user=request.user
+    ).select_related('to_user').order_by('-created_at')
+
+    return Response({'recommendations': [
+        {
+            'id': r.id,
+            'to': r.to_user.username,
+            'movie_id': r.movie_id,
+            'title': r.title,
+            'poster_path': r.poster_path,
+            'release_date': r.release_date,
+            'vote_average': r.vote_average,
+            'created_at': r.created_at,
+        }
+        for r in recos
+    ]})
+
+
+@api_view(['DELETE'])
+@permission_classes([IsAuthenticated])
+def delete_recommendation(request, reco_id):
+    try:
+        reco = MovieRecommendation.objects.get(id=reco_id, to_user=request.user)
+        reco.delete()
+        return Response({'message': 'Supprimée'})
+    except MovieRecommendation.DoesNotExist:
+        return Response({'error': 'Introuvable'}, status=404)
 
 
 @api_view(['DELETE'])
