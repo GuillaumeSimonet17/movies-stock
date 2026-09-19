@@ -174,6 +174,10 @@
     .where-to-watch-desktop {
         display: none;
     }
+
+    .movie-nav span.btn-movie-page {
+        padding-bottom: 2px;
+    }
 }
 
 .movie-nav {
@@ -197,11 +201,11 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    padding-bottom: 7px;
+    padding-bottom: 6px;
 }
 
-.btn-nav-prev { padding-right: 4px; }
-.btn-nav-next { padding-left: 4px; }
+.btn-nav-prev { padding-right: 6px; }
+.btn-nav-next { padding-left: 6px; }
 
 .movie-nav span:hover {
     opacity: 1;
