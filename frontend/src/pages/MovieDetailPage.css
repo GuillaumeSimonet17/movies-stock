@@ -191,17 +191,17 @@
 }
 
 .movie-nav span.btn-movie-page {
-    font-size: 1.6rem;
+    font-size: 2.4rem;
     line-height: 1;
     margin-bottom: 0;
     display: flex;
     align-items: center;
     justify-content: center;
-    padding-bottom: 2px;
+    padding-bottom: 7px;
 }
 
-.btn-nav-prev { padding-right: 2px; }
-.btn-nav-next { padding-left: 2px; }
+.btn-nav-prev { padding-right: 4px; }
+.btn-nav-next { padding-left: 4px; }
 
 .movie-nav span:hover {
     opacity: 1;
@@ -233,8 +233,8 @@
     align-items: center;
     justify-content: center;
     line-height: 1;
-    width: 38px;
-    height: 38px;
+    width: 48px;
+    height: 48px;
     border-radius: 50%;
     background: rgba(255, 255, 255, 0.15);
     backdrop-filter: blur(4px);
@@ -251,7 +251,7 @@
 }
 
 .btn-nav {
-    font-size: 1.6rem;
+    font-size: 2.4rem;
 }
 
 .btn-movie-tooltip {

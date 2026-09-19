@@ -238,7 +238,9 @@ function MovieDetailPage() {
           <div className="col-md-6 d-flex justify-content-center justify-content-md-end gap-3 btn_pass">
             <div className="movie-nav">
               {prevMovie && (
-                <span className="btn-movie-page btn-nav btn-nav-prev" onClick={() => goToMovie(prevMovie.id)}>◂</span>
+                <div className="btn-movie-page-wrapper">
+                  <span className="btn-movie-page btn-nav btn-nav-prev" onClick={() => goToMovie(prevMovie.id)}>◂</span>
+                </div>
               )}
             </div>
             <div className="btn-movie-page-wrapper">
@@ -265,7 +267,9 @@ function MovieDetailPage() {
             )}
             <div className="movie-nav">
               {nextMovie && (
-                <span className="btn-movie-page btn-nav btn-nav-next" onClick={() => goToMovie(nextMovie.id)}>▸</span>
+                <div className="btn-movie-page-wrapper">
+                  <span className="btn-movie-page btn-nav btn-nav-next" onClick={() => goToMovie(nextMovie.id)}>▸</span>
+                </div>
               )}
             </div>
             <button className="random-btn" onClick={handleRandomMovie}>
