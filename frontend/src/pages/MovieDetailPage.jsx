@@ -316,7 +316,7 @@ function MovieDetailPage() {
             </div>
             {(userLists.length > 0 || friends.length > 0) && (
               <div className="list-menu-wrapper" ref={optionsMenuRef}>
-                <span className="btn-movie-page" onClick={() => setShowOptionsMenu(v => !v)} title="Options">⋯</span>
+                <span className="btn-movie-page" onClick={() => setShowOptionsMenu(v => !v)} title="Options">⋮</span>
                 {showOptionsMenu && (
                   <div className="list-dropdown" style={{background: backgroundColor, color: textColor, border: `1px solid ${textColor}30`}}>
                     {userLists.length > 0 && (

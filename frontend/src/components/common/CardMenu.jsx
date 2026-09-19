@@ -55,7 +55,7 @@ function CardMenu({ movie, onRemoveClick }) {
           onClick={(e) => { e.preventDefault(); e.stopPropagation(); setOpen(v => !v); }}
           title="Options"
         >
-          ⋯
+          ⋮
         </button>
         {open && (
           <div className="card-menu-dropdown">
