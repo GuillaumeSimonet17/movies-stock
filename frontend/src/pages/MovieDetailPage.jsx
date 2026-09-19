@@ -9,7 +9,6 @@ import {getGenreName} from '../utils/genreMapping';
 import './MovieDetailPage.css';
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome'
 import {faYoutube, faGoogle} from '@fortawesome/free-brands-svg-icons'
-import {faShareNodes} from '@fortawesome/free-solid-svg-icons'
 import {useLocation} from 'react-router-dom';
 import MovieCard from '../components/common/MovieCard';
 
@@ -81,16 +80,17 @@ function MovieDetailPage() {
   const [similarByKeyword, setSimilarByKeyword] = useState([]);
   const [activeTab, setActiveTab] = useState('images');
   const [userLists, setUserLists] = useState([]);
-  const [showListMenu, setShowListMenu] = useState(false);
   const [listToast, setListToast] = useState({ show: false, message: '', type: '' });
-  const listMenuRef = useRef(null);
   const [streamingOffers, setStreamingOffers] = useState(null);
   const [suggestions, setSuggestions] = useState([]);
   const [filmography, setFilmography] = useState({ films: [], director: null });
   const [friends, setFriends] = useState([]);
-  const [showRecoMenu, setShowRecoMenu] = useState(false);
+  const [showOptionsMenu, setShowOptionsMenu] = useState(false);
+  const [showListModal, setShowListModal] = useState(false);
+  const [showRecoModal, setShowRecoModal] = useState(false);
+  const [recoStatus, setRecoStatus] = useState(null);
   const [recoToast, setRecoToast] = useState('');
-  const recoMenuRef = useRef(null);
+  const optionsMenuRef = useRef(null);
 
   const currentIndex = movieList.findIndex(m => m.id === Number(id));
 
@@ -151,29 +151,18 @@ function MovieDetailPage() {
   }, [id]);
 
   useEffect(() => {
-    if (!showListMenu) return;
+    if (!showOptionsMenu) return;
     const handleClick = (e) => {
-      if (listMenuRef.current && !listMenuRef.current.contains(e.target)) {
-        setShowListMenu(false);
+      if (optionsMenuRef.current && !optionsMenuRef.current.contains(e.target)) {
+        setShowOptionsMenu(false);
       }
     };
     document.addEventListener('mousedown', handleClick);
     return () => document.removeEventListener('mousedown', handleClick);
-  }, [showListMenu]);
-
-  useEffect(() => {
-    if (!showRecoMenu) return;
-    const handleClick = (e) => {
-      if (recoMenuRef.current && !recoMenuRef.current.contains(e.target)) {
-        setShowRecoMenu(false);
-      }
-    };
-    document.addEventListener('mousedown', handleClick);
-    return () => document.removeEventListener('mousedown', handleClick);
-  }, [showRecoMenu]);
+  }, [showOptionsMenu]);
 
   const handleAddToList = async (listId) => {
-    setShowListMenu(false);
+    setShowOptionsMenu(false);
     try {
       await listService.addMovie(listId, id);
       const listName = userLists.find(l => l.id === listId)?.name || 'list';
@@ -216,14 +205,15 @@ function MovieDetailPage() {
   };
 
   const handleSendReco = async (friendId, friendUsername) => {
-    setShowRecoMenu(false);
+    setRecoStatus('sending');
     try {
       await friendService.sendRecommendation(friendId, movie.movie_id);
+      setRecoStatus('ok');
       setRecoToast(`Recommandé à ${friendUsername} !`);
+      setTimeout(() => { setShowRecoModal(false); setRecoStatus(null); setRecoToast(''); }, 1500);
     } catch {
-      setRecoToast('Erreur lors de l\'envoi');
+      setRecoStatus('error');
     }
-    setTimeout(() => setRecoToast(''), 3000);
   };
 
   const handleRandomMovie = async () => {
@@ -324,33 +314,21 @@ function MovieDetailPage() {
               <span className={"btn-movie-page btn-nope"} onClick={handleDelete} title="Pas envie de le voir">✕</span>
               <span className="btn-movie-tooltip">Pas envie de le voir</span>
             </div>
-            {userLists.length > 0 && (
-              <div className="list-menu-wrapper" ref={listMenuRef}>
-                <span className={"btn-movie-page"} onClick={() => setShowListMenu(v => !v)}>+</span>
-                {showListMenu && (
+            {(userLists.length > 0 || friends.length > 0) && (
+              <div className="list-menu-wrapper" ref={optionsMenuRef}>
+                <span className="btn-movie-page" onClick={() => setShowOptionsMenu(v => !v)} title="Options">⋯</span>
+                {showOptionsMenu && (
                   <div className="list-dropdown" style={{background: backgroundColor, color: textColor, border: `1px solid ${textColor}30`}}>
-                    {userLists.map(lst => (
-                      <button key={lst.id} className="list-dropdown-item" style={{color: textColor}} onClick={() => handleAddToList(lst.id)}>
-                        {lst.name}
+                    {userLists.length > 0 && (
+                      <button className="list-dropdown-item" style={{color: textColor}} onClick={() => { setShowOptionsMenu(false); setShowListModal(true); }}>
+                        Ajouter à une liste
                       </button>
-                    ))}
-                  </div>
-                )}
-              </div>
-            )}
-            {friends.length > 0 && (
-              <div className="list-menu-wrapper" ref={recoMenuRef}>
-                <span className={"btn-movie-page"} onClick={() => setShowRecoMenu(v => !v)} title="Recommander à un ami">
-                  <FontAwesomeIcon icon={faShareNodes} />
-                </span>
-                {showRecoMenu && (
-                  <div className="list-dropdown" style={{background: backgroundColor, color: textColor, border: `1px solid ${textColor}30`}}>
-                    <div className="list-dropdown-label" style={{color: textColor, opacity: 0.5}}>Recommander à...</div>
-                    {friends.map(f => (
-                      <button key={f.id} className="list-dropdown-item" style={{color: textColor}} onClick={() => handleSendReco(f.user.id, f.user.username)}>
-                        {f.user.username}
+                    )}
+                    {friends.length > 0 && (
+                      <button className="list-dropdown-item" style={{color: textColor}} onClick={() => { setShowOptionsMenu(false); setShowRecoModal(true); setRecoStatus(null); }}>
+                        Recommander
                       </button>
-                    ))}
+                    )}
                   </div>
                 )}
               </div>
@@ -735,6 +713,44 @@ function MovieDetailPage() {
       {recoToast && (
         <div className="list-toast" style={{background: backgroundColor, color: textColor, border: `1px solid ${textColor}30`}}>
           ↗ {recoToast}
+        </div>
+      )}
+
+      {showListModal && (
+        <div className="movie-modal-overlay" onClick={() => setShowListModal(false)}>
+          <div className="movie-modal" onClick={e => e.stopPropagation()}>
+            <h3 className="movie-modal-title">Ajouter à une liste</h3>
+            <div className="movie-modal-list">
+              {userLists.map(lst => (
+                <button key={lst.id} className="movie-modal-item" onClick={() => { handleAddToList(lst.id); setShowListModal(false); }}>
+                  <span className="movie-modal-item-icon">{lst.icon || '🎬'}</span>
+                  {lst.name}
+                </button>
+              ))}
+            </div>
+            <button className="movie-modal-cancel" onClick={() => setShowListModal(false)}>Fermer</button>
+          </div>
+        </div>
+      )}
+
+      {showRecoModal && (
+        <div className="movie-modal-overlay" onClick={() => { setShowRecoModal(false); setRecoStatus(null); }}>
+          <div className="movie-modal" onClick={e => e.stopPropagation()}>
+            <h3 className="movie-modal-title">Recommander à un ami</h3>
+            {recoStatus === 'ok' ? (
+              <p className="movie-modal-success">Recommandation envoyée ✓</p>
+            ) : (
+              <div className="movie-modal-list">
+                {friends.map(f => (
+                  <button key={f.id} className="movie-modal-item" onClick={() => handleSendReco(f.user.id, f.user.username)} disabled={recoStatus === 'sending'}>
+                    {f.user.username}
+                  </button>
+                ))}
+              </div>
+            )}
+            {recoStatus === 'error' && <p className="movie-modal-error">Erreur lors de l'envoi</p>}
+            <button className="movie-modal-cancel" onClick={() => { setShowRecoModal(false); setRecoStatus(null); }}>Fermer</button>
+          </div>
         </div>
       )}
     </div>

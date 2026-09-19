@@ -117,6 +117,7 @@
 
 .card-wizard-friend-btn:hover:not(:disabled) {
   background: var(--bg-tertiary, #eee);
+  border-color: transparent;
 }
 
 .card-wizard-friend-btn:disabled {
@@ -153,13 +154,17 @@
 .card-wizard-cancel {
   padding: 9px 18px;
   border-radius: 8px;
-  border: 1px solid var(--border-color, #e0e0e0);
+  border: none;
   background: none;
   color: var(--text-primary);
   font-size: 0.9rem;
   cursor: pointer;
+  opacity: 0.6;
+  transition: opacity 0.15s;
   margin-top: 4px;
 }
+
+.card-wizard-cancel:hover { opacity: 1; }
 
 .card-wizard-confirm {
   padding: 9px 18px;
