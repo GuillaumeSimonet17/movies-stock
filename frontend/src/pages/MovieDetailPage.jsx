@@ -63,6 +63,7 @@ function MovieDetailPage() {
   const [showListMenu, setShowListMenu] = useState(false);
   const [listToast, setListToast] = useState({ show: false, message: '', type: '' });
   const listMenuRef = useRef(null);
+  const [streamingOffers, setStreamingOffers] = useState(null);
 
   const currentIndex = movieList.findIndex(m => m.id === Number(id));
 
@@ -113,6 +114,11 @@ function MovieDetailPage() {
     loadMovie();
     listService.getLists().then(setUserLists).catch(() => {});
   }, [loadMovie]);
+
+  useEffect(() => {
+    if (!id) return;
+    movieService.getStreaming(id).then(data => setStreamingOffers(data.offers || [])).catch(() => setStreamingOffers([]));
+  }, [id]);
 
   useEffect(() => {
     if (!showListMenu) return;
@@ -210,8 +216,23 @@ function MovieDetailPage() {
 
   const buildImageUrl = (path) => {
     if (!path) return '';
-    if (path.startsWith('http')) return path; // local/full URL
-    return `https://image.tmdb.org/t/p/w780${path}`; // TMDB
+    if (path.startsWith('http')) return path;
+    return `https://image.tmdb.org/t/p/w780${path}`;
+  };
+
+  const renderStreamingOffers = () => {
+    if (streamingOffers === null) return <p style={{opacity: 0.6, fontSize: '0.85rem'}}>Recherche des plateformes...</p>;
+    if (!streamingOffers.length) return null;
+    return (
+      <div className="streaming-badges">
+        {streamingOffers.map((o, i) => (
+          <a key={i} href={o.url} target="_blank" rel="noreferrer" className="streaming-badge"
+            title={`${o.provider}${o.price ? ' — ' + o.price : ''}`}>
+            {o.icon ? <img src={o.icon} alt={o.provider} /> : <span>{o.provider}</span>}
+          </a>
+        ))}
+      </div>
+    );
   };
 
   return (
@@ -381,6 +402,7 @@ function MovieDetailPage() {
                 </div>
 
                 <div className="where-to-watch-desktop">
+                  {renderStreamingOffers()}
                   {!movie.is_tv && (
                     <a href="https://www.avobiv.com" target="_blank" rel="noreferrer"
                       style={{background: backgroundColor, color: textColor, border: `1px solid ${textColor}`}}>
@@ -465,6 +487,7 @@ function MovieDetailPage() {
 
           {activeTab === 'where' && (
             <div className="where-to-watch-tab p-4">
+              {renderStreamingOffers()}
               {!movie.is_tv && (
                 <a href="https://www.avobiv.com" target="_blank" rel="noreferrer"
                   style={{background: backgroundColor, color: textColor, border: `1px solid ${textColor}`}}>

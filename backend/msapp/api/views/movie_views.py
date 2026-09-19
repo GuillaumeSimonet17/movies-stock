@@ -5,6 +5,7 @@ from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from django.db.models import Q
+from django.core.cache import cache
 from msapp.models import Movie, MoviesList, MovieListItem, FilePath
 from msapp.utils import URL_TMDB, API_KEY_DEEPL
 from msapp.serializers import MovieSerializer, MovieListSerializer
@@ -482,6 +483,70 @@ def random_movie(request):
             {'error': 'Movies list not found'},
             status=status.HTTP_404_NOT_FOUND
         )
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def get_streaming(request, movie_id):
+    try:
+        movie = Movie.objects.get(pk=movie_id)
+    except Movie.DoesNotExist:
+        return Response({'error': 'Movie not found'}, status=404)
+
+    cache_key = f'streaming_{movie_id}'
+    cached = cache.get(cache_key)
+    if cached is not None:
+        return Response(cached)
+
+    try:
+        from simplejustwatchapi.justwatch import search as jw_search
+        results = jw_search(movie.title, 'FR', 'fr', 5)
+
+        target = None
+        release_year = movie.release_date.year if movie.release_date else None
+        for entry in results:
+            if entry.title.lower() == movie.title.lower():
+                if release_year is None or entry.release_year is None or abs(entry.release_year - release_year) <= 1:
+                    target = entry
+                    break
+        if target is None and results:
+            target = results[0]
+
+        if not target or not target.offers:
+            cache.set(cache_key, {'offers': []}, timeout=3600 * 6)
+            return Response({'offers': []})
+
+        ALLOWED = {
+            'netflix', 'amazonprimevideo', 'arte', 'canalplus', 'canalpluscine',
+            'pathehome', 'itunes', 'max',
+        }
+
+        seen = set()
+        offers = []
+        for offer in target.offers:
+            tn = offer.package.technical_name
+            if tn not in ALLOWED:
+                continue
+            if offer.monetization_type != 'FLATRATE':
+                continue
+            if tn in seen:
+                continue
+            seen.add(tn)
+            offers.append({
+                'provider': offer.package.name,
+                'type': offer.monetization_type,
+                'quality': offer.presentation_type.lstrip('_'),
+                'url': offer.url,
+                'price': offer.price_string,
+                'icon': offer.package.icon,
+            })
+
+        data = {'offers': offers}
+        cache.set(cache_key, data, timeout=3600 * 6)
+        return Response(data)
+
+    except Exception as e:
+        return Response({'offers': [], 'error': str(e)})
+
 
 def get_keywords(movie, endpoint, movie_id):
     url = f'{URL_TMDB}{endpoint}/{movie_id}/keywords'

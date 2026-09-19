@@ -27,4 +27,8 @@ export const movieService = {
     return api.get('/movies/random/');
   },
 
+  getStreaming: (id) => {
+    return api.get(`/movies/${id}/streaming/`);
+  },
+
 };
