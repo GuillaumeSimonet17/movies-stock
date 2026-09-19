@@ -362,8 +362,12 @@ function MovieDetailPage() {
                 </p>
 
                 <p>
-                  <strong>Director</strong> : {movie.directors}
+                  <strong>Réalisateur</strong> : {movie.directors}
                 </p>
+
+                {movie.vote_average > 0 && (
+                  <p><strong>Note</strong> : {movie.vote_average} / 10</p>
+                )}
 
                 {/* PRODUCTION LOGOS */}
                 <div className="row prods align-items-center justify-content-between p-2 mt-1">

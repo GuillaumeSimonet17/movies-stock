@@ -526,17 +526,18 @@
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  width: 120px;
+  width: 160px;
   flex-shrink: 0;
-  border-radius: 10px;
+  border-radius: 6px;
   overflow: hidden;
   background: rgba(255,255,255,0.07);
+  box-shadow: 0 2px 8px rgba(0,0,0,0.25);
 }
 
 .suggestion-card img,
 .suggestion-no-poster {
-  width: 100%;
-  aspect-ratio: 2/3;
+  width: 160px;
+  height: 240px;
   object-fit: cover;
   background: rgba(255,255,255,0.1);
 }

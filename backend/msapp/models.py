@@ -16,6 +16,7 @@ class Movie(models.Model):
     production_companies = models.JSONField(null=True)
     status = models.CharField()
     dominant_color = models.CharField(max_length=7, null=True, blank=True)
+    vote_average = models.FloatField(null=True, blank=True)
     is_tv = models.BooleanField(default=False, db_index=True)
     keywords = models.JSONField(null=True, blank=True)
 

@@ -199,7 +199,8 @@ def add_movie(request):
             is_tv=is_tv,
             production_companies=movie_data.get('production_companies') or None,
             origin_country=movie_data.get('origin_country', []),
-            status=movie_data.get('status', '')
+            status=movie_data.get('status', ''),
+            vote_average=movie_data.get('vote_average')
         )
         get_images_and_links(movie)
         get_keywords(movie, endpoint, movie_id)
@@ -499,7 +500,8 @@ def get_director_filmography(request, movie_id):
 
     user_movie_ids = set(
         MovieListItem.objects.filter(
-            movies_list__user=request.user
+            movies_list__user=request.user,
+            movies_list__is_collection=True
         ).values_list('movie__movie_id', flat=True)
     )
 
@@ -570,10 +572,10 @@ def get_suggestions(request, movie_id):
     if not movie.movie_id:
         return Response({'suggestions': []})
 
-    # IDs déjà dans toutes les listes de l'user
     user_movie_ids = set(
         MovieListItem.objects.filter(
-            movies_list__user=request.user
+            movies_list__user=request.user,
+            movies_list__is_collection=True
         ).values_list('movie__movie_id', flat=True)
     )
 
