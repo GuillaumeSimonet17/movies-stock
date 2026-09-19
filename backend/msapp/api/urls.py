@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import auth_views, movie_views, watched_views, list_views
+from .views import auth_views, movie_views, watched_views, list_views, friend_views
 
 app_name = 'api'
 
@@ -37,4 +37,12 @@ urlpatterns = [
     path('lists/<int:list_id>/search-add/', list_views.search_add_to_list, name='list-search-add'),
     path('lists/<int:list_id>/movies/<int:movie_id>/delete/', list_views.remove_movie_from_list, name='list-remove-movie'),
     path('lists/<int:list_id>/reorder/', list_views.reorder_list, name='list-reorder'),
+
+    # Friends endpoints
+    path('friends/', friend_views.get_friends, name='friends-list'),
+    path('friends/send/', friend_views.send_request, name='friends-send'),
+    path('friends/pending/', friend_views.get_pending, name='friends-pending'),
+    path('friends/notifications/', friend_views.get_notifications, name='friends-notifications'),
+    path('friends/<int:friendship_id>/respond/', friend_views.respond_request, name='friends-respond'),
+    path('friends/<int:friendship_id>/remove/', friend_views.remove_friend, name='friends-remove'),
 ]

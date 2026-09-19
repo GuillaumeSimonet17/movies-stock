@@ -7,6 +7,7 @@ import Home from './pages/Home';
 import MovieDetailPage from './pages/MovieDetailPage';
 import WatchedPage from './pages/WatchedPage';
 import ListPage from './pages/ListPage';
+import FriendsPage from './pages/FriendsPage';
 
 function AppRouter() {
   const { isAuthenticated, loading } = useAuth();
@@ -42,6 +43,7 @@ function AppRouter() {
         <Route path="/movie/:id" element={<MovieDetailPage />} />
         <Route path="/watched" element={<WatchedPage />} />
         <Route path="/lists/:id" element={<ListPage />} />
+        <Route path="/friends" element={<FriendsPage />} />
       </Route>
 
       <Route path="*" element={<Navigate to="/" />} />

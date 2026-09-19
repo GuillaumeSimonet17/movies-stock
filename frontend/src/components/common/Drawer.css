@@ -247,6 +247,18 @@
   margin-top: 0 !important;
 }
 
+.drawer-notif-badge {
+  margin-left: auto;
+  background: #c83232;
+  color: #fff;
+  font-size: 0.72rem;
+  font-weight: 700;
+  border-radius: 50px;
+  padding: 1px 7px;
+  min-width: 20px;
+  text-align: center;
+}
+
 .drawer-lists-empty {
   font-size: 13px;
   color: var(--text-secondary, #888);

@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../hooks/useAuth';
 import { movieService } from '../../services/movieService';
 import { listService } from '../../services/listService';
+import { friendService } from '../../services/friendService';
 import './Drawer.css';
 
 function Drawer({ isOpen, onClose }) {
@@ -13,6 +14,7 @@ function Drawer({ isOpen, onClose }) {
   const [lists, setLists] = useState([]);
   const [creatingList, setCreatingList] = useState(false);
   const [newListName, setNewListName] = useState('');
+  const [pendingCount, setPendingCount] = useState(0);
 
   useEffect(() => {
     if (isOpen) {
@@ -23,6 +25,7 @@ function Drawer({ isOpen, onClose }) {
         listService.getWatchedCount().then(data => setWatchedCount(data?.count ?? 0)).catch(() => {});
       }
       listService.getLists().then(data => setLists(data)).catch(() => {});
+      friendService.getNotifications().then(d => setPendingCount(d.pending_received || 0)).catch(() => {});
     }
   }, [isOpen]);
 
@@ -75,6 +78,11 @@ function Drawer({ isOpen, onClose }) {
               <span className="icon">✓</span>
               Films vus
               {watchedCount !== null && <span className="drawer-count">{watchedCount}</span>}
+            </Link>
+            <Link to="/friends" onClick={onClose}>
+              <span className="icon">👥</span>
+              Amis
+              {pendingCount > 0 && <span className="drawer-notif-badge">{pendingCount}</span>}
             </Link>
           </nav>
 
