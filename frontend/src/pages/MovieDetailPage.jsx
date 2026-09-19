@@ -11,6 +11,25 @@ import {faYoutube, faGoogle} from '@fortawesome/free-brands-svg-icons'
 import {useLocation} from 'react-router-dom';
 import MovieCard from '../components/common/MovieCard';
 
+const StarRating = ({ value }) => {
+  const rating = value / 2;
+  return (
+    <span className="star-rating">
+      {[1, 2, 3, 4, 5].map(i => {
+        const fill = Math.min(1, Math.max(0, rating - (i - 1)));
+        const pct = Math.round(fill * 100);
+        return (
+          <span key={i} className="star-wrap">
+            <span className="star-bg">★</span>
+            <span className="star-fg" style={{width: `${pct}%`}}>★</span>
+          </span>
+        );
+      })}
+      <span className="star-value">{(value / 2).toFixed(1)}/5</span>
+    </span>
+  );
+};
+
 const toOpaqueColor = (hex) => {
   if (!hex) return '#ffffff';
   return hex.slice(0, 7);
@@ -343,9 +362,13 @@ function MovieDetailPage() {
                   ))}
                 </div>
 
+                {movie.vote_average > 0 && (
+                  <p className="mt-4"><StarRating value={movie.vote_average} /></p>
+                )}
+
                 {/* SYNOPSIS */}
                 {movie.overview && (
-                  <p className="mt-4">
+                  <p className="mt-2">
                     <strong style={{textDecoration: 'underline'}}>
                       Synopsis
                     </strong>{' '}
@@ -364,10 +387,6 @@ function MovieDetailPage() {
                 <p>
                   <strong>Réalisateur</strong> : {movie.directors}
                 </p>
-
-                {movie.vote_average > 0 && (
-                  <p><strong>Note</strong> : {movie.vote_average} / 10</p>
-                )}
 
                 {/* PRODUCTION LOGOS */}
                 <div className="row prods align-items-center justify-content-between p-2 mt-1">

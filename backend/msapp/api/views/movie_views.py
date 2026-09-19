@@ -165,12 +165,16 @@ def add_movie(request):
 
         if credits:
             actors_list = [actor['name'] for actor in credits.get('cast', [])[:5]]
+            actors = ", ".join(actors_list)
+
+        if is_tv:
+            creators = movie_data.get('created_by', [])
+            directors = ", ".join([c['name'] for c in creators]) if creators else None
+        elif credits:
             directors_list = [
                 crew['name'] for crew in credits.get('crew', [])
                 if crew.get('job') == 'Director'
             ]
-
-            actors = ", ".join(actors_list)
             directors = ", ".join(directors_list)
 
         # Get dominant color from poster
