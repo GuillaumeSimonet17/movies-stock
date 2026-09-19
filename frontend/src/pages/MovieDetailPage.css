@@ -178,6 +178,11 @@
     .movie-nav span.btn-movie-page {
         padding-bottom: 2px;
     }
+
+    .btn_pass {
+        gap: 0.5rem !important;
+        margin-bottom: 12px;
+    }
 }
 
 .movie-nav {
