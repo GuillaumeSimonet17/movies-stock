@@ -4,9 +4,9 @@ import './CardMenu.css';
 
 function CardMenu({ movie, onRemoveClick }) {
   const [open, setOpen] = useState(false);
-  const [wizard, setWizard] = useState(null); // null | 'recommend' | 'delete'
+  const [wizard, setWizard] = useState(null);
   const [friends, setFriends] = useState([]);
-  const [recoStatus, setRecoStatus] = useState(null); // null | 'sending' | 'ok' | 'error'
+  const [recoStatus, setRecoStatus] = useState(null);
   const menuRef = useRef(null);
 
   useEffect(() => {
@@ -34,7 +34,12 @@ function CardMenu({ movie, onRemoveClick }) {
   const sendReco = async (friendId) => {
     setRecoStatus('sending');
     try {
-      await friendService.sendRecommendation(friendId, movie.movie_id ?? movie.id);
+      await friendService.sendRecommendation(friendId, movie.movie_id ?? movie.id, {
+        title: movie.title || movie.name,
+        poster_path: movie.poster_path,
+        release_date: movie.release_date,
+        vote_average: movie.vote_average,
+      });
       setRecoStatus('ok');
       setTimeout(() => { setWizard(null); setRecoStatus(null); }, 1200);
     } catch (err) {
@@ -62,9 +67,11 @@ function CardMenu({ movie, onRemoveClick }) {
             <button onClick={(e) => { e.stopPropagation(); openRecommend(); }}>
               Recommander
             </button>
-            <button className="danger" onClick={(e) => { e.stopPropagation(); openDelete(); }}>
-              Supprimer
-            </button>
+            {onRemoveClick && (
+              <button className="danger" onClick={(e) => { e.stopPropagation(); openDelete(); }}>
+                Supprimer
+              </button>
+            )}
           </div>
         )}
       </div>
@@ -100,7 +107,7 @@ function CardMenu({ movie, onRemoveClick }) {
         </div>
       )}
 
-      {wizard === 'delete' && (
+      {wizard === 'delete' && onRemoveClick && (
         <div className="card-wizard-overlay" onClick={() => setWizard(null)}>
           <div className="card-wizard" onClick={e => e.stopPropagation()}>
             <h3>Supprimer ?</h3>

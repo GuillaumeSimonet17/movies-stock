@@ -72,6 +72,10 @@ def get_friends(request):
         Q(from_user=request.user) | Q(to_user=request.user),
         status='accepted'
     )
+    # Marquer les notifs d'acceptation comme vues
+    Friendship.objects.filter(
+        from_user=request.user, status='accepted', accepted_notified=False
+    ).update(accepted_notified=True)
     friends = []
     for f in friendships:
         other = f.to_user if f.from_user == request.user else f.from_user
@@ -95,10 +99,17 @@ def get_pending(request):
 def get_notifications(request):
     pending_received = Friendship.objects.filter(to_user=request.user, status='pending').count()
     unread_recos = MovieRecommendation.objects.filter(to_user=request.user, is_read=False).count()
+    accepted_qs = Friendship.objects.filter(
+        from_user=request.user, status='accepted', accepted_notified=False
+    ).select_related('to_user')
+    friend_accepted_list = [f.to_user.username for f in accepted_qs]
+    friend_accepted = len(friend_accepted_list)
     return Response({
         'pending_received': pending_received,
         'unread_recos': unread_recos,
-        'total': pending_received + unread_recos,
+        'friend_accepted': friend_accepted,
+        'friend_accepted_list': friend_accepted_list,
+        'total': pending_received + unread_recos + friend_accepted,
     })
 
 
@@ -154,7 +165,7 @@ def send_recommendation(request):
 @permission_classes([IsAuthenticated])
 def get_recommendations(request):
     recos = MovieRecommendation.objects.filter(
-        to_user=request.user
+        to_user=request.user, is_declined=False
     ).select_related('from_user').order_by('-created_at')
 
     # Marquer comme lues
@@ -191,6 +202,15 @@ def get_sent_recommendations(request):
         from_user=request.user
     ).select_related('to_user').order_by('-created_at')
 
+    # Collecter les movie_ids dans la wishlist de chaque destinataire
+    to_user_ids = list(set(r.to_user_id for r in recos))
+    wishlist_pairs = set(
+        MovieListItem.objects.filter(
+            movies_list__user_id__in=to_user_ids,
+            movies_list__is_collection=True,
+        ).values_list('movies_list__user_id', 'movie__movie_id')
+    )
+
     return Response({'recommendations': [
         {
             'id': r.id,
@@ -201,6 +221,8 @@ def get_sent_recommendations(request):
             'release_date': r.release_date,
             'vote_average': r.vote_average,
             'created_at': r.created_at,
+            'in_wishlist': (r.to_user_id, r.movie_id) in wishlist_pairs,
+            'is_declined': r.is_declined,
         }
         for r in recos
     ]})
@@ -211,8 +233,9 @@ def get_sent_recommendations(request):
 def delete_recommendation(request, reco_id):
     try:
         reco = MovieRecommendation.objects.get(id=reco_id, to_user=request.user)
-        reco.delete()
-        return Response({'message': 'Supprimée'})
+        reco.is_declined = True
+        reco.save(update_fields=['is_declined'])
+        return Response({'message': 'Refusée'})
     except MovieRecommendation.DoesNotExist:
         return Response({'error': 'Introuvable'}, status=404)
 

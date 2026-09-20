@@ -218,6 +218,7 @@
   display: flex;
   flex-wrap: wrap;
   gap: 14px;
+  justify-content: center;
 }
 
 .reco-card {
@@ -287,4 +288,70 @@
 .reco-in-wishlist {
   font-size: 0.78rem;
   opacity: 0.55;
+}
+
+.reco-sent-status {
+  font-size: 0.78rem;
+  opacity: 0.5;
+  margin-top: 4px;
+}
+
+.reco-sent-status.accepted {
+  opacity: 1;
+  color: #2e7d32;
+  font-weight: 600;
+}
+
+.reco-sent-status.declined {
+  opacity: 1;
+  color: #c83232;
+  font-weight: 600;
+}
+
+/* Modal confirmation retirer */
+.friends-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.45);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.friends-modal {
+  background: var(--bg-primary, #fff);
+  border-radius: 14px;
+  padding: 28px 24px;
+  max-width: 340px;
+  width: 90%;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.22);
+}
+
+.friends-modal h3 {
+  margin: 0 0 10px;
+  font-size: 1.1rem;
+  font-weight: 700;
+}
+
+.friends-modal p {
+  margin: 0 0 20px;
+  font-size: 0.95rem;
+  opacity: 0.85;
+}
+
+.friends-modal-actions {
+  display: flex;
+  gap: 10px;
+  justify-content: flex-end;
+}
+
+.friends-accepted-notif {
+  padding: 10px 14px;
+  border-radius: 8px;
+  background: rgba(46, 125, 50, 0.12);
+  border: 1px solid rgba(46, 125, 50, 0.3);
+  color: #2e7d32;
+  font-size: 0.88rem;
+  margin-bottom: 6px;
 }

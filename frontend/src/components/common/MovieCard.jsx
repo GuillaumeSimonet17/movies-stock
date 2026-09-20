@@ -1,10 +1,8 @@
-import {useNavigate, Link} from 'react-router-dom';
-
+import {Link} from 'react-router-dom';
+import CardMenu from './CardMenu';
 import './MovieCard.css';
 
-function MovieCard({movie, movieList = [], clickable = true, from, extraState = {}}) {
-  const navigate = useNavigate();
-
+function MovieCard({movie, movieList = [], clickable = true, from, extraState = {}, showMenu = false}) {
   const posterUrl = movie.poster_path
     ? `https://image.tmdb.org/t/p/w500${movie.poster_path}`
     : '/placeholder-poster.png';
@@ -17,20 +15,9 @@ function MovieCard({movie, movieList = [], clickable = true, from, extraState = 
     const longestWord = title.split(' ').reduce((a, b) =>
       a.length > b.length ? a : b, ''
     );
-
     if (longestWord.length > 15) return 'x-small';
     if (longestWord.length > 8 || title.length > 30) return 'medium';
     return '';
-  };
-
-  const openMovie = () => {
-    if (!clickable) return;
-
-    navigate(`/movie/${movie.id}`, {
-      state: {
-        movieList
-      }
-    });
   };
 
   const cardClass =
@@ -41,7 +28,7 @@ function MovieCard({movie, movieList = [], clickable = true, from, extraState = 
     : from === 'similar' ? 'similar-poster'
     : 'watched-poster';
 
-  const content = (
+  const poster = (
     <div
       className={posterClass}
       style={{
@@ -57,6 +44,13 @@ function MovieCard({movie, movieList = [], clickable = true, from, extraState = 
       </div>
     </div>
   );
+
+  const content = showMenu ? (
+    <div className="movie-card-menu-wrap">
+      {poster}
+      <CardMenu movie={movie} />
+    </div>
+  ) : poster;
 
   return clickable ? (
     <Link

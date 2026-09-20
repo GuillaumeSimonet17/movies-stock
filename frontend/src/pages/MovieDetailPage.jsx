@@ -12,6 +12,8 @@ import {faYoutube, faGoogle} from '@fortawesome/free-brands-svg-icons'
 import {useLocation} from 'react-router-dom';
 import MovieCard from '../components/common/MovieCard';
 
+import CardMenu from '../components/common/CardMenu';
+
 const StarRating = ({ value }) => {
   const rating = value / 2;
   return (
@@ -207,7 +209,12 @@ function MovieDetailPage() {
   const handleSendReco = async (friendId, friendUsername) => {
     setRecoStatus('sending');
     try {
-      await friendService.sendRecommendation(friendId, movie.movie_id);
+      await friendService.sendRecommendation(friendId, movie.movie_id, {
+        title: movie.title,
+        poster_path: movie.poster_path,
+        release_date: movie.release_date,
+        vote_average: movie.vote_average,
+      });
       setRecoStatus('ok');
       setRecoToast(`Recommandé à ${friendUsername} !`);
       setTimeout(() => { setShowRecoModal(false); setRecoStatus(null); setRecoToast(''); }, 1500);
@@ -603,7 +610,7 @@ function MovieDetailPage() {
                   <h5 className="similar-title">De {movie.directors}</h5>
                   <div className="similar-cards-row">
                     {similarByDirector.map(m => (
-                      <MovieCard key={m.id} movie={m} from="similar" movieList={similarByDirector}/>
+                      <MovieCard key={m.id} movie={m} from="similar" movieList={similarByDirector} showMenu />
                     ))}
                   </div>
                 </div>
@@ -616,7 +623,7 @@ function MovieDetailPage() {
                   </h5>
                   <div className="similar-cards-row">
                     {similarByKeyword.map(m => (
-                      <MovieCard key={m.id} movie={m} from="similar" movieList={similarByKeyword}/>
+                      <MovieCard key={m.id} movie={m} from="similar" movieList={similarByKeyword} showMenu />
                     ))}
                   </div>
                 </div>
@@ -626,7 +633,7 @@ function MovieDetailPage() {
                   <h5 className="similar-title">Avec les mêmes acteurs</h5>
                   <div className="similar-cards-row">
                     {similarByActor.map(m => (
-                      <MovieCard key={m.id} movie={m} from="similar" movieList={similarByActor}/>
+                      <MovieCard key={m.id} movie={m} from="similar" movieList={similarByActor} showMenu />
                     ))}
                   </div>
                 </div>
@@ -638,10 +645,13 @@ function MovieDetailPage() {
               <div className="similar-cards-row">
                 {filmography.films.map((s) => (
                   <div key={s.movie_id} className="suggestion-card">
-                    {s.poster_path
-                      ? <img src={`https://image.tmdb.org/t/p/w300${s.poster_path}`} alt={s.title} />
-                      : <div className="suggestion-no-poster" />
-                    }
+                    <div className="suggestion-poster-wrap">
+                      {s.poster_path
+                        ? <img src={`https://image.tmdb.org/t/p/w300${s.poster_path}`} alt={s.title} />
+                        : <div className="suggestion-no-poster" />
+                      }
+                      <CardMenu movie={s} />
+                    </div>
                     <div className="suggestion-info">
                       <span className="suggestion-title">{s.title}</span>
                       <span className="suggestion-meta">
@@ -676,10 +686,13 @@ function MovieDetailPage() {
               <div className="similar-cards-row">
                 {suggestions.map((s) => (
                   <div key={s.movie_id} className="suggestion-card">
-                    {s.poster_path
-                      ? <img src={`https://image.tmdb.org/t/p/w300${s.poster_path}`} alt={s.title} />
-                      : <div className="suggestion-no-poster" />
-                    }
+                    <div className="suggestion-poster-wrap">
+                      {s.poster_path
+                        ? <img src={`https://image.tmdb.org/t/p/w300${s.poster_path}`} alt={s.title} />
+                        : <div className="suggestion-no-poster" />
+                      }
+                      <CardMenu movie={s} />
+                    </div>
                     <div className="suggestion-info">
                       <span className="suggestion-title">{s.title}</span>
                       <span className="suggestion-meta">

@@ -16,6 +16,12 @@ function FriendsPage() {
   const [sendSuccess, setSendSuccess] = useState('');
   const [addErrors, setAddErrors] = useState({});
   const [unreadRecos, setUnreadRecos] = useState(0);
+  const [removeConfirm, setRemoveConfirm] = useState(null);
+  const [acceptedNotifs, setAcceptedNotifs] = useState(() => {
+    const stored = JSON.parse(sessionStorage.getItem('friend_accepted_notifs') || '[]');
+    sessionStorage.removeItem('friend_accepted_notifs');
+    return stored;
+  });
 
   const loadFriends = () => {
     friendService.getFriends().then(d => setFriends(d.friends || [])).catch(() => {});
@@ -43,10 +49,11 @@ function FriendsPage() {
   }, []);
 
   useEffect(() => {
-    if (activeTab === 'recos') {
-      loadRecos();
-      loadSentRecos();
-    }
+    if (activeTab !== 'recos') return;
+    loadRecos();
+    loadSentRecos();
+    const interval = setInterval(() => { loadRecos(); loadSentRecos(); }, 10000);
+    return () => clearInterval(interval);
   }, [activeTab]);
 
   const handleSend = async (e) => {
@@ -68,8 +75,10 @@ function FriendsPage() {
     loadFriends();
   };
 
-  const handleRemove = async (id) => {
-    await friendService.remove(id).catch(() => {});
+  const handleRemove = async () => {
+    if (!removeConfirm) return;
+    await friendService.remove(removeConfirm.id).catch(() => {});
+    setRemoveConfirm(null);
     loadFriends();
   };
 
@@ -109,8 +118,13 @@ function FriendsPage() {
               : <button className="friends-btn-primary reco-add-btn" onClick={() => handleAddToWishlist(r)}>Ajouter</button>
             }
             {addErrors[r.id] && <span className="friends-error reco-add-error">{addErrors[r.id]}</span>}
-            <button className="friends-btn-danger reco-del-btn" onClick={() => handleDeleteReco(r.id)}>✕</button>
+            {!r.in_wishlist && <button className="friends-btn-danger reco-del-btn" onClick={() => handleDeleteReco(r.id)}>✕</button>}
           </div>
+        )}
+        {!showFrom && (
+          <span className={`reco-sent-status ${r.in_wishlist ? 'accepted' : r.is_declined ? 'declined' : ''}`}>
+            {r.in_wishlist ? '✓ Ajouté' : r.is_declined ? '✕ Refusée' : 'En attente'}
+          </span>
         )}
       </div>
     </div>
@@ -140,6 +154,16 @@ function FriendsPage() {
         {/* ONGLET AMIS */}
         {activeTab === 'friends' && (
           <>
+            {acceptedNotifs.length > 0 && (
+              <section className="friends-section">
+                {acceptedNotifs.map(username => (
+                  <div key={username} className="friends-accepted-notif">
+                    ✓ <strong>{username}</strong> a accepté ta demande d'ami
+                  </div>
+                ))}
+              </section>
+            )}
+
             <section className="friends-section">
               <h3 className="friends-section-title">Ajouter un ami</h3>
               <form className="friends-search-form" onSubmit={handleSend}>
@@ -196,7 +220,7 @@ function FriendsPage() {
                     {friends.map(f => (
                       <div key={f.id} className="friend-item">
                         <span className="friend-username">{f.user.username}</span>
-                        <button className="friends-btn-danger" onClick={() => handleRemove(f.id)}>Retirer</button>
+                        <button className="friends-btn-danger" onClick={() => setRemoveConfirm({ id: f.id, username: f.user.username })}>Retirer</button>
                       </div>
                     ))}
                   </div>
@@ -238,6 +262,20 @@ function FriendsPage() {
           </section>
         )}
       </div>
+
+      {/* MODAL CONFIRMATION RETIRER */}
+      {removeConfirm && (
+        <div className="friends-modal-overlay" onClick={() => setRemoveConfirm(null)}>
+          <div className="friends-modal" onClick={e => e.stopPropagation()}>
+            <h3>Retirer un ami</h3>
+            <p>Retirer <strong>{removeConfirm.username}</strong> de vos amis ?</p>
+            <div className="friends-modal-actions">
+              <button className="friends-btn-secondary" onClick={() => setRemoveConfirm(null)}>Annuler</button>
+              <button className="friends-btn-danger" onClick={handleRemove}>Retirer</button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

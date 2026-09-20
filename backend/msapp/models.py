@@ -57,6 +57,7 @@ class Friendship(models.Model):
     from_user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='sent_requests')
     to_user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='received_requests')
     status = models.CharField(max_length=10, choices=STATUS_CHOICES, default='pending')
+    accepted_notified = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
@@ -75,6 +76,7 @@ class MovieRecommendation(models.Model):
     release_date = models.CharField(max_length=20, null=True, blank=True)
     vote_average = models.FloatField(null=True, blank=True)
     is_read = models.BooleanField(default=False)
+    is_declined = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
