@@ -6,7 +6,7 @@ services:
     restart: always
     volumes:
       - /var/www/monapp/static:/app/staticfiles
-    command: gunicorn moviesstock.wsgi:application --bind 0.0.0.0:8000
+    command: gunicorn moviesstock.wsgi:application --bind 0.0.0.0:8000 --workers 4
     env_file:
       - .env
     depends_on:
