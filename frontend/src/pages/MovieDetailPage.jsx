@@ -119,15 +119,6 @@ function MovieDetailPage() {
       const hasImages = data.movie.filepath_set?.length > 0 || false;
       setActiveTab(hasImages ? 'images' : 'similar')
 
-      if (!data.movie.filepath_set || data.movie.filepath_set.length === 0) {
-        try {
-          // await movieService.fetchMedia(id);
-          const updated = await movieService.getMovieDetail(id);
-          setMovie(updated.movie);
-        } catch (err) {
-          console.error('Media fetch error:', err);
-        }
-      }
 
     } catch (error) {
       console.error('Error loading movie:', error);
