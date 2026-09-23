@@ -13,6 +13,7 @@ from msapp.utils import search_detailed_movies, get_dominant_color, API_KEY_TMDB
 import random
 import colorsys
 import string
+import hashlib
 
 URL_YTS_1 = 'https://www.yts-official.cc/movies/'
 URL_YTS_2 = 'https://yts.rs/movie/'
@@ -510,7 +511,7 @@ def get_director_filmography(request, movie_id):
         ).values_list('movie__movie_id', flat=True)
     )
 
-    cache_key = f'filmography_{director_name}'
+    cache_key = 'filmography_' + hashlib.md5(director_name.encode()).hexdigest()
     cached = cache.get(cache_key)
 
     if cached is not None:
@@ -584,33 +585,39 @@ def get_suggestions(request, movie_id):
         ).values_list('movie__movie_id', flat=True)
     )
 
-    headers = {
-        'accept': 'application/json',
-        'Authorization': 'Bearer ' + API_KEY_TMDB,
-    }
+    cache_key = f'suggestions_{movie.movie_id}'
+    cached_candidates = cache.get(cache_key)
 
-    candidates = []
-    for page in [1, 2]:
-        url = f'{URL_TMDB}movie/{movie.movie_id}/recommendations?language=fr-FR&page={page}'
-        try:
-            r = requests.get(url, headers=headers, timeout=5)
-            r.raise_for_status()
-            candidates += r.json().get('results', [])
-        except Exception:
-            break
+    if cached_candidates is None:
+        headers = {
+            'accept': 'application/json',
+            'Authorization': 'Bearer ' + API_KEY_TMDB,
+        }
 
-    # Compléter avec /similar si pas assez
-    if len(candidates) < 20:
-        try:
-            r = requests.get(f'{URL_TMDB}movie/{movie.movie_id}/similar?language=fr-FR&page=1', headers=headers, timeout=5)
-            r.raise_for_status()
-            existing_ids = {m['id'] for m in candidates}
-            candidates += [m for m in r.json().get('results', []) if m['id'] not in existing_ids]
-        except Exception:
-            pass
+        candidates = []
+        for page in [1, 2]:
+            url = f'{URL_TMDB}movie/{movie.movie_id}/recommendations?language=fr-FR&page={page}'
+            try:
+                r = requests.get(url, headers=headers, timeout=5)
+                r.raise_for_status()
+                candidates += r.json().get('results', [])
+            except Exception:
+                break
+
+        if len(candidates) < 20:
+            try:
+                r = requests.get(f'{URL_TMDB}movie/{movie.movie_id}/similar?language=fr-FR&page=1', headers=headers, timeout=5)
+                r.raise_for_status()
+                existing_ids = {m['id'] for m in candidates}
+                candidates += [m for m in r.json().get('results', []) if m['id'] not in existing_ids]
+            except Exception:
+                pass
+
+        cache.set(cache_key, candidates, timeout=3600 * 24)
+        cached_candidates = candidates
 
     suggestions = []
-    for m in candidates:
+    for m in cached_candidates:
         if m['id'] in user_movie_ids:
             continue
         if m.get('vote_average', 0) < 6.5:
