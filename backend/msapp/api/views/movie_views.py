@@ -676,9 +676,22 @@ def get_streaming(request, movie_id):
             return Response({'offers': []})
 
         ALLOWED = {
-            'netflix', 'amazonprimevideo', 'arte', 'canalplus', 'canalpluscine',
-            'pathehome', 'itunes', 'max',
+            'netflix',
+            'amazonprimevideo',
+            'disneyplus',
+            'canalplus', 'canalseries',
+            'max',
+            'appletvplus',
+            'paramountplus',
+            'mubi',
+            'molotovtv',
+            'sooner',
+            'arte',
+            'tf1',
+            'sixplay',
+            'francetv',
         }
+        ALLOWED_TYPES = {'FLATRATE', 'FREE', 'ADS'}
 
         seen = set()
         offers = []
@@ -686,7 +699,7 @@ def get_streaming(request, movie_id):
             tn = offer.package.technical_name
             if tn not in ALLOWED:
                 continue
-            if offer.monetization_type != 'FLATRATE':
+            if offer.monetization_type not in ALLOWED_TYPES:
                 continue
             if tn in seen:
                 continue
