@@ -342,7 +342,7 @@ def get_movie_detail(request, movie_id):
                     continue
                 if item.movie.keywords and shares_genre(item.movie):
                     shared = keyword_set & set(item.movie.keywords)
-                    if shared:
+                    if len(shared) >= 2:
                         data = MovieListSerializer(item.movie).data
                         data['shared_keywords'] = list(shared)
                         similar_by_keyword.append(data)
