@@ -453,9 +453,9 @@ function MovieDetailPage() {
                 <div className="where-to-watch-desktop">
                   {renderStreamingOffers()}
                   {!movie.is_tv && (
-                    <a href="https://www.avobiv.com" target="_blank" rel="noreferrer"
+                    <a href="https://gozlov.com" target="_blank" rel="noreferrer"
                       style={{background: backgroundColor, color: textColor, border: `1px solid ${textColor}`}}>
-                      Chercher sur Avobiv
+                      Chercher sur Gozlov
                     </a>
                   )}
                   <a href="https://papadustream.garden/" target="_blank" rel="noreferrer"
@@ -556,9 +556,9 @@ function MovieDetailPage() {
             <div className="where-to-watch-tab p-4">
               {renderStreamingOffers()}
               {!movie.is_tv && (
-                <a href="https://www.avobiv.com" target="_blank" rel="noreferrer"
+                <a href="https://gozlov.com" target="_blank" rel="noreferrer"
                   style={{background: backgroundColor, color: textColor, border: `1px solid ${textColor}`}}>
-                  Chercher sur Avobiv
+                  Chercher sur Gozlov
                 </a>
               )}
               <a href="https://papadustream.garden/" target="_blank" rel="noreferrer"
