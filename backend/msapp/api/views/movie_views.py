@@ -6,7 +6,7 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from django.db.models import Q
 from django.core.cache import cache
-from msapp.models import Movie, MoviesList, MovieListItem, FilePath
+from msapp.models import Movie, MoviesList, MovieListItem, FilePath, PriorityMovie
 from msapp.utils import URL_TMDB, API_KEY_DEEPL
 from msapp.serializers import MovieSerializer, MovieListSerializer
 from msapp.utils import search_detailed_movies, get_dominant_color, API_KEY_TMDB
@@ -74,6 +74,14 @@ def get_movies(request):
     serialized_movies = MovieListSerializer(all_movies, many=True).data
 
     movies_by_genre = {}
+
+    # Priority movies (still in the collection, same filters applied)
+    priority_ids = list(
+        PriorityMovie.objects.filter(user=request.user).values_list('movie_id', flat=True)
+    )
+    movies_by_id = {m['id']: m for m in serialized_movies}
+    movies_by_genre['Priority'] = [movies_by_id[pid] for pid in priority_ids if pid in movies_by_id]
+
     movies_by_genre['Latest'] = [m for m in serialized_movies if m['id'] in latest_ids]
 
     genre_set = set()
@@ -349,6 +357,7 @@ def get_movie_detail(request, movie_id):
 
         return Response({
             'movie': movie_data,
+            'is_priority': PriorityMovie.objects.filter(user=request.user, movie=movie).exists(),
             'movies_list': movies_ids,
             'movies_list_length': len(movies_ids),
 
@@ -450,6 +459,7 @@ def delete_movie(request, movie_id):
             )
 
         list_item.delete()
+        PriorityMovie.objects.filter(user=request.user, movie=movie).delete()
 
         # Delete movie if orphaned (not in any list and not watched)
         if not movie.movies_lists.exists() and not movie.watched_by.exists():
@@ -466,6 +476,25 @@ def delete_movie(request, movie_id):
             {'error': 'Movies list not found'},
             status=status.HTTP_404_NOT_FOUND
         )
+
+@api_view(['POST', 'DELETE'])
+@permission_classes([IsAuthenticated])
+def movie_priority(request, movie_id):
+    """Add (POST) or remove (DELETE) a movie from the user's priority list"""
+    try:
+        movie = Movie.objects.get(id=movie_id)
+    except Movie.DoesNotExist:
+        return Response({'error': 'Movie not found'}, status=status.HTTP_404_NOT_FOUND)
+
+    if request.method == 'DELETE':
+        PriorityMovie.objects.filter(user=request.user, movie=movie).delete()
+        return Response({'is_priority': False})
+
+    if not MovieListItem.objects.filter(movies_list__user=request.user, movie=movie).exists():
+        return Response({'error': 'Movie not in your list'}, status=status.HTTP_403_FORBIDDEN)
+
+    PriorityMovie.objects.get_or_create(user=request.user, movie=movie)
+    return Response({'is_priority': True})
 
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])

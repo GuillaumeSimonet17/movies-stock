@@ -37,6 +37,7 @@ export const getGenreName = (id) => {
   const idString = String(id);
   const idLower = idString.toLowerCase();
 
+  if (idLower === "priority") return "Priorité";
   if (idLower === "latest") return "Derniers ajouts";
   if (idLower === "no genre") return "Sans genre";
 

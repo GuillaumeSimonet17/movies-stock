@@ -120,10 +120,12 @@ function Home() {
                 return Array.isArray(genreMovies) && genreMovies.length > 0;
               })
               .sort(([keyA], [keyB]) => {
-                // Always put "Latest" first
+                // Always put "Priority" first, then "Latest"
                 const keyALower = String(keyA).toLowerCase();
                 const keyBLower = String(keyB).toLowerCase();
 
+                if (keyALower === "priority") return -1;
+                if (keyBLower === "priority") return 1;
                 if (keyALower === "latest") return -1;
                 if (keyBLower === "latest") return 1;
 

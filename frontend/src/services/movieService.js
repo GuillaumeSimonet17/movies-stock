@@ -23,6 +23,14 @@ export const movieService = {
     return api.delete(`/movies/${id}/delete/`);
   },
 
+  addPriority: (id) => {
+    return api.post(`/movies/${id}/priority/`);
+  },
+
+  removePriority: (id) => {
+    return api.delete(`/movies/${id}/priority/`);
+  },
+
   getRandomMovie: () => {
     return api.get('/movies/random/');
   },

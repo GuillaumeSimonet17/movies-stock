@@ -88,6 +88,7 @@ function MovieDetailPage() {
   const [filmography, setFilmography] = useState({ films: [], director: null });
   const [friends, setFriends] = useState([]);
   const [showOptionsMenu, setShowOptionsMenu] = useState(false);
+  const [isPriority, setIsPriority] = useState(false);
   const [showListModal, setShowListModal] = useState(false);
   const [showRecoModal, setShowRecoModal] = useState(false);
   const [recoStatus, setRecoStatus] = useState(null);
@@ -108,6 +109,7 @@ function MovieDetailPage() {
       const data = await movieService.getMovieDetail(id, sourceListId);
 
       setMovie(data.movie);
+      setIsPriority(!!data.is_priority);
 
       setBackgroundColor(data.background);
       setTextColor(data.text_color);
@@ -165,6 +167,24 @@ function MovieDetailPage() {
       const isAlready = err?.message?.toLowerCase().includes('already');
       const msg = isAlready ? `Déjà dans "${listName}"` : "Impossible d'ajouter à la liste";
       setListToast({ show: true, message: msg, type: 'error' });
+    }
+    setTimeout(() => setListToast({ show: false, message: '', type: '' }), 3000);
+  };
+
+  const handleTogglePriority = async () => {
+    setShowOptionsMenu(false);
+    try {
+      if (isPriority) {
+        await movieService.removePriority(id);
+        setIsPriority(false);
+        setListToast({ show: true, message: 'Retiré des priorités', type: 'success' });
+      } else {
+        await movieService.addPriority(id);
+        setIsPriority(true);
+        setListToast({ show: true, message: 'Ajouté en priorité', type: 'success' });
+      }
+    } catch {
+      setListToast({ show: true, message: 'Impossible de modifier la priorité', type: 'error' });
     }
     setTimeout(() => setListToast({ show: false, message: '', type: '' }), 3000);
   };
@@ -312,25 +332,26 @@ function MovieDetailPage() {
               <span className={"btn-movie-page btn-nope"} onClick={handleDelete} title="Pas envie de le voir">✕</span>
               <span className="btn-movie-tooltip">Pas envie de le voir</span>
             </div>
-            {(userLists.length > 0 || friends.length > 0) && (
-              <div className="list-menu-wrapper" ref={optionsMenuRef}>
-                <span className="btn-movie-page" onClick={() => setShowOptionsMenu(v => !v)} title="Options">⋮</span>
-                {showOptionsMenu && (
-                  <div className="list-dropdown" style={{background: backgroundColor, color: textColor, border: `1px solid ${textColor}30`}}>
-                    {userLists.length > 0 && (
-                      <button className="list-dropdown-item" style={{color: textColor}} onClick={() => { setShowOptionsMenu(false); setShowListModal(true); }}>
-                        Ajouter à une liste
-                      </button>
-                    )}
-                    {friends.length > 0 && (
-                      <button className="list-dropdown-item" style={{color: textColor}} onClick={() => { setShowOptionsMenu(false); setShowRecoModal(true); setRecoStatus(null); }}>
-                        Recommander
-                      </button>
-                    )}
-                  </div>
-                )}
-              </div>
-            )}
+            <div className="list-menu-wrapper" ref={optionsMenuRef}>
+              <span className="btn-movie-page" onClick={() => setShowOptionsMenu(v => !v)} title="Options">⋮</span>
+              {showOptionsMenu && (
+                <div className="list-dropdown" style={{background: backgroundColor, color: textColor, border: `1px solid ${textColor}30`}}>
+                  <button className="list-dropdown-item" style={{color: textColor}} onClick={handleTogglePriority}>
+                    {isPriority ? 'Retirer des priorités' : 'Ajouter en priorité'}
+                  </button>
+                  {userLists.length > 0 && (
+                    <button className="list-dropdown-item" style={{color: textColor}} onClick={() => { setShowOptionsMenu(false); setShowListModal(true); }}>
+                      Ajouter à une liste
+                    </button>
+                  )}
+                  {friends.length > 0 && (
+                    <button className="list-dropdown-item" style={{color: textColor}} onClick={() => { setShowOptionsMenu(false); setShowRecoModal(true); setRecoStatus(null); }}>
+                      Recommander
+                    </button>
+                  )}
+                </div>
+              )}
+            </div>
             <div className="movie-nav">
               {nextMovie && (
                 <div className="btn-movie-page-wrapper">
@@ -453,12 +474,12 @@ function MovieDetailPage() {
                 <div className="where-to-watch-desktop">
                   {renderStreamingOffers()}
                   {!movie.is_tv && (
-                    <a href="https://gozlov.com" target="_blank" rel="noreferrer"
+                    <a href="https://foldav.com" target="_blank" rel="noreferrer"
                       style={{background: backgroundColor, color: textColor, border: `1px solid ${textColor}`}}>
-                      Chercher sur Gozlov
+                      Chercher sur Foldav
                     </a>
                   )}
-                  <a href="https://papadustream.garden/" target="_blank" rel="noreferrer"
+                  <a href="https://papadustream.pink/" target="_blank" rel="noreferrer"
                     style={{background: backgroundColor, color: textColor, border: `1px solid ${textColor}`}}>
                     Chercher sur papadustream
                   </a>
@@ -556,12 +577,12 @@ function MovieDetailPage() {
             <div className="where-to-watch-tab p-4">
               {renderStreamingOffers()}
               {!movie.is_tv && (
-                <a href="https://gozlov.com" target="_blank" rel="noreferrer"
+                <a href="https://foldav.com" target="_blank" rel="noreferrer"
                   style={{background: backgroundColor, color: textColor, border: `1px solid ${textColor}`}}>
-                  Chercher sur Gozlov
+                  Chercher sur Foldav
                 </a>
               )}
-              <a href="https://papadustream.garden/" target="_blank" rel="noreferrer"
+              <a href="https://papadustream.pink/" target="_blank" rel="noreferrer"
                 style={{background: backgroundColor, color: textColor, border: `1px solid ${textColor}`}}>
                 Chercher sur papadustream
               </a>

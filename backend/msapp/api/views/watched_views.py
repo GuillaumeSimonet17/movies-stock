@@ -4,7 +4,7 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from django.db.models import Count
 from django.db.models.functions import TruncYear, TruncMonth, TruncWeek
-from msapp.models import WatchedMovie, Movie, MoviesList, MovieListItem
+from msapp.models import WatchedMovie, Movie, MoviesList, MovieListItem, PriorityMovie
 from msapp.serializers import WatchedMovieSerializer
 
 
@@ -94,6 +94,8 @@ def add_to_watched(request):
             user=request.user,
             movie=movie
         )
+
+        PriorityMovie.objects.filter(user=request.user, movie=movie).delete()
 
         # Remove from the source list (custom or collection)
         list_id = request.data.get('list_id')
