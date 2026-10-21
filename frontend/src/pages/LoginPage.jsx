@@ -17,7 +17,7 @@ function LoginPage() {
     setLoading(true);
 
     try {
-      await login({ username, password });
+      await login({ username: username.trim(), password });
       navigate('/');
     } catch (err) {
       setError(err.message || 'Login failed. Please check your credentials.');
@@ -42,6 +42,10 @@ function LoginPage() {
               id="username"
               value={username}
               onChange={(e) => setUsername(e.target.value)}
+              autoComplete="username"
+              autoCapitalize="none"
+              autoCorrect="off"
+              spellCheck={false}
               required
               disabled={loading}
             />
@@ -54,6 +58,7 @@ function LoginPage() {
               id="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
+              autoComplete="current-password"
               required
               disabled={loading}
             />
