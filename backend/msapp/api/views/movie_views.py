@@ -267,7 +267,7 @@ def get_movie_detail(request, movie_id):
             title_no_punct = movie.title.translate(str.maketrans('', '', string.punctuation))
             title_dash = title_no_punct.replace(' ', '-')
             year = movie.release_date.year
-            yts1 = URL_YTS_1 + title_dash + '-' + str(year)
+            yts1 = URL_YTS_1 + title_dash.lower() + '-' + str(year) + '/'
             yts2 = URL_YTS_2 + title_dash.lower() + '-' + str(year)
 
         # 🎞️ Sérialisation film
