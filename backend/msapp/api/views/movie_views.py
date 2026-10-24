@@ -15,7 +15,7 @@ import colorsys
 import string
 import hashlib
 
-URL_YTS_1 = 'https://www.yts-official.cc/movies/'
+URL_YTS_1 = 'https://www13.yts-official.to/movies/'
 URL_YTS_2 = 'https://yts.rs/movie/'
 
 
