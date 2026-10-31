@@ -4,9 +4,8 @@ import {movieService} from '../../services/movieService';
 import './AskMoviesWizard.css';
 
 const EXAMPLES = [
-  'Une comédie romantique',
-  'Un film avec Brad Pitt',
-  'Un Tarantino sorti avant 2010',
+  'un film de braquage',
+  'un film drôle avec Brad Pitt',
 ];
 
 function AskMoviesWizard({onClose}) {
@@ -51,10 +50,11 @@ function AskMoviesWizard({onClose}) {
         className="ask-wizard"
         role="dialog"
         aria-modal="true"
-        aria-label="Demander à Claude"
+        aria-labelledby="ask-wizard-title"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="ask-header">
+          <h2 id="ask-wizard-title">Demander à Claude</h2>
           <button className="ask-close" onClick={onClose} aria-label="Fermer">
             ✕
           </button>
@@ -65,7 +65,7 @@ function AskMoviesWizard({onClose}) {
             type="text"
             value={query}
             onChange={(e) => setQuery(e.target.value)}
-            placeholder="Décris le film que tu cherches dans ta liste..."
+            placeholder="Je cherche..."
             maxLength={300}
             aria-label="Décris le film que tu cherches"
             autoFocus

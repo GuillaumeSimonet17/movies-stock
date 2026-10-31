@@ -24,8 +24,15 @@
 
 .ask-header {
   display: flex;
-  justify-content: flex-end;
-  margin-bottom: 10px;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 15px;
+}
+
+.ask-header h2 {
+  margin: 0;
+  font-size: 1.4rem;
 }
 
 .ask-close {
