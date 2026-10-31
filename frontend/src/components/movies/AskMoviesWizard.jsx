@@ -6,6 +6,8 @@ import './AskMoviesWizard.css';
 const EXAMPLES = [
   'un film de braquage',
   'un film drôle avec Brad Pitt',
+  "un Tarantino d'avant 2010",
+  'un film spécial Noël',
 ];
 
 function AskMoviesWizard({onClose}) {
@@ -54,7 +56,7 @@ function AskMoviesWizard({onClose}) {
         onClick={(e) => e.stopPropagation()}
       >
         <div className="ask-header">
-          <h2 id="ask-wizard-title">Demander à Claude</h2>
+          <h2 id="ask-wizard-title">Demander a Claude</h2>
           <button className="ask-close" onClick={onClose} aria-label="Fermer">
             ✕
           </button>

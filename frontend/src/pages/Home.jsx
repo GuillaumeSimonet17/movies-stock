@@ -109,8 +109,8 @@ function Home() {
           <button
             className="random-btn ask-btn"
             onClick={() => setAskOpen(true)}
-            aria-label="Demander à Claude"
-            title="Demander à Claude"
+            aria-label="Demander a Claude"
+            title="Demander a Claude"
           >
             <img src={claudeIcon} alt=""/>
           </button>
