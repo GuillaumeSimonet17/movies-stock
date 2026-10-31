@@ -114,6 +114,38 @@
   min-width: 0;
 }
 
+.ask-section-title {
+  margin: 25px 0 15px;
+  font-size: 1.1rem;
+}
+
+.ask-suggestion button,
+.ask-added {
+  display: block;
+  width: 100%;
+  margin-top: 8px;
+  padding: 6px;
+  font-size: 14px;
+  text-align: center;
+}
+
+.ask-suggestion button {
+  border: 1px solid var(--border-color);
+  border-radius: 6px;
+  background: transparent;
+  color: var(--text-primary);
+  cursor: pointer;
+}
+
+.ask-suggestion button:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
+.ask-added {
+  color: var(--text-secondary);
+}
+
 @media (max-width: 500px) {
   .ask-overlay {
     padding: 0;

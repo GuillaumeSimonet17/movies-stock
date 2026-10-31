@@ -1,5 +1,6 @@
 from unittest.mock import AsyncMock, patch
 
+import requests
 from claude_agent_sdk import ResultMessage
 from django.core.cache import cache
 from django.test import TestCase
@@ -7,7 +8,7 @@ from django.contrib.auth.models import User
 from rest_framework.test import APIClient
 from rest_framework import status
 from msapp.models import Movie, MoviesList, MovieListItem, WatchedMovie
-from msapp.api.views.ai_views import AssistantError, MovieSelection, select_movies as real_select_movies
+from msapp.api.views.ai_views import AssistantError, MovieSelection, MovieFilters, MovieSuggestion, discover_movies, find_on_tmdb, select_movies as real_select_movies
 
 
 # ---------------------------------------------------------------------------
@@ -513,6 +514,16 @@ class CrossUserIsolationTests(TestCase):
 # Ask Claude
 # ---------------------------------------------------------------------------
 
+def movie_filters(**kwargs):
+    defaults = dict(actors=[], directors=[], genres=[], keywords=[], year_min=None, year_max=None, is_tv=False)
+    defaults.update(kwargs)
+    return MovieFilters(**defaults)
+
+
+def tmdb_movie(movie_id, title):
+    return {'movie_id': movie_id, 'title': title, 'poster_path': '/p.jpg', 'release_date': '1995-12-15', 'is_tv': False}
+
+
 class AskMoviesTests(TestCase):
     def setUp(self):
         cache.clear()
@@ -526,8 +537,10 @@ class AskMoviesTests(TestCase):
     def ask(self, query='Un film avec Brad Pitt'):
         return self.client.post('/api/movies/ask/', {'query': query}, format='json')
 
-    def claude_selects(self, select_movies, movie_ids, message='Voici ta sélection.'):
-        select_movies.return_value = MovieSelection(movie_ids=movie_ids, message=message)
+    def claude_selects(self, select_movies, movie_ids, message='Voici ta sélection.', suggestions=None, filters=None):
+        select_movies.return_value = MovieSelection(
+            movie_ids=movie_ids, suggestions=suggestions or [], filters=filters, message=message,
+        )
 
     @patch('msapp.api.views.ai_views.select_movies')
     def test_returns_selected_movies_in_order(self, select_movies):
@@ -569,12 +582,95 @@ class AskMoviesTests(TestCase):
         select_movies.assert_not_called()
 
     @patch('msapp.api.views.ai_views.select_movies')
-    def test_empty_collection_does_not_call_claude(self, select_movies):
+    def test_empty_collection_still_gets_suggestions(self, select_movies):
         MovieListItem.objects.filter(movies_list=self.collection).delete()
-        r = self.ask()
+        self.claude_selects(select_movies, [], suggestions=[MovieSuggestion(title='Heat', year=1995, is_tv=False)])
+        with patch('msapp.api.views.ai_views.find_on_tmdb', return_value=tmdb_movie(949, 'Heat')):
+            r = self.ask()
         self.assertEqual(r.status_code, status.HTTP_200_OK)
         self.assertEqual(r.data['movies'], [])
-        select_movies.assert_not_called()
+        self.assertEqual([m['movie_id'] for m in r.data['suggestions']], [949])
+
+    @patch('msapp.api.views.ai_views.find_on_tmdb')
+    @patch('msapp.api.views.ai_views.select_movies')
+    def test_suggestions_exclude_list_duplicates_and_unknown_movies(self, select_movies, find_on_tmdb):
+        titles = ['Fight Club', 'Heat', 'Heat again', 'Inconnu']
+        self.claude_selects(
+            select_movies, [],
+            suggestions=[MovieSuggestion(title=t, year=2000, is_tv=False) for t in titles],
+        )
+        find_on_tmdb.side_effect = [
+            tmdb_movie(self.movie.movie_id, 'Fight Club'),
+            tmdb_movie(949, 'Heat'),
+            tmdb_movie(949, 'Heat'),
+            None,
+        ]
+        r = self.ask()
+        self.assertEqual([m['movie_id'] for m in r.data['suggestions']], [949])
+
+    @patch('msapp.api.views.ai_views.discover_movies')
+    @patch('msapp.api.views.ai_views.find_on_tmdb')
+    @patch('msapp.api.views.ai_views.select_movies')
+    def test_suggestions_alternate_sources_and_are_capped(self, select_movies, find_on_tmdb, discover_movies):
+        self.claude_selects(
+            select_movies, [],
+            suggestions=[MovieSuggestion(title='Titre', year=2000, is_tv=False)] * 8,
+            filters=movie_filters(actors=['Brad Pitt']),
+        )
+        find_on_tmdb.side_effect = lambda s: tmdb_movie(1000, 'Titre')
+        discover_movies.return_value = [tmdb_movie(1000, 'Titre')] + [tmdb_movie(i, 'Film') for i in range(2000, 2020)]
+        r = self.ask()
+        self.assertEqual(r.data['suggestions'][0]['movie_id'], 1000)
+        self.assertEqual(len(r.data['suggestions']), 10)
+
+    @patch('msapp.api.views.ai_views.tmdb_get')
+    def test_discover_applies_filters(self, tmdb_get):
+        def fake(path, **params):
+            if path == 'search/person':
+                return {'results': [{'id': 287}]}
+            if path == 'search/keyword':
+                return {'results': [{'id': 10051}]}
+            if path == 'genre/movie/list':
+                return {'genres': [{'id': 35, 'name': 'Comédie'}]}
+            return {'results': [{'id': 1, 'title': 'Snatch', 'release_date': '2000-09-01'}]}
+        tmdb_get.side_effect = fake
+        movies = discover_movies(movie_filters(
+            actors=['Brad Pitt'], genres=['comédie'], keywords=['heist'], year_max=2009,
+        ))
+        self.assertEqual([m['movie_id'] for m in movies], [1])
+        path, params = tmdb_get.call_args.args[0], tmdb_get.call_args.kwargs
+        self.assertEqual(path, 'discover/movie')
+        self.assertEqual(params['with_cast'], '287')
+        self.assertEqual(params['with_genres'], '35')
+        self.assertEqual(params['with_keywords'], '10051')
+        self.assertEqual(params['primary_release_date.lte'], '2009-12-31')
+
+    @patch('msapp.api.views.ai_views.tmdb_get')
+    def test_discover_skips_unusable_filters(self, tmdb_get):
+        tmdb_get.return_value = {'results': []}
+        self.assertEqual(discover_movies(None), [])
+        self.assertEqual(discover_movies(movie_filters()), [])
+        self.assertEqual(discover_movies(movie_filters(actors=['Brad Pitt'], is_tv=True)), [])
+        # Unknown person: no search that would ignore this criterion
+        self.assertEqual(discover_movies(movie_filters(actors=['Inconnu'], year_max=2009)), [])
+        self.assertNotIn('discover/movie', [c.args[0] for c in tmdb_get.call_args_list])
+
+    @patch('msapp.api.views.ai_views.requests.get')
+    def test_find_on_tmdb_searches_by_type_and_year(self, get):
+        get.return_value.json.return_value = {'results': [
+            {'id': 1399, 'name': 'Game of Thrones', 'poster_path': '/p.jpg', 'first_air_date': '2011-04-17'},
+        ]}
+        movie = find_on_tmdb(MovieSuggestion(title='Game of Thrones', year=2011, is_tv=True))
+        self.assertEqual(movie['movie_id'], 1399)
+        self.assertEqual(movie['title'], 'Game of Thrones')
+        self.assertEqual(movie['release_date'], '2011-04-17')
+        self.assertTrue(movie['is_tv'])
+        self.assertTrue(get.call_args.args[0].endswith('search/tv'))
+        self.assertEqual(get.call_args.kwargs['params']['first_air_date_year'], 2011)
+
+    @patch('msapp.api.views.ai_views.requests.get', side_effect=requests.exceptions.Timeout)
+    def test_find_on_tmdb_failure_is_ignored(self, get):
+        self.assertIsNone(find_on_tmdb(MovieSuggestion(title='Heat', year=1995, is_tv=False)))
 
     @patch('msapp.api.views.ai_views.select_movies')
     def test_assistant_error_is_returned(self, select_movies):
@@ -586,7 +682,7 @@ class AskMoviesTests(TestCase):
     def claude_result(self, **kwargs):
         defaults = dict(
             subtype='success', duration_ms=1, duration_api_ms=1, is_error=False,
-            num_turns=1, session_id='s', structured_output={'movie_ids': [1], 'message': 'ok'},
+            num_turns=1, session_id='s', structured_output={'movie_ids': [1], 'suggestions': [], 'filters': None, 'message': 'ok'},
         )
         defaults.update(kwargs)
         return ResultMessage(**defaults)

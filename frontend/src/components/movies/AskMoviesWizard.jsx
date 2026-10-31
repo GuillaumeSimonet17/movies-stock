@@ -10,11 +10,12 @@ const EXAMPLES = [
   'un film spécial Noël',
 ];
 
-function AskMoviesWizard({onClose}) {
+function AskMoviesWizard({onClose, onMovieAdded}) {
   const [query, setQuery] = useState('');
   const [result, setResult] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [addStatus, setAddStatus] = useState({});
 
   useEffect(() => {
     const handleKeyDown = (e) => {
@@ -32,12 +33,24 @@ function AskMoviesWizard({onClose}) {
     setLoading(true);
     setError('');
     setResult(null);
+    setAddStatus({});
     try {
       setResult(await movieService.askMovies(trimmed));
     } catch (err) {
       setError(err.message || 'Une erreur est survenue.');
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleAdd = async (movie) => {
+    setAddStatus(prev => ({...prev, [movie.movie_id]: 'adding'}));
+    try {
+      await movieService.addMovie(movie.movie_id, movie.is_tv);
+      setAddStatus(prev => ({...prev, [movie.movie_id]: 'added'}));
+      onMovieAdded();
+    } catch {
+      setAddStatus(prev => ({...prev, [movie.movie_id]: 'error'}));
     }
   };
 
@@ -104,6 +117,32 @@ function AskMoviesWizard({onClose}) {
                 />
               ))}
             </div>
+
+            {result.suggestions.length > 0 && (
+              <>
+                <h3 className="ask-section-title">Pas encore dans ta liste</h3>
+                <div className="ask-results">
+                  {result.suggestions.map(movie => (
+                    <div key={movie.movie_id} className="ask-suggestion">
+                      <MovieCard movie={movie} clickable={false} from="home"/>
+                      {addStatus[movie.movie_id] === 'added' ? (
+                        <span className="ask-added">✓ Dans ma liste</span>
+                      ) : (
+                        <button
+                          type="button"
+                          disabled={addStatus[movie.movie_id] === 'adding'}
+                          onClick={() => handleAdd(movie)}
+                        >
+                          {addStatus[movie.movie_id] === 'adding' && 'Ajout...'}
+                          {addStatus[movie.movie_id] === 'error' && 'Échec, réessayer'}
+                          {!addStatus[movie.movie_id] && '+ Ajouter'}
+                        </button>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              </>
+            )}
           </>
         )}
       </div>

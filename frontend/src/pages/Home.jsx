@@ -119,7 +119,7 @@ function Home() {
           </button>
         </div>
 
-        {askOpen && <AskMoviesWizard onClose={handleCloseAsk}/>}
+        {askOpen && <AskMoviesWizard onClose={handleCloseAsk} onMovieAdded={loadMovies}/>}
 
         {movies.length === 0 ? (
           <div className="empty-state">
