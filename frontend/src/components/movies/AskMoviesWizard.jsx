@@ -1,7 +1,6 @@
 import {useState, useEffect} from 'react';
 import MovieCard from '../common/MovieCard';
 import {movieService} from '../../services/movieService';
-import {useAuth} from '../../hooks/useAuth';
 import './AskMoviesWizard.css';
 
 const EXAMPLES = [
@@ -11,12 +10,8 @@ const EXAMPLES = [
 ];
 
 function AskMoviesWizard({onClose}) {
-  const {user} = useAuth();
-  // Garde la dernière réponse pour la retrouver après avoir consulté une fiche film
-  const storageKey = `ask_movies_${user?.id}`;
-  const [saved] = useState(() => JSON.parse(sessionStorage.getItem(storageKey) || 'null'));
-  const [query, setQuery] = useState(saved?.query || '');
-  const [result, setResult] = useState(saved?.result || null);
+  const [query, setQuery] = useState('');
+  const [result, setResult] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
@@ -36,11 +31,8 @@ function AskMoviesWizard({onClose}) {
     setLoading(true);
     setError('');
     setResult(null);
-    sessionStorage.removeItem(storageKey);
     try {
-      const data = await movieService.askMovies(trimmed);
-      setResult(data);
-      sessionStorage.setItem(storageKey, JSON.stringify({query: text, result: data}));
+      setResult(await movieService.askMovies(trimmed));
     } catch (err) {
       setError(err.message || 'Une erreur est survenue.');
     } finally {

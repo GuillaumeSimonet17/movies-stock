@@ -55,6 +55,12 @@
     margin-left: 12px;
 }
 
+.ask-btn img {
+    display: block;
+    width: 1em;
+    height: 1em;
+}
+
 .empty-state {
     text-align: center;
     padding: 60px 20px;

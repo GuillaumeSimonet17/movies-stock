@@ -7,6 +7,7 @@ import AskMoviesWizard from '../components/movies/AskMoviesWizard';
 import MovieCard from '../components/common/MovieCard';
 import {movieService} from '../services/movieService';
 import {getGenreName} from '../utils/genreMapping';
+import claudeIcon from '../assets/claude.svg';
 import './Home.css';
 
 function Home() {
@@ -114,7 +115,7 @@ function Home() {
             aria-label="Demander à Claude"
             title="Demander à Claude"
           >
-            ✨
+            <img src={claudeIcon} alt=""/>
           </button>
         </div>
 
