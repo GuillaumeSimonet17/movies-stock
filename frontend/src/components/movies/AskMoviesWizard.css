@@ -6,11 +6,15 @@
   justify-content: center;
   align-items: flex-start;
   padding: 40px 20px;
-  background: rgba(0, 0, 0, 0.6);
+  background: rgba(0, 0, 0, 0.4);
+  -webkit-backdrop-filter: blur(6px);
+  backdrop-filter: blur(6px);
   overflow-y: auto;
 }
 
 .ask-wizard {
+  /* Centre la wizard, sans couper le haut quand les résultats dépassent de l'écran */
+  margin: auto;
   width: 100%;
   max-width: 900px;
   padding: 20px;
