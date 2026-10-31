@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import auth_views, movie_views, watched_views, list_views, friend_views
+from .views import ai_views, auth_views, movie_views, watched_views, list_views, friend_views
 
 app_name = 'api'
 
@@ -16,6 +16,7 @@ urlpatterns = [
     path('movies/search/', movie_views.search_movies, name='movies-search'),
     path('movies/add/', movie_views.add_movie, name='movies-add'),
     path('movies/random/', movie_views.random_movie, name='movies-random'),
+    path('movies/ask/', ai_views.ask_movies, name='movies-ask'),
     path('movies/<int:movie_id>/', movie_views.get_movie_detail, name='movie-detail'),
     path('movies/<int:movie_id>/delete/', movie_views.delete_movie, name='movie-delete'),
     path('movies/<int:movie_id>/priority/', movie_views.movie_priority, name='movie-priority'),

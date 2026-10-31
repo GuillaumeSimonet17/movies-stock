@@ -3,6 +3,7 @@ import {useNavigate} from 'react-router-dom';
 import TopBar from '../components/common/TopBar';
 import SearchBar from '../components/movies/SearchBar';
 import Filters from '../components/movies/Filters';
+import AskMoviesWizard from '../components/movies/AskMoviesWizard';
 import MovieCard from '../components/common/MovieCard';
 import {movieService} from '../services/movieService';
 import {getGenreName} from '../utils/genreMapping';
@@ -14,6 +15,7 @@ function Home() {
   const [loading, setLoading] = useState(true);
   const [availableGenres, setAvailableGenres] = useState([]);
   const [collectionListId, setCollectionListId] = useState(null);
+  const [askOpen, setAskOpen] = useState(false);
   const [filters, setFilters] = useState({
     genre: 'all',
     is_tv: 'all',
@@ -68,6 +70,8 @@ function Home() {
     setFilters(newFilters);
   }, []);
 
+  const handleCloseAsk = useCallback(() => setAskOpen(false), []);
+
   const handleRandomMovie = async () => {
     try {
       const movie = await movieService.getRandomMovie();
@@ -104,7 +108,17 @@ function Home() {
           <button className="random-btn" onClick={handleRandomMovie}>
             🎲
           </button>
+          <button
+            className="random-btn ask-btn"
+            onClick={() => setAskOpen(true)}
+            aria-label="Demander à Claude"
+            title="Demander à Claude"
+          >
+            ✨
+          </button>
         </div>
+
+        {askOpen && <AskMoviesWizard onClose={handleCloseAsk}/>}
 
         {movies.length === 0 ? (
           <div className="empty-state">

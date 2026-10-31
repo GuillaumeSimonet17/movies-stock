@@ -35,6 +35,10 @@ export const movieService = {
     return api.get('/movies/random/');
   },
 
+  askMovies: (query) => {
+    return api.post('/movies/ask/', { query });
+  },
+
   getStreaming: (id) => {
     return api.get(`/movies/${id}/streaming/`);
   },
