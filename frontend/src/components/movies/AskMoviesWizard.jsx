@@ -51,11 +51,10 @@ function AskMoviesWizard({onClose}) {
         className="ask-wizard"
         role="dialog"
         aria-modal="true"
-        aria-labelledby="ask-wizard-title"
+        aria-label="Demander à Claude"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="ask-header">
-          <h2 id="ask-wizard-title">Que veux-tu regarder ?</h2>
           <button className="ask-close" onClick={onClose} aria-label="Fermer">
             ✕
           </button>

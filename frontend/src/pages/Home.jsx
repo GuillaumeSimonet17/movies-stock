@@ -106,9 +106,6 @@ function Home() {
             availableGenres={availableGenres}
             currentFilters={filters}
           />
-          <button className="random-btn" onClick={handleRandomMovie}>
-            🎲
-          </button>
           <button
             className="random-btn ask-btn"
             onClick={() => setAskOpen(true)}
@@ -116,6 +113,9 @@ function Home() {
             title="Demander à Claude"
           >
             <img src={claudeIcon} alt=""/>
+          </button>
+          <button className="random-btn" onClick={handleRandomMovie}>
+            🎲
           </button>
         </div>
 

@@ -13,8 +13,7 @@
 }
 
 .ask-wizard {
-  /* Centre la wizard, sans couper le haut quand les résultats dépassent de l'écran */
-  margin: auto;
+  margin: 12vh auto auto;
   width: 100%;
   max-width: 900px;
   padding: 20px;
@@ -25,15 +24,8 @@
 
 .ask-header {
   display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 10px;
-  margin-bottom: 15px;
-}
-
-.ask-header h2 {
-  margin: 0;
-  font-size: 1.4rem;
+  justify-content: flex-end;
+  margin-bottom: 10px;
 }
 
 .ask-close {
@@ -121,6 +113,7 @@
   }
 
   .ask-wizard {
+    margin: 0;
     min-height: 100%;
     border-radius: 0;
   }
