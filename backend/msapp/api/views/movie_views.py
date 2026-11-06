@@ -14,9 +14,47 @@ import random
 import colorsys
 import string
 import hashlib
+from concurrent.futures import ThreadPoolExecutor
 
 URL_YTS_1 = 'https://en.yts-official.to/movies/'
 URL_YTS_2 = 'https://yts.rs/movie/'
+
+# TMDb provider ids for Netflix (standard + "Basic with Ads")
+NETFLIX_PROVIDER_IDS = {8, 1796}
+NETFLIX_REGION = 'FR'
+
+
+def _fetch_is_on_netflix(tmdb_id, is_tv):
+    """Return True/False if the title is on Netflix (FR), None on error. Cached 24h."""
+    cache_key = f'netflix_{"tv" if is_tv else "movie"}_{tmdb_id}'
+    cached = cache.get(cache_key)
+    if cached is not None:
+        return cached
+    endpoint = 'tv' if is_tv else 'movie'
+    try:
+        response = requests.get(
+            f'{URL_TMDB}{endpoint}/{tmdb_id}/watch/providers',
+            headers={'accept': 'application/json', 'Authorization': 'Bearer ' + API_KEY_TMDB},
+            timeout=5,
+        )
+        response.raise_for_status()
+        region = response.json().get('results', {}).get(NETFLIX_REGION, {})
+        providers = region.get('flatrate', []) + region.get('ads', [])
+        on_netflix = any(p.get('provider_id') in NETFLIX_PROVIDER_IDS for p in providers)
+    except (requests.exceptions.RequestException, ValueError):
+        return None
+    cache.set(cache_key, on_netflix, timeout=3600 * 24)
+    return on_netflix
+
+
+def get_netflix_movie_ids(movies):
+    """Return the set of local Movie ids available on Netflix."""
+    candidates = [m for m in movies if m.movie_id]
+    if not candidates:
+        return set()
+    with ThreadPoolExecutor(max_workers=10) as executor:
+        results = executor.map(lambda m: _fetch_is_on_netflix(m.movie_id, m.is_tv), candidates)
+        return {m.id for m, on_netflix in zip(candidates, results) if on_netflix}
 
 
 @api_view(['GET'])
@@ -83,6 +121,9 @@ def get_movies(request):
     movies_by_genre['Priority'] = [movies_by_id[pid] for pid in priority_ids if pid in movies_by_id]
 
     movies_by_genre['Latest'] = [m for m in serialized_movies if m['id'] in latest_ids]
+
+    netflix_ids = get_netflix_movie_ids(all_movies)
+    movies_by_genre['Netflix'] = [m for m in serialized_movies if m['id'] in netflix_ids]
 
     genre_set = set()
     for movie_data, movie_obj in zip(serialized_movies, all_movies):

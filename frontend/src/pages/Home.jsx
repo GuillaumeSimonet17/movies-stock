@@ -143,6 +143,8 @@ function Home() {
                 if (keyBLower === "priority") return 1;
                 if (keyALower === "latest") return -1;
                 if (keyBLower === "latest") return 1;
+                if (keyALower === "netflix") return -1;
+                if (keyBLower === "netflix") return 1;
 
                 // Get genre names for sorting
                 const nameA = getGenreName(keyA);
