@@ -289,11 +289,12 @@ class SeenTests(TestCase):
         self.assertFalse(MovieListItem.objects.filter(movies_list=self.collection, movie=self.movie).exists())
         self.assertTrue(MovieListItem.objects.filter(movies_list=self.custom, movie=self.movie).exists())
 
-    def test_seen_twice_returns_conflict(self):
+    def test_seen_twice_records_two_viewings(self):
         add_to_list(self.collection, self.movie)
         self.client.post('/api/watched/add/', {'movie_id': self.movie.id, 'list_id': self.collection.id})
         r = self.client.post('/api/watched/add/', {'movie_id': self.movie.id, 'list_id': self.collection.id})
-        self.assertEqual(r.status_code, status.HTTP_409_CONFLICT)
+        self.assertEqual(r.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(WatchedMovie.objects.filter(user=self.user, movie=self.movie).count(), 2)
 
     def test_seen_with_other_users_list_id_does_not_affect_that_list(self):
         other = make_user('other')
