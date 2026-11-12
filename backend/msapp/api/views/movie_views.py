@@ -122,9 +122,6 @@ def get_movies(request):
 
     movies_by_genre['Latest'] = [m for m in serialized_movies if m['id'] in latest_ids]
 
-    netflix_ids = get_netflix_movie_ids(all_movies)
-    movies_by_genre['Netflix'] = [m for m in serialized_movies if m['id'] in netflix_ids]
-
     genre_set = set()
     for movie_data, movie_obj in zip(serialized_movies, all_movies):
         if not movie_obj.genre_ids:
@@ -142,6 +139,17 @@ def get_movies(request):
         "total_count": len(all_movies),
         "list_id": movies_list.id,
     })
+
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def get_netflix_movies(request):
+    """Ids of the collection's movies available on Netflix (TMDb lookups, cached 24h)."""
+    movies = Movie.objects.filter(
+        movielistitem__movies_list__user=request.user,
+        movielistitem__movies_list__is_collection=True,
+    ).distinct()
+    return Response({'ids': sorted(get_netflix_movie_ids(list(movies)))})
 
 
 @api_view(['GET'])

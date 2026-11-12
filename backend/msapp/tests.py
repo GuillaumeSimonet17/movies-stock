@@ -452,6 +452,33 @@ class WatchedCountTests(TestCase):
         self.assertEqual(r.status_code, status.HTTP_403_FORBIDDEN)
 
 
+class NetflixMoviesTests(TestCase):
+    def setUp(self):
+        self.user = make_user()
+        self.client = APIClient()
+        self.client.force_authenticate(self.user)
+
+    @patch('msapp.api.views.movie_views._fetch_is_on_netflix')
+    def test_movies_list_does_not_query_tmdb(self, fetch):
+        add_to_list(make_collection(self.user), make_movie())
+        r = self.client.get('/api/movies/')
+        self.assertEqual(r.status_code, 200)
+        self.assertEqual(len(r.data['movies']), 1)
+        fetch.assert_not_called()
+
+    @patch('msapp.api.views.movie_views._fetch_is_on_netflix')
+    def test_returns_only_own_collection_movies_on_netflix(self, fetch):
+        on_netflix, not_on_netflix, other_users = make_movie(), make_movie(), make_movie()
+        collection = make_collection(self.user)
+        add_to_list(collection, on_netflix)
+        add_to_list(collection, not_on_netflix)
+        add_to_list(make_collection(make_user('other')), other_users)
+        fetch.side_effect = lambda tmdb_id, is_tv: tmdb_id in (on_netflix.movie_id, other_users.movie_id)
+        r = self.client.get('/api/movies/netflix/')
+        self.assertEqual(r.status_code, 200)
+        self.assertEqual(r.data['ids'], [on_netflix.id])
+
+
 # ---------------------------------------------------------------------------
 # Cross-user isolation
 # ---------------------------------------------------------------------------

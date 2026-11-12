@@ -31,6 +31,10 @@ export const movieService = {
     return api.delete(`/movies/${id}/priority/`);
   },
 
+  getNetflixIds: () => {
+    return api.get('/movies/netflix/');
+  },
+
   getRandomMovie: () => {
     return api.get('/movies/random/');
   },

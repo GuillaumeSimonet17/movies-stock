@@ -15,6 +15,7 @@ urlpatterns = [
     path('movies/', movie_views.get_movies, name='movies-list'),
     path('movies/search/', movie_views.search_movies, name='movies-search'),
     path('movies/add/', movie_views.add_movie, name='movies-add'),
+    path('movies/netflix/', movie_views.get_netflix_movies, name='movies-netflix'),
     path('movies/random/', movie_views.random_movie, name='movies-random'),
     path('movies/ask/', ai_views.ask_movies, name='movies-ask'),
     path('movies/<int:movie_id>/', movie_views.get_movie_detail, name='movie-detail'),

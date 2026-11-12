@@ -1,4 +1,4 @@
-import {useState, useEffect, useRef, useCallback} from 'react';
+import {useState, useEffect, useRef, useCallback, useMemo} from 'react';
 import {useNavigate} from 'react-router-dom';
 import TopBar from '../components/common/TopBar';
 import SearchBar from '../components/movies/SearchBar';
@@ -13,6 +13,7 @@ import './Home.css';
 function Home() {
   const [movies, setMovies] = useState([]);
   const [groupedMovies, setGroupedMovies] = useState({});
+  const [netflixIds, setNetflixIds] = useState(new Set());
   const [loading, setLoading] = useState(true);
   const [availableGenres, setAvailableGenres] = useState([]);
   const [collectionListId, setCollectionListId] = useState(null);
@@ -25,6 +26,16 @@ function Home() {
   const isFirstLoad = useRef(true);
   const navigate = useNavigate();
   const debounceRef = useRef(null);
+
+  // Netflix availability needs one TMDb call per movie: loaded separately so it never delays the list
+  const loadNetflix = useCallback(async () => {
+    try {
+      const data = await movieService.getNetflixIds();
+      setNetflixIds(new Set(data?.ids ?? []));
+    } catch (error) {
+      console.error('Error loading Netflix availability:', error);
+    }
+  }, []);
 
   const loadMovies = useCallback(async () => {
     if (isFirstLoad.current) setLoading(true);
@@ -67,6 +78,20 @@ function Home() {
     return () => clearTimeout(debounceRef.current);
   }, [loadMovies, filters.search]);
 
+  useEffect(() => {
+    loadNetflix();
+  }, [loadNetflix]);
+
+  const handleMovieAdded = useCallback(() => {
+    loadMovies();
+    loadNetflix();
+  }, [loadMovies, loadNetflix]);
+
+  const displayedGroups = useMemo(() => ({
+    ...groupedMovies,
+    Netflix: movies.filter(m => netflixIds.has(m.id)),
+  }), [groupedMovies, movies, netflixIds]);
+
   const handleFilterChange = useCallback((newFilters) => {
     setFilters(newFilters);
   }, []);
@@ -98,7 +123,7 @@ function Home() {
       <TopBar/>
 
       <div className="content">
-        <SearchBar onMovieAdded={loadMovies}/>
+        <SearchBar onMovieAdded={handleMovieAdded}/>
 
         <div className="actions-row">
           <Filters
@@ -119,7 +144,7 @@ function Home() {
           </button>
         </div>
 
-        {askOpen && <AskMoviesWizard onClose={handleCloseAsk} onMovieAdded={loadMovies}/>}
+        {askOpen && <AskMoviesWizard onClose={handleCloseAsk} onMovieAdded={handleMovieAdded}/>}
 
         {movies.length === 0 ? (
           <div className="empty-state">
@@ -129,7 +154,7 @@ function Home() {
           </div>
         ) : (
           <div className="movies-container">
-            {Object.entries(groupedMovies)
+            {Object.entries(displayedGroups)
               .filter(([_, genreMovies]) => {
                 // Filter out empty or invalid genre groups
                 return Array.isArray(genreMovies) && genreMovies.length > 0;
