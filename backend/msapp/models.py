@@ -19,6 +19,9 @@ class Movie(models.Model):
     vote_average = models.FloatField(null=True, blank=True)
     is_tv = models.BooleanField(default=False, db_index=True)
     keywords = models.JSONField(null=True, blank=True)
+    fr_release_date = models.DateField(blank=True, null=True, db_index=True)
+    on_netflix = models.BooleanField(null=True, blank=True)
+    refreshed_at = models.DateTimeField(null=True, blank=True)
 
 class FilePath(models.Model):
     movie = models.ForeignKey(Movie, related_name='file_paths', on_delete=models.CASCADE)
@@ -103,3 +106,20 @@ class PriorityMovie(models.Model):
 
     def __str__(self):
         return f"{self.user.username} prioritized {self.movie.title}"
+
+
+class MovieNotification(models.Model):
+    KIND_NETFLIX = 'netflix'
+    KIND_CHOICES = [(KIND_NETFLIX, 'Arrivé sur Netflix')]
+
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='movie_notifications')
+    movie = models.ForeignKey(Movie, on_delete=models.CASCADE, related_name='notifications')
+    kind = models.CharField(max_length=20, choices=KIND_CHOICES)
+    is_read = models.BooleanField(default=False)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ['-created_at']
+
+    def __str__(self):
+        return f"{self.user.username}: {self.movie.title} ({self.kind})"

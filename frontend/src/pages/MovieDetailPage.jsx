@@ -64,6 +64,17 @@ const getAccentColor = (hex) => {
   return getLuminance(opaque) < 0.45 ? adjustColor(opaque, 60) : adjustColor(opaque, -60);
 };
 
+const formatReleaseDate = (isoDate) =>
+  new Date(`${isoDate}T00:00:00`).toLocaleDateString('fr-FR', {day: 'numeric', month: 'long', year: 'numeric'});
+
+// Dates are "YYYY-MM-DD" strings, comparable lexicographically
+const isUpcoming = (isoDate) => {
+  if (!isoDate) return false;
+  const now = new Date();
+  const today = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
+  return isoDate >= today;
+};
+
 function MovieDetailPage() {
   const location = useLocation();
   const movieList = location.state?.movieList || [];
@@ -392,7 +403,13 @@ function MovieDetailPage() {
 
                 {movie.status !== 'Released' && movie.release_date && (
                   <p>
-                    Release date : <strong>{movie.release_date}</strong>
+                    Sortie USA : <strong>{formatReleaseDate(movie.release_date)}</strong>
+                  </p>
+                )}
+
+                {isUpcoming(movie.fr_release_date) && (
+                  <p>
+                    Sortie France : <strong>{formatReleaseDate(movie.fr_release_date)}</strong>
                   </p>
                 )}
 

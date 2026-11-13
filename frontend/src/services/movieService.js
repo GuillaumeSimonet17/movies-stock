@@ -35,6 +35,14 @@ export const movieService = {
     return api.get('/movies/netflix/');
   },
 
+  getMovieNotifications: () => {
+    return api.get('/movies/notifications/');
+  },
+
+  markMovieNotificationsRead: (ids) => {
+    return api.post('/movies/notifications/read/', { ids });
+  },
+
   getRandomMovie: () => {
     return api.get('/movies/random/');
   },

@@ -4,6 +4,8 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from msapp.models import MoviesList, MovieListItem, Movie, WatchedMovie
 from msapp.serializers import MovieListSerializer
+from msapp.movie_refresh import fetch_movie_details, pick_fr_release_date
+from django.utils import timezone
 
 
 @api_view(['GET'])
@@ -94,7 +96,7 @@ def search_add_to_list(request, list_id):
     movie = Movie.objects.filter(movie_id=tmdb_id).first()
     if not movie:
         endpoint = 'tv' if is_tv else 'movie'
-        movie_data = search_detailed_movies(f"https://api.themoviedb.org/3/{endpoint}/{tmdb_id}")
+        movie_data = fetch_movie_details(tmdb_id, is_tv)
         if not movie_data:
             return Response({'error': 'Movie not found on TMDb'}, status=status.HTTP_404_NOT_FOUND)
 
@@ -127,6 +129,9 @@ def search_add_to_list(request, list_id):
             production_companies=movie_data.get('production_companies') or None,
             origin_country=movie_data.get('origin_country', []),
             status=movie_data.get('status', ''),
+            vote_average=movie_data.get('vote_average'),
+            fr_release_date=None if is_tv else pick_fr_release_date(movie_data.get('release_dates')),
+            refreshed_at=timezone.now(),
         )
         get_images_and_links(movie)
         get_keywords(movie, endpoint, tmdb_id)

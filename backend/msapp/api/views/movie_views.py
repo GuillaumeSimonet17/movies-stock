@@ -6,7 +6,12 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from django.db.models import Q
 from django.core.cache import cache
-from msapp.models import Movie, MoviesList, MovieListItem, FilePath, PriorityMovie
+from django.utils import timezone
+from msapp.models import Movie, MoviesList, MovieListItem, FilePath, PriorityMovie, MovieNotification
+from msapp.movie_refresh import (
+    fetch_movie_details, pick_fr_release_date, record_netflix_statuses,
+    today_in_france, trigger_background_refresh,
+)
 from msapp.utils import URL_TMDB, API_KEY_DEEPL
 from msapp.serializers import MovieSerializer, MovieListSerializer
 from msapp.utils import search_detailed_movies, get_dominant_color, API_KEY_TMDB
@@ -48,13 +53,14 @@ def _fetch_is_on_netflix(tmdb_id, is_tv):
 
 
 def get_netflix_movie_ids(movies):
-    """Return the set of local Movie ids available on Netflix."""
+    """Return the set of local Movie ids available on Netflix, persisting status changes."""
     candidates = [m for m in movies if m.movie_id]
     if not candidates:
         return set()
     with ThreadPoolExecutor(max_workers=10) as executor:
-        results = executor.map(lambda m: _fetch_is_on_netflix(m.movie_id, m.is_tv), candidates)
-        return {m.id for m, on_netflix in zip(candidates, results) if on_netflix}
+        results = list(executor.map(lambda m: _fetch_is_on_netflix(m.movie_id, m.is_tv), candidates))
+    record_netflix_statuses(zip(candidates, results))
+    return {m.id for m, on_netflix in zip(candidates, results) if on_netflix}
 
 
 @api_view(['GET'])
@@ -149,7 +155,50 @@ def get_netflix_movies(request):
         movielistitem__movies_list__user=request.user,
         movielistitem__movies_list__is_collection=True,
     ).distinct()
-    return Response({'ids': sorted(get_netflix_movie_ids(list(movies)))})
+    ids = get_netflix_movie_ids(list(movies))
+    # This endpoint is already the "slow, TMDb-backed" call of the home page: piggyback on it
+    # to keep stored movie data (release dates, status...) fresh.
+    trigger_background_refresh()
+    return Response({'ids': sorted(ids)})
+
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def get_movie_notifications(request):
+    """Collection movies released today (France or US) and unread Netflix arrivals."""
+    today = today_in_france()
+    collection_movies = Movie.objects.filter(
+        movielistitem__movies_list__user=request.user,
+        movielistitem__movies_list__is_collection=True,
+    ).distinct()
+
+    released_today = []
+    for movie in collection_movies.filter(Q(fr_release_date=today) | Q(release_date=today)):
+        released_today.append({
+            'movie_id': movie.id,
+            'title': movie.title,
+            'poster_path': movie.poster_path,
+            'is_tv': movie.is_tv,
+            'region': 'FR' if movie.fr_release_date == today else 'US',
+        })
+
+    netflix = [
+        {'id': n.id, 'movie_id': n.movie_id, 'title': n.movie.title, 'poster_path': n.movie.poster_path}
+        for n in MovieNotification.objects.filter(
+            user=request.user, kind=MovieNotification.KIND_NETFLIX, is_read=False,
+        ).select_related('movie')
+    ]
+    return Response({'date': today.isoformat(), 'released_today': released_today, 'netflix': netflix})
+
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def mark_movie_notifications_read(request):
+    ids = request.data.get('ids') or []
+    if not isinstance(ids, list):
+        return Response({'error': 'ids must be a list'}, status=status.HTTP_400_BAD_REQUEST)
+    updated = MovieNotification.objects.filter(user=request.user, id__in=ids).update(is_read=True)
+    return Response({'updated': updated})
 
 
 @api_view(['GET'])
@@ -204,9 +253,7 @@ def add_movie(request):
 
     # New movie: fetch full details from TMDb
     endpoint = 'tv' if is_tv else 'movie'
-    movie_data = search_detailed_movies(
-        f"https://api.themoviedb.org/3/{endpoint}/{movie_id}"
-    )
+    movie_data = fetch_movie_details(movie_id, is_tv)
 
     if not movie_data:
         return Response(
@@ -263,7 +310,9 @@ def add_movie(request):
         production_companies=movie_data.get('production_companies') or None,
         origin_country=movie_data.get('origin_country', []),
         status=movie_data.get('status', ''),
-        vote_average=movie_data.get('vote_average')
+        vote_average=movie_data.get('vote_average'),
+        fr_release_date=None if is_tv else pick_fr_release_date(movie_data.get('release_dates')),
+        refreshed_at=timezone.now(),
     )
     get_images_and_links(movie)
     get_keywords(movie, endpoint, movie_id)

@@ -1,7 +1,8 @@
 import { useState, useEffect, useRef } from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useTheme } from '../../hooks/useTheme';
 import { friendService } from '../../services/friendService';
+import { movieService } from '../../services/movieService';
 import Drawer from './Drawer';
 import './TopBar.css';
 
@@ -11,13 +12,46 @@ function TopBar({ bgColor, textColor }) {
   const [toasts, setToasts] = useState([]);
   const { theme, toggleTheme } = useTheme();
   const location = useLocation();
+  const navigate = useNavigate();
   const seenAccepted = useRef(new Set());
 
-  const showToast = (msg) => {
+  const dismissToast = (id) => setToasts(prev => prev.filter(t => t.id !== id));
+
+  const showToast = (msg, { movieId = null, duration = 4000 } = {}) => {
     const id = Date.now() + Math.random();
-    setToasts(prev => [...prev, { id, msg }]);
-    setTimeout(() => setToasts(prev => prev.filter(t => t.id !== id)), 4000);
+    setToasts(prev => [...prev, { id, msg, movieId }]);
+    setTimeout(() => dismissToast(id), duration);
   };
+
+  // Movie notifications: releases of the day (shown once per day) and Netflix arrivals (shown once)
+  useEffect(() => {
+    const fetchMovieNotifs = () => movieService.getMovieNotifications().then(d => {
+      const storageKey = `release_notifs_${d.date}`;
+      let shown = [];
+      try { shown = JSON.parse(localStorage.getItem(storageKey) || '[]'); } catch { /* storage unavailable */ }
+      const fresh = (d.released_today || []).filter(m => !shown.includes(m.movie_id));
+      fresh.forEach(m => {
+        const where = m.region === 'FR' ? 'en France' : 'aux USA';
+        showToast(`🎬 Sort aujourd'hui ${where} : ${m.title}`, { movieId: m.movie_id, duration: 8000 });
+      });
+      if (fresh.length) {
+        try {
+          localStorage.setItem(storageKey, JSON.stringify([...shown, ...fresh.map(m => m.movie_id)]));
+        } catch { /* storage unavailable */ }
+      }
+
+      const netflix = d.netflix || [];
+      netflix.forEach(n => {
+        showToast(`🍿 ${n.title} est maintenant sur Netflix`, { movieId: n.movie_id, duration: 8000 });
+      });
+      if (netflix.length) {
+        movieService.markMovieNotificationsRead(netflix.map(n => n.id)).catch(() => {});
+      }
+    }).catch(() => {});
+    fetchMovieNotifs();
+    const interval = setInterval(fetchMovieNotifs, 60000);
+    return () => clearInterval(interval);
+  }, []);
 
   useEffect(() => {
     if (location.pathname === '/friends') {
@@ -78,11 +112,24 @@ function TopBar({ bgColor, textColor }) {
 
       <Drawer isOpen={drawerOpen} onClose={() => setDrawerOpen(false)} />
 
-      {toasts.map(t => (
-        <div key={t.id} className="topbar-toast">
-          {t.msg}
+      {toasts.length > 0 && (
+        <div className="topbar-toasts">
+          {toasts.map(t => t.movieId ? (
+            <button
+              key={t.id}
+              type="button"
+              className="topbar-toast topbar-toast-link"
+              onClick={() => { dismissToast(t.id); navigate(`/movie/${t.movieId}`); }}
+            >
+              {t.msg}
+            </button>
+          ) : (
+            <div key={t.id} className="topbar-toast">
+              {t.msg}
+            </div>
+          ))}
         </div>
-      ))}
+      )}
     </>
   );
 }
