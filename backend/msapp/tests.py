@@ -528,10 +528,10 @@ class NetflixArrivalNotificationTests(TestCase):
         notif = MovieNotification.objects.create(user=self.user, movie=self.movie, kind='netflix')
         MovieNotification.objects.create(user=self.other, movie=self.movie, kind='netflix')
         r = self.client.get('/api/movies/notifications/')
-        self.assertEqual([n['id'] for n in r.data['netflix']], [notif.id])
+        self.assertEqual([n['id'] for n in r.data['notifications']], [notif.id])
         self.client.post('/api/movies/notifications/read/', {'ids': [notif.id]}, format='json')
         r = self.client.get('/api/movies/notifications/')
-        self.assertEqual(r.data['netflix'], [])
+        self.assertEqual(r.data['notifications'], [])
         self.assertEqual(MovieNotification.objects.filter(is_read=False).count(), 1)
 
 
@@ -543,19 +543,35 @@ class ReleasedTodayNotificationTests(TestCase):
         self.collection = make_collection(self.user)
         self.today = movie_refresh.today_in_france()
 
+    def notifs(self):
+        r = self.client.get('/api/movies/notifications/')
+        return r.data['notifications']
+
     def test_lists_fr_and_us_releases_of_the_day(self):
-        fr = make_movie(title='FR', fr_release_date=self.today, release_date=self.today - timedelta(days=10))
+        fr = make_movie(title='FR', fr_release_date=self.today, release_date=self.today - timedelta(days=30))
         us = make_movie(title='US', release_date=self.today, fr_release_date=self.today + timedelta(days=7))
         later = make_movie(title='Later', release_date=self.today + timedelta(days=1))
         not_mine = make_movie(title='Other', fr_release_date=self.today)
         for m in (fr, us, later):
             add_to_list(self.collection, m)
         add_to_list(make_collection(make_user('other')), not_mine)
-        r = self.client.get('/api/movies/notifications/')
         self.assertEqual(
-            {m['title']: m['region'] for m in r.data['released_today']},
-            {'FR': 'FR', 'US': 'US'},
+            {(n['title'], n['kind']) for n in self.notifs()},
+            {('FR', 'release_fr'), ('US', 'release_us')},
         )
+
+    def test_missed_release_still_notified_a_few_days_later(self):
+        add_to_list(self.collection, make_movie(title='Missed', fr_release_date=self.today - timedelta(days=3)))
+        add_to_list(self.collection, make_movie(title='Too old', fr_release_date=self.today - timedelta(days=20)))
+        notifs = self.notifs()
+        self.assertEqual([n['title'] for n in notifs], ['Missed'])
+        self.assertEqual(notifs[0]['release_date'], (self.today - timedelta(days=3)).isoformat())
+
+    def test_release_notified_only_once(self):
+        add_to_list(self.collection, make_movie(fr_release_date=self.today))
+        ids = [n['id'] for n in self.notifs()]
+        self.client.post('/api/movies/notifications/read/', {'ids': ids}, format='json')
+        self.assertEqual(self.notifs(), [])
 
 
 class MovieRefreshTests(TestCase):
@@ -583,18 +599,19 @@ class MovieRefreshTests(TestCase):
         self.assertIsNone(movie_refresh.pick_fr_release_date(None))
 
     @patch('msapp.movie_refresh.search_detailed_movies')
-    def test_refresh_movie_updates_changing_fields(self, search):
-        movie = make_movie(status='Post Production', release_date=date(2026, 12, 1), poster_path='/p.jpg')
+    def test_refresh_movie_updates_only_release_info(self, search):
+        movie = make_movie(status='Post Production', release_date=date(2026, 12, 1), vote_average=6.0)
         search.return_value = {
             'status': 'Released', 'release_date': '2026-11-20', 'vote_average': 7.4,
-            'poster_path': '/p.jpg', 'release_dates': self.RELEASE_DATES,
+            'poster_path': '/new.jpg', 'release_dates': self.RELEASE_DATES,
         }
         self.assertTrue(movie_refresh.refresh_movie(movie))
         movie.refresh_from_db()
         self.assertEqual(movie.status, 'Released')
         self.assertEqual(movie.release_date, date(2026, 11, 20))
         self.assertEqual(movie.fr_release_date, date(2026, 12, 3))
-        self.assertEqual(movie.vote_average, 7.4)
+        self.assertEqual(movie.vote_average, 6.0)
+        self.assertEqual(movie.poster_path, '/poster.jpg')
         self.assertIsNotNone(movie.refreshed_at)
         self.assertIn('append_to_response=release_dates', search.call_args[0][0])
 
@@ -606,23 +623,34 @@ class MovieRefreshTests(TestCase):
         self.assertEqual(movie.status, 'Planned')
         self.assertIsNone(movie.refreshed_at)
 
-    def test_stale_selection(self):
+    def test_stale_selection_only_unreleased_movies(self):
         collection = make_collection(make_user())
-        now = timezone.now()
+        yesterday = timezone.now() - timedelta(days=2)
         today = movie_refresh.today_in_france()
-        never = make_movie(title='never')
-        upcoming_stale = make_movie(title='upcoming', status='Post Production',
-                                    release_date=today + timedelta(days=30), refreshed_at=now - timedelta(days=2))
-        upcoming_fresh = make_movie(title='upcoming fresh', status='Post Production',
-                                    release_date=today + timedelta(days=30), refreshed_at=now - timedelta(hours=2))
-        old_recent = make_movie(title='old recent', release_date=date(2000, 1, 1), refreshed_at=now - timedelta(days=2))
-        old_stale = make_movie(title='old stale', release_date=date(2000, 1, 1), refreshed_at=now - timedelta(days=40))
-        for m in (never, upcoming_stale, upcoming_fresh, old_recent, old_stale):
+        movies = [
+            make_movie(title='never refreshed', release_date=date(2000, 1, 1)),
+            make_movie(title='upcoming', status='Post Production',
+                       release_date=today + timedelta(days=30), refreshed_at=yesterday),
+            make_movie(title='upcoming already refreshed today', status='Post Production',
+                       release_date=today + timedelta(days=30), refreshed_at=timezone.now()),
+            make_movie(title='out in US, not yet in France', release_date=today - timedelta(days=10),
+                       fr_release_date=today + timedelta(days=20), refreshed_at=yesterday),
+            make_movie(title='out in US, French date unknown', release_date=today - timedelta(days=10),
+                       refreshed_at=yesterday),
+            make_movie(title='out everywhere', release_date=today - timedelta(days=10),
+                       fr_release_date=today - timedelta(days=3), refreshed_at=yesterday),
+            make_movie(title='old', release_date=date(2000, 1, 1), refreshed_at=yesterday - timedelta(days=400)),
+            make_movie(title='ended series', is_tv=True, status='Returning Series',
+                       release_date=date(2015, 1, 1), refreshed_at=yesterday),
+        ]
+        for m in movies:
             add_to_list(collection, m)
         make_movie(title='not in a list')
         titles = list(movie_refresh.stale_movies_queryset().values_list('title', flat=True))
-        self.assertEqual(titles[0], 'never')
-        self.assertEqual(set(titles), {'never', 'upcoming', 'old stale'})
+        self.assertEqual(titles[0], 'never refreshed')
+        self.assertEqual(set(titles), {
+            'never refreshed', 'upcoming', 'out in US, not yet in France', 'out in US, French date unknown',
+        })
 
 
 # ---------------------------------------------------------------------------

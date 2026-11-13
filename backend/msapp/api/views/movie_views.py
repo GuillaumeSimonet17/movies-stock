@@ -8,6 +8,7 @@ from django.db.models import Q
 from django.core.cache import cache
 from django.utils import timezone
 from msapp.models import Movie, MoviesList, MovieListItem, FilePath, PriorityMovie, MovieNotification
+from datetime import timedelta
 from msapp.movie_refresh import (
     fetch_movie_details, pick_fr_release_date, record_netflix_statuses,
     today_in_france, trigger_background_refresh,
@@ -23,6 +24,9 @@ from concurrent.futures import ThreadPoolExecutor
 
 URL_YTS_1 = 'https://en.yts-official.to/movies/'
 URL_YTS_2 = 'https://yts.rs/movie/'
+
+# A release is still notified this many days later if the app was not opened on the day
+RELEASE_NOTIFICATION_DAYS = 7
 
 # TMDb provider ids for Netflix (standard + "Basic with Ads")
 NETFLIX_PROVIDER_IDS = {8, 1796}
@@ -165,30 +169,51 @@ def get_netflix_movies(request):
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
 def get_movie_notifications(request):
-    """Collection movies released today (France or US) and unread Netflix arrivals."""
+    """Unread notifications: Netflix arrivals and releases (France / US) of collection movies.
+
+    Release notifications are created here for the last RELEASE_NOTIFICATION_DAYS days, so a
+    release is still notified if the user did not open the app on the day itself.
+    """
     today = today_in_france()
+    since = today - timedelta(days=RELEASE_NOTIFICATION_DAYS)
     collection_movies = Movie.objects.filter(
         movielistitem__movies_list__user=request.user,
         movielistitem__movies_list__is_collection=True,
     ).distinct()
 
-    released_today = []
-    for movie in collection_movies.filter(Q(fr_release_date=today) | Q(release_date=today)):
-        released_today.append({
-            'movie_id': movie.id,
-            'title': movie.title,
-            'poster_path': movie.poster_path,
-            'is_tv': movie.is_tv,
-            'region': 'FR' if movie.fr_release_date == today else 'US',
-        })
+    already_created = set(
+        MovieNotification.objects.filter(
+            user=request.user,
+            kind__in=[MovieNotification.KIND_RELEASE_FR, MovieNotification.KIND_RELEASE_US],
+        ).values_list('movie_id', 'kind')
+    )
+    to_create = []
+    for movie in collection_movies.filter(
+        Q(fr_release_date__range=(since, today)) | Q(release_date__range=(since, today))
+    ):
+        for kind, release in (
+            (MovieNotification.KIND_RELEASE_FR, movie.fr_release_date),
+            (MovieNotification.KIND_RELEASE_US, movie.release_date),
+        ):
+            if release and since <= release <= today and (movie.id, kind) not in already_created:
+                to_create.append(MovieNotification(user=request.user, movie=movie, kind=kind))
+    MovieNotification.objects.bulk_create(to_create)
 
-    netflix = [
-        {'id': n.id, 'movie_id': n.movie_id, 'title': n.movie.title, 'poster_path': n.movie.poster_path}
-        for n in MovieNotification.objects.filter(
-            user=request.user, kind=MovieNotification.KIND_NETFLIX, is_read=False,
-        ).select_related('movie')
-    ]
-    return Response({'date': today.isoformat(), 'released_today': released_today, 'netflix': netflix})
+    notifications = []
+    for n in MovieNotification.objects.filter(user=request.user, is_read=False).select_related('movie'):
+        release = {
+            MovieNotification.KIND_RELEASE_FR: n.movie.fr_release_date,
+            MovieNotification.KIND_RELEASE_US: n.movie.release_date,
+        }.get(n.kind)
+        notifications.append({
+            'id': n.id,
+            'kind': n.kind,
+            'movie_id': n.movie_id,
+            'title': n.movie.title,
+            'poster_path': n.movie.poster_path,
+            'release_date': release.isoformat() if release else None,
+        })
+    return Response({'date': today.isoformat(), 'notifications': notifications})
 
 
 @api_view(['POST'])

@@ -6,6 +6,16 @@ import { movieService } from '../../services/movieService';
 import Drawer from './Drawer';
 import './TopBar.css';
 
+const formatShortDate = (isoDate) =>
+  new Date(`${isoDate}T00:00:00`).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long' });
+
+const movieNotifMessage = (n, today) => {
+  if (n.kind === 'netflix') return `🍿 ${n.title} est maintenant sur Netflix`;
+  const where = n.kind === 'release_fr' ? 'en France' : 'aux USA';
+  if (!n.release_date || n.release_date === today) return `🎬 Sort aujourd'hui ${where} : ${n.title}`;
+  return `🎬 ${n.title} est sorti ${where} le ${formatShortDate(n.release_date)}`;
+};
+
 function TopBar({ bgColor, textColor }) {
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [notifCount, setNotifCount] = useState(0);
@@ -23,29 +33,15 @@ function TopBar({ bgColor, textColor }) {
     setTimeout(() => dismissToast(id), duration);
   };
 
-  // Movie notifications: releases of the day (shown once per day) and Netflix arrivals (shown once)
+  // Movie notifications (Netflix arrivals, releases): each one is shown once, then marked read
   useEffect(() => {
     const fetchMovieNotifs = () => movieService.getMovieNotifications().then(d => {
-      const storageKey = `release_notifs_${d.date}`;
-      let shown = [];
-      try { shown = JSON.parse(localStorage.getItem(storageKey) || '[]'); } catch { /* storage unavailable */ }
-      const fresh = (d.released_today || []).filter(m => !shown.includes(m.movie_id));
-      fresh.forEach(m => {
-        const where = m.region === 'FR' ? 'en France' : 'aux USA';
-        showToast(`🎬 Sort aujourd'hui ${where} : ${m.title}`, { movieId: m.movie_id, duration: 8000 });
+      const notifications = d.notifications || [];
+      notifications.forEach(n => {
+        showToast(movieNotifMessage(n, d.date), { movieId: n.movie_id, duration: 8000 });
       });
-      if (fresh.length) {
-        try {
-          localStorage.setItem(storageKey, JSON.stringify([...shown, ...fresh.map(m => m.movie_id)]));
-        } catch { /* storage unavailable */ }
-      }
-
-      const netflix = d.netflix || [];
-      netflix.forEach(n => {
-        showToast(`🍿 ${n.title} est maintenant sur Netflix`, { movieId: n.movie_id, duration: 8000 });
-      });
-      if (netflix.length) {
-        movieService.markMovieNotificationsRead(netflix.map(n => n.id)).catch(() => {});
+      if (notifications.length) {
+        movieService.markMovieNotificationsRead(notifications.map(n => n.id)).catch(() => {});
       }
     }).catch(() => {});
     fetchMovieNotifs();

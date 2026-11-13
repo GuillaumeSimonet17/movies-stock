@@ -110,7 +110,13 @@ class PriorityMovie(models.Model):
 
 class MovieNotification(models.Model):
     KIND_NETFLIX = 'netflix'
-    KIND_CHOICES = [(KIND_NETFLIX, 'Arrivé sur Netflix')]
+    KIND_RELEASE_FR = 'release_fr'
+    KIND_RELEASE_US = 'release_us'
+    KIND_CHOICES = [
+        (KIND_NETFLIX, 'Arrivé sur Netflix'),
+        (KIND_RELEASE_FR, 'Sortie en France'),
+        (KIND_RELEASE_US, 'Sortie aux USA'),
+    ]
 
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='movie_notifications')
     movie = models.ForeignKey(Movie, on_delete=models.CASCADE, related_name='notifications')

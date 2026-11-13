@@ -1,7 +1,7 @@
 """Keep stored movie data in sync with TMDb after a movie has been added.
 
-- Metadata (release dates, status, rating, poster...) is re-fetched periodically:
-  daily for upcoming titles, monthly for the others.
+- Release dates (and status) of titles not released yet are re-fetched daily.
+  Released titles are never re-fetched.
 - Netflix availability changes are persisted on the Movie and, when a title
   arrives on Netflix, a MovieNotification is created for each user who has it
   in their collection.
@@ -17,7 +17,7 @@ from django.db.models import F, Q
 from django.utils import timezone
 
 from msapp.models import Movie, MovieListItem, MovieNotification
-from msapp.utils import URL_TMDB, get_dominant_color, search_detailed_movies
+from msapp.utils import URL_TMDB, search_detailed_movies
 
 logger = logging.getLogger(__name__)
 
@@ -28,10 +28,10 @@ FR_REGION = 'FR'
 # Festival premieres are ignored; the wide theatrical release wins, then the others.
 FR_RELEASE_TYPE_PRIORITY = [{3}, {2}, {4}, {5, 6}]
 
-UPCOMING_REFRESH_INTERVAL = timedelta(days=1)
-DEFAULT_REFRESH_INTERVAL = timedelta(days=30)
-RECENT_RELEASE_WINDOW = timedelta(days=60)
-FINAL_STATUSES = {'Released', 'Ended', 'Canceled'}
+REFRESH_INTERVAL = timedelta(days=1)
+# A French date is often announced after the US release: keep looking for it a while.
+FR_DATE_LOOKUP_WINDOW = timedelta(days=90)
+FINAL_STATUSES = {'Released', 'Canceled'}
 
 BACKGROUND_BATCH_SIZE = 25
 BACKGROUND_LOCK_KEY = 'movie_refresh_lock'
@@ -77,7 +77,7 @@ def fetch_movie_details(tmdb_id, is_tv):
 
 
 def refresh_movie(movie):
-    """Re-fetch the movie from TMDb and update the fields that can change. Returns True on success."""
+    """Re-fetch the release dates and status from TMDb. Returns True on success."""
     if not movie.movie_id:
         return False
     data = fetch_movie_details(movie.movie_id, movie.is_tv)
@@ -89,42 +89,32 @@ def refresh_movie(movie):
         movie.release_date = release_date
     if data.get('status'):
         movie.status = data['status']
-    if data.get('vote_average') is not None:
-        movie.vote_average = data['vote_average']
-    if data.get('overview'):
-        movie.overview = data['overview']
-    if data.get('genres'):
-        movie.genre_ids = data['genres']
     if not movie.is_tv:
         movie.fr_release_date = pick_fr_release_date(data.get('release_dates'))
 
-    poster_path = data.get('poster_path')
-    if poster_path and poster_path != movie.poster_path:
-        movie.poster_path = poster_path
-        try:
-            movie.dominant_color = get_dominant_color(f'https://image.tmdb.org/t/p/w500{poster_path}')
-        except Exception as e:
-            logger.warning('Dominant color failed for %s: %s', movie.title, e)
-
     movie.refreshed_at = timezone.now()
-    movie.save()
+    movie.save(update_fields=['release_date', 'status', 'fr_release_date', 'refreshed_at'])
     return True
 
 
-def stale_movies_queryset():
-    """Movies in at least one list whose data is due for a refresh, never-refreshed first."""
-    now = timezone.now()
-    today = today_in_france()
-    upcoming = (
+def not_released_q(today):
+    """Titles whose release (US or France) is still to come."""
+    return (
         Q(release_date__isnull=True)
-        | Q(release_date__gte=today - RECENT_RELEASE_WINDOW)
+        | Q(release_date__gte=today)
         | Q(fr_release_date__gte=today)
-        | ~Q(status__in=FINAL_STATUSES)
+        | Q(is_tv=False, fr_release_date__isnull=True, release_date__gte=today - FR_DATE_LOOKUP_WINDOW)
+        | (Q(is_tv=False) & ~Q(status__in=FINAL_STATUSES))
     )
+
+
+def stale_movies_queryset():
+    """Movies in a list, not released yet, not refreshed today. Never-refreshed movies come first
+    (they are checked once even if released, to get their French date)."""
+    now = timezone.now()
     due = (
         Q(refreshed_at__isnull=True)
-        | (upcoming & Q(refreshed_at__lt=now - UPCOMING_REFRESH_INTERVAL))
-        | Q(refreshed_at__lt=now - DEFAULT_REFRESH_INTERVAL)
+        | (not_released_q(today_in_france()) & Q(refreshed_at__lt=now - REFRESH_INTERVAL))
     )
     in_a_list = Movie.objects.filter(
         id__in=MovieListItem.objects.values('movie_id')
