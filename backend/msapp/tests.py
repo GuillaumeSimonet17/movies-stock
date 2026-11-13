@@ -548,7 +548,7 @@ class ReleasedTodayNotificationTests(TestCase):
         return r.data['notifications']
 
     def test_lists_fr_and_us_releases_of_the_day(self):
-        fr = make_movie(title='FR', fr_release_date=self.today, release_date=self.today - timedelta(days=30))
+        fr = make_movie(title='FR', fr_release_date=self.today, release_date=self.today - timedelta(days=60))
         us = make_movie(title='US', release_date=self.today, fr_release_date=self.today + timedelta(days=7))
         later = make_movie(title='Later', release_date=self.today + timedelta(days=1))
         not_mine = make_movie(title='Other', fr_release_date=self.today)
@@ -562,7 +562,7 @@ class ReleasedTodayNotificationTests(TestCase):
 
     def test_missed_release_still_notified_a_few_days_later(self):
         add_to_list(self.collection, make_movie(title='Missed', fr_release_date=self.today - timedelta(days=3)))
-        add_to_list(self.collection, make_movie(title='Too old', fr_release_date=self.today - timedelta(days=20)))
+        add_to_list(self.collection, make_movie(title='Too old', fr_release_date=self.today - timedelta(days=45)))
         notifs = self.notifs()
         self.assertEqual([n['title'] for n in notifs], ['Missed'])
         self.assertEqual(notifs[0]['release_date'], (self.today - timedelta(days=3)).isoformat())
@@ -572,6 +572,12 @@ class ReleasedTodayNotificationTests(TestCase):
         ids = [n['id'] for n in self.notifs()]
         self.client.post('/api/movies/notifications/read/', {'ids': ids}, format='json')
         self.assertEqual(self.notifs(), [])
+
+    def test_release_notification_stays_until_dismissed(self):
+        add_to_list(self.collection, make_movie(fr_release_date=self.today - timedelta(days=2)))
+        first = [n['id'] for n in self.notifs()]
+        self.assertEqual(len(first), 1)
+        self.assertEqual([n['id'] for n in self.notifs()], first)
 
 
 class MovieRefreshTests(TestCase):

@@ -15,6 +15,7 @@ function Drawer({ isOpen, onClose }) {
   const [creatingList, setCreatingList] = useState(false);
   const [newListName, setNewListName] = useState('');
   const [pendingCount, setPendingCount] = useState(0);
+  const [releasesCount, setReleasesCount] = useState(0);
 
   useEffect(() => {
     if (isOpen) {
@@ -26,6 +27,7 @@ function Drawer({ isOpen, onClose }) {
       }
       listService.getLists().then(data => setLists(data)).catch(() => {});
       friendService.getNotifications().then(d => setPendingCount(d.total || 0)).catch(() => {});
+      movieService.getMovieNotifications().then(d => setReleasesCount(d.notifications?.length || 0)).catch(() => {});
     }
   }, [isOpen]);
 
@@ -78,6 +80,11 @@ function Drawer({ isOpen, onClose }) {
               <span className="icon">✅</span>
               Films vus
               {watchedCount !== null && <span className="drawer-count">{watchedCount}</span>}
+            </Link>
+            <Link to="/sorties" onClick={onClose}>
+              <span className="icon">🍿</span>
+              Sorties
+              {releasesCount > 0 && <span className="drawer-notif-badge">{releasesCount}</span>}
             </Link>
             <Link to="/friends" onClick={onClose}>
               <span className="icon">💬</span>

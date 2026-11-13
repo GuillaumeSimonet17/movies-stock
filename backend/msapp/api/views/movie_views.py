@@ -25,8 +25,8 @@ from concurrent.futures import ThreadPoolExecutor
 URL_YTS_1 = 'https://en.yts-official.to/movies/'
 URL_YTS_2 = 'https://yts.rs/movie/'
 
-# A release is still notified this many days later if the app was not opened on the day
-RELEASE_NOTIFICATION_DAYS = 7
+# Releases up to this many days old get a notification (e.g. movie added just after its release)
+RELEASE_NOTIFICATION_DAYS = 30
 
 # TMDb provider ids for Netflix (standard + "Basic with Ads")
 NETFLIX_PROVIDER_IDS = {8, 1796}

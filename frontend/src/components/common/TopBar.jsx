@@ -3,22 +3,24 @@ import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useTheme } from '../../hooks/useTheme';
 import { friendService } from '../../services/friendService';
 import { movieService } from '../../services/movieService';
+import { movieNotifIcon, movieNotifLabel } from '../../utils/movieNotifications';
 import Drawer from './Drawer';
 import './TopBar.css';
 
-const formatShortDate = (isoDate) =>
-  new Date(`${isoDate}T00:00:00`).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long' });
+const TOASTED_NOTIFS_KEY = 'movie_notifs_toasted';
 
-const movieNotifMessage = (n, today) => {
-  if (n.kind === 'netflix') return `🍿 ${n.title} est maintenant sur Netflix`;
-  const where = n.kind === 'release_fr' ? 'en France' : 'aux USA';
-  if (!n.release_date || n.release_date === today) return `🎬 Sort aujourd'hui ${where} : ${n.title}`;
-  return `🎬 ${n.title} est sorti ${where} le ${formatShortDate(n.release_date)}`;
+const readToasted = () => {
+  try { return JSON.parse(localStorage.getItem(TOASTED_NOTIFS_KEY) || '[]'); } catch { return []; }
+};
+
+const writeToasted = (ids) => {
+  try { localStorage.setItem(TOASTED_NOTIFS_KEY, JSON.stringify(ids.slice(-200))); } catch { /* storage unavailable */ }
 };
 
 function TopBar({ bgColor, textColor }) {
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [notifCount, setNotifCount] = useState(0);
+  const [movieNotifCount, setMovieNotifCount] = useState(0);
   const [toasts, setToasts] = useState([]);
   const { theme, toggleTheme } = useTheme();
   const location = useLocation();
@@ -27,26 +29,32 @@ function TopBar({ bgColor, textColor }) {
 
   const dismissToast = (id) => setToasts(prev => prev.filter(t => t.id !== id));
 
-  const showToast = (msg, { movieId = null, duration = 4000 } = {}) => {
+  const showToast = (msg, { link = null, duration = 4000 } = {}) => {
     const id = Date.now() + Math.random();
-    setToasts(prev => [...prev, { id, msg, movieId }]);
+    setToasts(prev => [...prev, { id, msg, link }]);
     setTimeout(() => dismissToast(id), duration);
   };
 
-  // Movie notifications (Netflix arrivals, releases): each one is shown once, then marked read
+  // Movie notifications (Netflix arrivals, releases) stay in the "Sorties" page until clicked there.
+  // Here: badge count, plus a toast the first time each one is seen on this device.
   useEffect(() => {
     const fetchMovieNotifs = () => movieService.getMovieNotifications().then(d => {
       const notifications = d.notifications || [];
-      notifications.forEach(n => {
-        showToast(movieNotifMessage(n, d.date), { movieId: n.movie_id, duration: 8000 });
+      setMovieNotifCount(notifications.length);
+      const toasted = readToasted();
+      const fresh = notifications.filter(n => !toasted.includes(n.id));
+      fresh.forEach(n => {
+        showToast(`${movieNotifIcon(n)} ${n.title} · ${movieNotifLabel(n, d.date)}`, { link: '/sorties', duration: 8000 });
       });
-      if (notifications.length) {
-        movieService.markMovieNotificationsRead(notifications.map(n => n.id)).catch(() => {});
-      }
+      if (fresh.length) writeToasted([...toasted, ...fresh.map(n => n.id)]);
     }).catch(() => {});
     fetchMovieNotifs();
     const interval = setInterval(fetchMovieNotifs, 60000);
-    return () => clearInterval(interval);
+    window.addEventListener('movie-notifs-changed', fetchMovieNotifs);
+    return () => {
+      clearInterval(interval);
+      window.removeEventListener('movie-notifs-changed', fetchMovieNotifs);
+    };
   }, []);
 
   useEffect(() => {
@@ -88,7 +96,9 @@ function TopBar({ bgColor, textColor }) {
           style={{ color: style.color }}
         >
           ☰
-          {notifCount > 0 && <span className="menu-btn-badge">{notifCount}</span>}
+          {notifCount + movieNotifCount > 0 && (
+            <span className="menu-btn-badge">{notifCount + movieNotifCount}</span>
+          )}
         </button>
 
         <Link to="/" className="app-title-link">
@@ -110,12 +120,12 @@ function TopBar({ bgColor, textColor }) {
 
       {toasts.length > 0 && (
         <div className="topbar-toasts">
-          {toasts.map(t => t.movieId ? (
+          {toasts.map(t => t.link ? (
             <button
               key={t.id}
               type="button"
               className="topbar-toast topbar-toast-link"
-              onClick={() => { dismissToast(t.id); navigate(`/movie/${t.movieId}`); }}
+              onClick={() => { dismissToast(t.id); navigate(t.link); }}
             >
               {t.msg}
             </button>
