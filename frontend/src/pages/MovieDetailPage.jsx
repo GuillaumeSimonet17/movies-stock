@@ -401,12 +401,6 @@ function MovieDetailPage() {
                   </p>
                 )}
 
-                {movie.status !== 'Released' && movie.release_date && (
-                  <p>
-                    Sortie USA : <strong>{formatReleaseDate(movie.release_date)}</strong>
-                  </p>
-                )}
-
                 {isUpcoming(movie.fr_release_date) && (
                   <p>
                     Sortie France : <strong>{formatReleaseDate(movie.fr_release_date)}</strong>

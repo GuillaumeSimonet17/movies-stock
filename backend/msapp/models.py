@@ -111,11 +111,9 @@ class PriorityMovie(models.Model):
 class MovieNotification(models.Model):
     KIND_NETFLIX = 'netflix'
     KIND_RELEASE_FR = 'release_fr'
-    KIND_RELEASE_US = 'release_us'
     KIND_CHOICES = [
         (KIND_NETFLIX, 'Arrivé sur Netflix'),
         (KIND_RELEASE_FR, 'Sortie en France'),
-        (KIND_RELEASE_US, 'Sortie aux USA'),
     ]
 
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='movie_notifications')
@@ -126,6 +124,14 @@ class MovieNotification(models.Model):
 
     class Meta:
         ordering = ['-created_at']
+        constraints = [
+            # A release is notified once per user and movie
+            models.UniqueConstraint(
+                fields=['user', 'movie', 'kind'],
+                condition=models.Q(kind='release_fr'),
+                name='unique_release_notification',
+            ),
+        ]
 
     def __str__(self):
         return f"{self.user.username}: {self.movie.title} ({self.kind})"
